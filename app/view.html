@@ -48,41 +48,11 @@
     
     <script type="text/javascript" src="swf/swfobject.js"></script>
     
+    <script type="text/javascript" src="js/janrain/janrain_widget.js"></script>
+    <script type="text/javascript" src="js/common/notification.js"></script>
+    
     <!-- SWF Save/Load JS Code Go HERE! This was originally taken from "KSketchCallBacks.js". -->
-    
-    <!-- script type="text/javascript" src="swf/KSketchCallBacks.js"></script -->
-    <script type="text/javascript">
-      
-      //Function to trigger Janrain login plugin
-      
-      (function() {
-        if (typeof window.janrain !== 'object') window.janrain = {};
-        if (typeof window.janrain.settings !== 'object') window.janrain.settings = {};
         
-        janrain.settings.tokenUrl = 'http://ksketchweb.appspot.com/user/janrain';
-        
-        function isReady() { janrain.ready = true; };
-        if (document.addEventListener) {
-          document.addEventListener("DOMContentLoaded", isReady, false);
-        } else {
-          window.attachEvent('onload', isReady);
-        }
-        
-        var e = document.createElement('script');
-        e.type = 'text/javascript';
-        e.id = 'janrainAuthWidget';
-        
-        if (document.location.protocol === 'https:') {
-          e.src = 'https://rpxnow.com/js/lib/ksketch/engage.js';
-        } else {
-          e.src = 'http://widget-cdn.rpxnow.com/js/lib/ksketch/engage.js';
-        }
-        
-        var s = document.getElementsByTagName('script')[0];
-        s.parentNode.insertBefore(e, s);
-      })();
-    </script>
-    
     <script type="text/javascript">
       //Function to trigger a save procedure in the flash object
       //The flash object will call saveKSketchFile in return to pass the data from itself to javascript
@@ -114,7 +84,7 @@
         //      scope.get_sketch();
         //  });
         //}
-        if (query_string.id !== undefined) {
+        if (query_string.id !== undefined && query_string.id !== "") {
           scope.$apply(function() {
               scope.setTest(query_string.id);
           });
@@ -138,6 +108,15 @@
         }
       
       }
+      
+      function get_location() {
+        e = document.getElementById('testdiv');
+        scope = angular.element(e).scope();
+        scope.$apply(function() {
+            return scope.get_player();
+        });
+      }
+      
       //Function receives an xml string from anywhere
       //and asks the flash object to load it	
       function loadKSketchFile(fileData) {
@@ -146,6 +125,7 @@
           var loading = true;
           while (loading) {
             try {
+              //console.log('I exist!');
               swfObject.load(fileData);//change load
               loading = false;
             } catch (e) {
@@ -154,40 +134,14 @@
         }
         else
         {
-          alert('the swf object does not exist! Unable to save');
+          bootbox.alert('The player does not exist! Unable to open the Sketch.');
         }	
       }
     </script>
     
     <!-- SWF Save/Load JS Code Go HERE! This was originally taken from "KSketchCallBacks.js". -->
     
-    <!-- JS code for SWF plugin. DO NOT REMOVE. -->
-    
-    <script type="text/javascript">
-      // For version detection, set to min. required Flash Player version, or 0 (or 0.0.0), for no version detection. 
-      var swfVersionStr = "10.2.0";
-      // To use express install, set to playerProductInstall.swf, otherwise the empty string. 
-      var xiSwfUrlStr = "swf/playerProductInstall.swf";
-      var flashvars = {};
-      var params = {};
-      params.quality = "high";
-      params.bgcolor = "#ffffff";
-      params.allowScriptAccess = "always";
-      params.allowfullscreen = "true";
-      var attributes = {};
-      attributes.id = "KSketch_Player";
-      attributes.name = "KSketch_Player";
-      attributes.align = "middle";
-      swfobject.embedSWF(
-        "swf/v1/KSketch2_Web.swf", "flashContent", 
-        "100%", "406", 
-        swfVersionStr, xiSwfUrlStr, 
-        flashvars, params, attributes);
-      // JavaScript enabled so display the flashContent div in case it is not replaced with a swf object.
-      swfobject.createCSS("#flashContent", "display:block;text-align:left;border:1px solid black;padding:1px");
-    </script>
-    
-    <!-- JS code for SWF plugin. DO NOT REMOVE. -->
+
     
     <script src="https://apis.google.com/js/client.js?onload=OnLoadCallback"></script>
     
@@ -200,19 +154,103 @@
   
   <!-- body id="ksketchapp" ng-controller="LoginController" scrolling="no" -->
   <body ng-controller="ViewController" id="ksketchapp"  scrolling="no" onload="QueryString()">
+    <!-- Loading -->
+    
+    <div id="LoadingDiv" ui-if="waiting!='Ready'"></div>
+    <div class="modal" id="Loading" ui-if="waiting=='Loading'">
+      <div class="modal-body">
+        <span>Loading........</span>
+      </div>
+    </div>
+    <div class="modal" id="Loading" ui-if="waiting=='Saving'" ng-cloak>
+      <div class="modal-body">
+        <span>Saving........</span>
+      </div>
+    </div>
+    <div class="modal" id="Message" ui-if="waiting=='Error'" ng-cloak>
+      <div class="modal-body">
+        <div class="modal-header">
+          <input type="submit" class="close" value="x" data-dismiss="modal" ng-click="acknowledge()"/>
+          <h3 id="myUploadItems">{{heading}}</h3>
+        </div>
+        <br/>
+        <div class="control-group">
+          <div class="control-label">
+            <span style="text-align:center">{{message}}</span>
+            <br/>
+            <br/>
+            <span style="text-align:center">{{submessage}}</span>
+            <br/>
+            <br/>
+          </div>
+        </div>
+      </div>
+      <div class="modal-footer">
+        <input type="submit"  ng-click="acknowledge()" value="Ok" data-dismiss="modal"/>
+      </div>
+    </div>     
     <!-- Top Bar -->
     <div id="topbar" class="navbar navbar-inverse navbar-fixed-top">
       <div class="navbar-inner">
-        <div class="container-fluid">
+        <div class="container-fluid" ng-show="waiting=='Ready'" ng-cloak>
           <!-- a class="brand" id="logo" href="#"><img style="height:36px" src="ico/KSketch-logo.png"></a -->
           <a class="brand" id="logo" href=" index.html">K-Sketch</a>
-          <p class="navbar-text pull-left">
-            <!--Username and profile link goes here.-->
-              <a ng-show="User.u_login" ng-cloak href="profile.html?id={{User.id}}" class="navbar-link"><span id="heading">Hello, {{User.u_name}}!</span></a>
-              <span ng-hide="User.u_login" ng-cloak id="heading">Hello, {{User.u_name}}!</span>
-              <a ng-hide="User.u_login" ng-cloak class="janrainEngage" href="#">Sign-In</a>
-              <a ng-show="User.u_login" ng-cloak href="/user/logout">Logout</a>
-          </p>
+          <ul class="nav" ng-cloak>
+            <li>
+              <!--Username and profile link goes here.-->
+              <a ng-show="User.u_login" ng-cloak href="profile.html?id={{User.id}}" class="navbar-link">
+                <span id="heading">
+                  Hello, {{User.u_name}}
+                  <span ui-if="User.u_isadmin"> (Admin)</span>
+                  !
+                </span>
+              </a>
+              <a ng-hide="User.u_login" ng-cloak id="heading" disabled>Hello, {{User.u_name}}!</a>
+            </li>          
+            <li ng-hide="User.u_login" ng-cloak>
+              <a class="janrainEngage" href="#">Sign-In</a>
+            </li>
+            <li ng-show="User.u_login" ng-cloak>
+              <a href="/user/logout">Logout</a>
+            </li>           
+            <li class="dropdown"  ui-if="User.u_login">
+              <a href="#" class="dropdown-toggle" data-toggle="dropdown" title="{{notify}}">
+<!--                 <b class="caret"></b> -->
+                <i ng-class="notify_icon"></i>
+              </a>
+              <ul class="dropdown-menu">
+                <li>
+                  <a ui-if="!notifications.entities.length">
+                  <span>You have no new notifications.</span>
+                  </a>
+                  <table class="table table-striped" ui-if="!!notifications.entities.length">
+                    <tr ng-repeat="notification in notifications.entities |  limitTo:3">
+                      <td>
+                        <span>{{notification.n_date}}</span>
+                      </td>
+                      <td>
+                        <span>{{notification.n_message}}</span>
+                      </td>
+                      <td ui-if="notification.n_type == 'GROUPINVITE'">
+                        <ul>
+                          <a class="btn btn-small" onClick="notifyAccept({{notification.id}},{{notification.n_relevant}})">Accept</a>
+                        </ul>
+                        <ul>
+                          <a class="btn btn-small" onClick="notifyReject({{notification.id}},{{notification.n_relevant}})">Reject</a>
+                        </ul>
+                      </td>
+                    </tr>
+                  </table>
+                </li>
+                <li class="divider"></li>
+                <li>
+                  <a href="notifications.html">
+                    Show All Notifications
+                  </a>
+                </li>      
+              </ul>                     
+            </li>
+          </ul>         
           <p class="navbar-search pull-right">
             <input type="text" ng-model="search" onkeypress="searchKeyPress(event);" class="search-query" placeholder="Search by sketch name or owner">
             <input type="submit" id="searchbutton" class="btn btn-inverse btn-small" ng-click="simpleSearch()" value=">>">
@@ -230,42 +268,12 @@
           </p>
         </div>
       </div>
-    </div>
-    
+    </div> 
     
     
     <!-- Main Body -->
-    <div class="container-fluid">
-      <!-- Loading -->
-      
-      <div id="LoadingDiv" ng-hide="waiting=='Ready'"></div>
-      <div class="modal" id="Loading" ng-show="waiting=='Loading'">
-        <div class="modal-body">
-          <span>Loading........</span>
-        </div>
-      </div>
-      <div class="modal" id="Message" ng-show="waiting=='Error'" ng-cloak>
-        <div class="modal-body">
-          <div class="modal-header">
-            <input type="submit" class="close" value="x" data-dismiss="modal" ng-click="acknowledge()"/>
-            <h3 id="myUploadItems">{{heading}}</h3>
-          </div>
-          <br/>
-          <div class="control-group">
-            <div class="control-label">
-              <span style="text-align:center">{{message}}</span>
-              <br/>
-              <br/>
-              <span style="text-align:center">{{submessage}}</span>
-              <br/>
-              <br/>
-            </div>
-            <div class="controls">
-              <input type="submit"  ng-click="acknowledge()" value="Ok" data-dismiss="modal"/>
-            </div>
-          </div>
-        </div>
-      </div>        
+    <div class="container-fluid" id="wrap">
+   
       <div class="row-fluid" id="mainbody">
         
         <!-- Navigation Sidebar (Access separate panes). -->
@@ -277,7 +285,6 @@
               
               <li id="sc" ng-show="User.u_login" ng-cloak><a title="View personal profile, sketches and group memberships" href="profile.html?id={{User.id}}">My Sketchbook</a></li>
               <li id="cs"><a title="Open editor to create a new sketch" href="sketch.html">Create a Sketch</a></li>
-              <li id="vs"><a title="Search for sketch" href="search.html">Search for Sketch</a></li>
             </ul>
           </div><!--/.well -->
         </div><!--/span-->
@@ -285,21 +292,18 @@
         <!-- Main Body -->
         <div class="span10">
           <!-- Stuff goes here. -->
-            <div class="row-fluid">
-              <div class="row-fluid">
-                <div class="span8">
+          <div class="row-fluid">
+            <span id="testdiv" ng-model="test"></span>
+            <div class="row-fluid" ng-cloak>
+              <div class="span8">
+                <div class="row-fluid">
                   <span style="font-weight:bold" ng-cloak>
                   {{item.data.fileName}} (version {{item.data.version}}) by {{item.data.owner}}
                   </span>
-                  <a class="btn btn-success btn-small" style="float:right" title="Edit this sketch" href="sketch.html?id={{item.data.sketchId}}&version={{item.data.version}}">Edit This Sketch</a>
-                </div>				
-                <div class="span4">
+                  <a ui-if="item.data.p_edit" class="btn btn-success btn-small" style="float:right" title="Edit this sketch" href="sketch.html?id={{item.data.sketchId}}">Edit This Sketch</a>
+                  <button ui-if="!item.data.p_edit" style="float:right" class="btn btn-success btn-small disabled" title="You are not allowed to edit this sketch"><del>No Editing</del></button>
                 </div>
-              </div>
-              <span id="testdiv" ng-model="test"></span>
-              
-              <div class="row-fluid">
-                <div class="span8" ng-cloak>
+                <div class="row-fluid">
                   <!-- Temporary Div to prevent clicking until proper editor is provided -->
                   <div id="ViewCoverBarDiv"></div>
                   <div id="ViewCoverDiv"></div>
@@ -319,13 +323,13 @@
                     </div>
                     <noscript>
                       <object classid="clsid:D27CDB6E-AE6D-11cf-96B8-444553540000" width="100%" height="406" id="KSketch_Player">
-                        <param name="movie" value="swf/v1/KSketch2_Web.swf" />
+                        <param name="movie" value="{{get_player()}}" />
                         <param name="quality" value="high" />
                         <param name="bgcolor" value="#ffffff" />
                         <param name="allowScriptAccess" value="always" />
                         <param name="allowFullScreen" value="true" />
                         <!--[if !IE]>-->
-                        <object type="application/x-shockwave-flash" width="100%" height="406" data="swf/v1/KSketch2_Web.swf">
+                        <object type="application/x-shockwave-flash" width="100%" height="406" data="{{get_player()}}" >
                           <param name="quality" value="high" />
                           <param name="bgcolor" value="#ffffff" />
                           <param name="allowScriptAccess" value="always" />
@@ -347,37 +351,113 @@
                     </noscript>
                   </div>
                 </div>
-                <div class="span4" ng-cloak>
+                <div class="row-fluid">
                   <div class="well well-small">
-                    <span style="font-weight:bold">Sketch Name:</span> {{item.data.fileName}}
+                    <div class="row-fluid" ui-if="item.data.p_comment">
+                      <div ui-if="User.u_login">
+                        <textarea ng-model="comment.data.content" id="comment" maxlength="255"></textarea>                
+                        <button class="btn" title="Add Comment" ng-click="addComment()">Add Comment</button>
+                      </div>
+                      <div ui-if="!User.u_login">
+                        You have to <a class="janrainEngage" href="#">log in</a> to comment.
+                      </div>
+                    </div>
+                    <div class="row-fluid" ui-if="!item.data.p_comment">
+                      You are not allowed to comment on this sketch.
+                    </div>                    
+                    <div class="row-fluid">
+                      <span>This sketch has {{comments.entities.length}} comment(s).</span>
+                      <table class="table table-striped">
+                        <tr ng-repeat="comment in comments.entities">
+                            <td>
+                              <a ng-cloak href="profile.html?id={{comment.data.user_id}}">                            
+                                <img id="comment_img" src="https://secure.gravatar.com/avatar/{{comment.data.g_hash}}?s=200&r=pg&d=mm" />
+                                <span>{{comment.data.user_name}}</span>
+                              </a>
+                            </td>
+                            <td>
+                              <span>{{comment.data.content}}</span>
+                            </td>
+                            <td>
+                              <span>{{comment.created}}</span>
+                            </td>
+                          </tr>                
+                      </table>
+                    </div>
+                  </div>
+                </div>
+              </div>
+              <div class="span4">
+                <div class="row-fluid">
+                </div>
+                <div class="row-fluid">
+                  <div class="well well-small" ng-cloak>
+                    <!-- <span style="font-weight:bold">Sketch Name:</span> {{item.data.fileName}}
                     <br>
                     <span style="font-weight:bold">Sketch Version:</span> {{item.data.version}}
+                    <br> -->
+                    <span style="font-weight:bold">Sketch Description:</span>
                     <br>
-                    <span style="font-weight:bold">Sketch Description:</span> {{item.data.changeDescription}}    
+                    {{item.data.changeDescription}}    
                     <br>                
                     <hr/>
-                    <span style="font-weight:bold">Done By:</span> {{item.data.owner}}
+                    <span style="font-weight:bold">Done By:</span>
+                    <a href="profile.html?id={{item.data.owner_id}}" ui-if="item.data.owner_id != 0">{{item.data.owner}}</a>
+                    <span ui-if="item.data.owner_id == 0">{{item.data.owner}}</span>
                     <br>
                     <span style="font-weight:bold">Created On:</span> {{item.created}}
                     <br>
-                    <hr/>
-                    <span style="font-weight:bold">Created From:</span> {{item.data.original}}
-                    <br>
-                    <span style="font-weight:bold">Edited On:</span> {{item.modified}}
-                    <hr/>
-                    <span style="font-weight:bold">View Permissions:</span> {{item.data.p_view}}
-                    <br>
-                    <span style="font-weight:bold">Edit Permissions:</span> {{item.data.p_edit}}
-                    <br>
-                    <span style="font-weight:bold">Comment Permissions:</span> {{item.data.p_comment}}
+                    <div ui-if="item.data.owner_id != 0">
+                      <hr/>
+                      <span style="font-weight:bold">Groups:</span>
+                      <br>
+                      <ul ng-repeat="group in item.data.groups">
+                        <li>
+                          <a href="groups.html?id={{group.id}}">
+                            {{group.data.group_name}}
+                          </a> - (Can view
+                                  <span ui-if="group.edit">, edit</span>
+                                  <span ui-if="group.comment">, comment</span>)
+                        </li>
+                      </ul>
+                    </div>
+                    <div ng-show="!isoriginal(item)">
+                      <hr/>
+                      <span style="font-weight:bold">Created From:</span> 
+                        <span ui-if="item.data.originalName != 'N/A'">
+                          {{item.data.originalName}} (version {{item.data.originalVersion}})
+                        </span>
+                        <span ui-if="item.data.originalName == 'N/A'">
+                          The "parent" sketch no longer exists.
+                        </span>
+                      <br>
+                    </div>
                   </div>
-                  <div>
+                </div>
+                <div class="row-fluid">
+                  <div class="well well-small" ng-cloak>
+                    <div ui-if="likes.is_user_like">
+                      You and <span style="font-weight:bold">{{likes.count_other_users}}</span> other user(s) have liked this sketch.
+                    </div>
+                    <div ui-if="!likes.is_user_like">
+                      <span style="font-weight:bold">{{likes.count}}</span> user(s) have liked this sketch.
+                    </div>
+                    <div ui-if="User.u_login">
+                      <button class="btn btn-danger btn-small" ui-if="likes.is_user_like" title="Unlike" ng-click="toggleLike()">Unlike</button>
+                       
+                      <button class="btn btn-success btn-small" ui-if="!likes.is_user_like" title="Llike" ng-click="toggleLike()">Like</button>
+                    </div>
+                    <div ui-if="!User.u_login">
+                      You have to <a class="janrainEngage" href="#">log in</a> to like/unlike this sketch.
+                    </div>
+                    <hr/>
                     <span class='st_facebook_hcount' displayText='Facebook'></span>
                     <span class='st_fblike_hcount' displayText='Facebook Like'></span>
                   </div>
                 </div>
-              </div>          
+              </div>
             </div>
+          </div>
         </div><!--/span-->
       </div><!--/row-->
       
@@ -393,25 +473,57 @@
     <!-- Le javascript
 ================================================== -->
     <!-- Placed at the end of the document so the pages load faster -->
-    <script src="js/jquery.js"></script>
-    <script src="js/moment.min.js"></script>
+    <script src="js/jquery/jquery.js"></script>
     <script src="lib/angular/angular.min.js"></script>
+    <!-- JS code for SWF plugin. DO NOT REMOVE. -->
+    
+    <script type="text/javascript">
+      //var player_location = get_location();
+      var player_location = "swf/v1/KSketch2_Web.swf";
+      //var player_location = "swf/Player/KSketch_Player.swf";
+      // For version detection, set to min. required Flash Player version, or 0 (or 0.0.0), for no version detection. 
+      //var swfVersionStr = "11.1.0";
+      var swfVersionStr = "10.2.0";
+      // To use express install, set to playerProductInstall.swf, otherwise the empty string. 
+      var xiSwfUrlStr = "swf/playerProductInstall.swf";
+      var flashvars = {};
+      var params = {};
+      params.quality = "high";
+      params.bgcolor = "#ffffff";
+      params.allowScriptAccess = "sameDomain";
+      params.allowfullscreen = "true";
+      var attributes = {};
+      attributes.id = "KSketch_Player";
+      attributes.name = "KSketch_Player";
+      attributes.align = "middle";
+      swfobject.embedSWF(
+        player_location, "flashContent", 
+        "100%", "406", 
+        swfVersionStr, xiSwfUrlStr, 
+        flashvars, params, attributes);
+      // JavaScript enabled so display the flashContent div in case it is not replaced with a swf object.
+      swfobject.createCSS("#flashContent", "display:block;text-align:left;border:1px solid black;padding:1px");
+    </script>
+    
+    <!-- JS code for SWF plugin. DO NOT REMOVE. -->
+    <script src="js/moment/moment.min.js"></script>
     <script src="lib/angular/angular-ui.min.js"></script>
     <script src="lib/angular/angular-resource.min.js"></script>
     <script src="js/angular/view-controller.js"></script>
     <script src="js/app.js"></script>
-    <script src="js/bootstrap-transition.js"></script>
-    <script src="js/bootstrap-alert.js"></script>
-    <script src="js/bootstrap-modal.js"></script>
-    <script src="js/bootstrap-dropdown.js"></script>
-    <script src="js/bootstrap-scrollspy.js"></script>
-    <script src="js/bootstrap-tab.js"></script>
-    <script src="js/bootstrap-tooltip.js"></script>
-    <script src="js/bootstrap-popover.js"></script>
-    <script src="js/bootstrap-button.js"></script>
-    <script src="js/bootstrap-collapse.js"></script>
-    <script src="js/bootstrap-carousel.js"></script>
-    <script src="js/bootstrap-typeahead.js"></script>
+    <script src="js/bootbox/bootbox.min.js"></script>
+    <script src="js/bootstrap/bootstrap-transition.js"></script>
+    <script src="js/bootstrap/bootstrap-alert.js"></script>
+    <script src="js/bootstrap/bootstrap-modal.js"></script>
+    <script src="js/bootstrap/bootstrap-dropdown.js"></script>
+    <script src="js/bootstrap/bootstrap-scrollspy.js"></script>
+    <script src="js/bootstrap/bootstrap-tab.js"></script>
+    <script src="js/bootstrap/bootstrap-tooltip.js"></script>
+    <script src="js/bootstrap/bootstrap-popover.js"></script>
+    <script src="js/bootstrap/bootstrap-button.js"></script>
+    <script src="js/bootstrap/bootstrap-collapse.js"></script>
+    <script src="js/bootstrap/bootstrap-carousel.js"></script>
+    <script src="js/bootstrap/bootstrap-typeahead.js"></script>
     
   </body>
 </html>

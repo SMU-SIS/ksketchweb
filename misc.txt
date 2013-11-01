@@ -1,0 +1,14 @@
+
+      include = True
+      if criteria != "":
+        include = False
+        if criteria.lower() in object.fileName.lower():
+          include = True
+        if object.owner in possible_users:
+          include = True
+      
+      if show == "latest":
+        #Normal Search - show only the latest Sketches
+        versionCount = VersionCount.get_counter(long(object.sketchId))
+        if long(object.version) < versionCount.lastVersion:
+          include = False

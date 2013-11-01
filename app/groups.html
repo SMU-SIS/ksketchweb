@@ -48,40 +48,8 @@
     
     <script type="text/javascript" src="swf/swfobject.js"></script>
     
-    <!-- SWF Save/Load JS Code Go HERE! This was originally taken from "KSketchCallBacks.js". -->
-    
-    <!-- script type="text/javascript" src="KSketchCallBacks.js"></script -->
-    <script type="text/javascript">
-      
-      //Function to trigger Janrain login plugin
-      
-      (function() {
-        if (typeof window.janrain !== 'object') window.janrain = {};
-        if (typeof window.janrain.settings !== 'object') window.janrain.settings = {};
-        
-        janrain.settings.tokenUrl = 'http://ksketchweb.appspot.com/user/janrain';
-        
-        function isReady() { janrain.ready = true; };
-        if (document.addEventListener) {
-          document.addEventListener("DOMContentLoaded", isReady, false);
-        } else {
-          window.attachEvent('onload', isReady);
-        }
-        
-        var e = document.createElement('script');
-        e.type = 'text/javascript';
-        e.id = 'janrainAuthWidget';
-        
-        if (document.location.protocol === 'https:') {
-          e.src = 'https://rpxnow.com/js/lib/ksketch/engage.js';
-        } else {
-          e.src = 'http://widget-cdn.rpxnow.com/js/lib/ksketch/engage.js';
-        }
-        
-        var s = document.getElementsByTagName('script')[0];
-        s.parentNode.insertBefore(e, s);
-      })();
-    </script>
+    <script type="text/javascript" src="js/janrain/janrain_widget.js"></script>    
+    <script type="text/javascript" src="js/common/notification.js"></script>
     
     <script type="text/javascript">
       function QueryString() {
@@ -106,7 +74,7 @@
         }
         e = document.getElementById('testdiv');
         scope = angular.element(e).scope();
-        if (query_string.id !== undefined) {
+        if (query_string.id !== undefined && query_string.id !== "") {
           scope.$apply(function() {
               scope.setTest(query_string.id);
               scope.get_group();
@@ -127,19 +95,103 @@
   
   <!-- body id="ksketchapp" ng-controller="LoginController" scrolling="no" -->
   <body ng-controller="GroupsController" id="ksketchapp"  scrolling="no" onload="QueryString()">
+    <!-- Loading -->     
+    <div id="LoadingDiv" ui-if="waiting!='Ready'"></div>
+    <div class="modal" id="Loading" ui-if="waiting=='Loading'">
+      <div class="modal-body">
+        <span>Loading........</span>
+      </div>
+    </div>
+    <div class="modal" id="Loading" ui-if="waiting=='Saving'" ng-cloak>
+      <div class="modal-body">
+        <span>Saving........</span>
+      </div>
+    </div>
+    <div class="modal" id="Message" ui-if="waiting=='Error'" ng-cloak>
+      <div class="modal-body">
+        <div class="modal-header">
+          <input type="submit" class="close" value="x" data-dismiss="modal" ng-click="acknowledge()"/>
+          <h3 id="myUploadItems">{{heading}}</h3>
+        </div>
+        <br/>
+        <div class="control-group">
+          <div class="control-label">
+            <span style="text-align:center">{{message}}</span>
+            <br/>
+            <br/>
+            <span style="text-align:center">{{submessage}}</span>
+            <br/>
+            <br/>
+          </div>
+        </div>
+      </div>
+      <div class="modal-footer">
+        <input type="submit"  ng-click="acknowledge()" value="Ok" data-dismiss="modal"/>
+      </div>
+    </div>          
+
     <!-- Top Bar -->
     <div id="topbar" class="navbar navbar-inverse navbar-fixed-top">
       <div class="navbar-inner">
-        <div class="container-fluid">
+        <div class="container-fluid" ng-show="waiting=='Ready'" ng-cloak>
           <!-- a class="brand" id="logo" href="#"><img style="height:36px" src="ico/KSketch-logo.png"></a -->
           <a class="brand" id="logo" href=" index.html">K-Sketch</a>
-          <p class="navbar-text pull-left">
-            <!--Username and profile link goes here.-->
-              <a ng-show="User.u_login" ng-cloak href="profile.html?id={{User.id}}" class="navbar-link"><span id="heading">Hello, {{User.u_name}}!</span></a>
-              <span ng-hide="User.u_login" ng-cloak id="heading">Hello, {{User.u_name}}!</span>
-              <a ng-hide="User.u_login" ng-cloak class="janrainEngage" href="#">Sign-In</a>
-              <a ng-show="User.u_login" ng-cloak href="/user/logout">Logout</a>
-          </p>
+          <ul class="nav" ng-cloak>
+            <li>
+              <!--Username and profile link goes here.-->
+              <a ng-show="User.u_login" ng-cloak href="profile.html?id={{User.id}}" class="navbar-link">
+                <span id="heading">
+                  Hello, {{User.u_name}}
+                  <span ui-if="User.u_isadmin"> (Admin)</span>
+                  !
+                </span>
+              </a>
+              <a ng-hide="User.u_login" ng-cloak id="heading" disabled>Hello, {{User.u_name}}!</a>
+            </li>          
+            <li ng-hide="User.u_login" ng-cloak>
+              <a class="janrainEngage" href="#">Sign-In</a>
+            </li>
+            <li ng-show="User.u_login" ng-cloak>
+              <a href="/user/logout">Logout</a>
+            </li>           
+            <li class="dropdown"  ui-if="User.u_login">
+              <a href="#" class="dropdown-toggle" data-toggle="dropdown" title="{{notify}}">
+<!--                 <b class="caret"></b> -->
+                <i ng-class="notify_icon"></i>
+              </a>
+              <ul class="dropdown-menu">
+                <li>
+                  <a ui-if="!notifications.entities.length">
+                  <span>You have no new notifications.</span>
+                  </a>
+                  <table class="table table-striped" ui-if="!!notifications.entities.length">
+                    <tr ng-repeat="notification in notifications.entities |  limitTo:3">
+                      <td>
+                        <span>{{notification.n_date}}</span>
+                      </td>
+                      <td>
+                        <span>{{notification.n_message}}</span>
+                      </td>
+                      <td ui-if="notification.n_type == 'GROUPINVITE'">
+                        <ul>
+                          <a class="btn btn-small" onClick="notifyAccept({{notification.id}},{{notification.n_relevant}})">Accept</a>
+                        </ul>
+                        <ul>
+                          <a class="btn btn-small" onClick="notifyReject({{notification.id}},{{notification.n_relevant}})">Reject</a>
+                        </ul>
+                      </td>
+                    </tr>
+                  </table>
+                </li>
+                <li class="divider"></li>
+                <li>
+                  <a href="notifications.html">
+                    Show All Notifications
+                  </a>
+                </li>      
+              </ul>                         
+            </li>
+          </ul>           
           <p class="navbar-search pull-right">
             <input type="text" ng-model="search" onkeypress="searchKeyPress(event);" class="search-query" placeholder="Search by sketch name or owner">
             <input type="submit" id="searchbutton" class="btn btn-inverse btn-small" ng-click="simpleSearch()" value=">>">
@@ -159,17 +211,8 @@
       </div>
     </div>
     
-    
-    
     <!-- Main Body -->
-    <div class="container-fluid">
-      <!-- Loading -->      
-      <div id="LoadingDiv" ng-hide="waiting=='Ready'"></div>      
-      <div class="modal" id="Loading" ng-hide="waiting=='Ready'">
-        <div class="modal-body">
-          <span>Loading........</span>
-        </div>
-      </div>    
+    <div class="container-fluid" id="wrap">
       <div class="row-fluid" id="mainbody">
         
         <!-- Navigation Sidebar (Access separate panes). -->
@@ -181,7 +224,6 @@
               
               <li id="sc" ng-show="User.u_login" ng-cloak><a title="View personal profile, sketches and group memberships" href="profile.html?id={{User.id}}">My Sketchbook</a></li>
               <li id="cs"><a title="Open editor to create a new sketch" href="sketch.html">Create a Sketch</a></li>
-              <li id="vs"><a title="Search for sketch" href="search.html">Search for Sketch</a></li>
             </ul>
           </div><!--/.well -->
         </div><!--/span-->
@@ -193,25 +235,101 @@
           <div class="row-fluid">
             <div class="row-fluid">
               <span id="testdiv" ng-model="test"></span>
-              <h2 ng-cloak>{{group_name}}</h2>
               <div class="row-fluid">
+                <div class="span10">
+                  <h2 ng-cloak>{{group_name}}</h2>
+                </div>
+                <div class="span2">
+                  <button class="btn btn-inverse btn-small" style="float:right" ui-if="!founder && belong" ng-click="leavegroup()" ng-cloak>Leave Group</button>
+                  <button class="btn btn-inverse btn-small" style="float:right" ui-if="founder && belong" ng-click="deletegroup()" ng-cloak>Delete Group</button>
+                </div>
               </div>
-              
             </div>
-            
             <div class="tabbable">
               <ul class="nav nav-tabs">
                 <li class="active">
-                  <a href="#GroupMembers" data-toggle="tab">Group Members</a>
+                  <a href="#GroupSketches" data-toggle="tab">Group Sketches</a>
                 </li>
                 <li>
-                  <a href="#GroupSketches" data-toggle="tab">Group Sketches</a>
+                  <a href="#GroupMembers" data-toggle="tab">Group Members</a>
                 </li>
               </ul>
               <div class="tab-content" id="main">
-                <div class="tab-pane active" id="GroupMembers">
+                <!-- Group Sketches Pane -->
+                <div class="tab-pane active" id="GroupSketches">
                   <div class="row-fluid">
-                    <h2>Group Members</h2>
+                    <h2>Group Sketches</h2>
+                    <div class="row-fluid">
+                      <div class="span6">
+                        <span ui-if="!items.entities.length" ng-cloak><em>No sketches were found for this group.</em></span>
+                      </div>
+                      <div class="span6">
+                        <button class="btn btn-info" style="float:right" ui-if="group_pagination.next_offset != 0" ng-click="paginate_forward()" ng-cloak>More Results</button>
+                      </div>
+                    </div>
+                    <ul class="unstyled" ui-if="!!items.entities.length"  ng-cloak>
+                      <li ng-repeat="files in items.entities | orderBy:predicate_users:reverse | filter:filter">
+                        <div class="well well-small">
+                          <div class="row-fluid">
+                            <div class="span3">
+                              <a href="view.html?id={{files.data.sketchId}}"  title="View this sketch">
+                                <img src="data:image/png;base64,{{files.data.thumbnailData}}" alt="Red dot" ui-if="!!files.data.thumbnailData">
+                                <div class="well well-small" ui-if="!files.data.thumbnailData">
+                                  <span>No preview available</span>
+                                </div>
+                              </a>
+                            </div>
+                            <div class="span9">
+                              <div class="row-fluid">
+                                <div class="span6">
+                                  <a href="view.html?id={{files.data.sketchId}}"  title="View this sketch">
+                                    <h4>{{files.data.fileName}}</h4>
+                                  </a>
+                                </div>
+                                <div class="span6">
+                                  <span class="label">
+                                    Likes: {{files.data.like}}
+                                  </span>
+                                  <span class="label">
+                                    Comments: {{files.data.comment}}
+                                  </span>
+                                </div>
+                              </div>
+                              <em>
+                                <span ui-if="files.data.changeDescription.length > 50" title="{{files.data.changeDescription}}" ng-cloak>
+                                  {{files.data.changeDescription.substring(0, 49)}}...
+                                </span>
+                                <span ui-if="0 < files.data.changeDescription.length <= 50" ng-cloak>
+                                  {{files.data.changeDescription}}
+                                </span>
+                                <span ui-if="files.data.changeDescription.length == 0" ng-cloak>
+                                  No description given
+                                </span>
+                              </em>
+                              <br>
+                              Created by 
+                              <a href="profile.html?id={{files.data.owner_id}}" ui-if="files.data.owner_id != 0">{{files.data.owner}}</a>
+                              <span ui-if="files.data.owner_id == 0">{{files.data.owner}}</span> 
+                              on {{tzformat(files.created)}}
+                            </div>
+                          </div>
+                        </div>
+                      </li>
+                    </ul>
+                    <hr/>
+                    <button class="btn btn-info" style="float:right" ui-if="group_pagination.next_offset != 0" ng-click="paginate_forward()" ng-cloak>More Results</button>
+                  </div>
+                </div>
+
+                <!-- Group Members Pane -->
+                <div class="tab-pane" id="GroupMembers">
+                  <div class="row-fluid">
+                    <div class="span10">
+                      <h2>Group Members</h2>
+                    </div>
+                    <div class="span2">
+                      <button class="btn btn-inverse btn-small" style="float:right" data-toggle="modal" href="#AddMember" ui-if="founder" ng-cloak>Add Member</button> 
+                    </div>
                     <table class="table table-bordered table-striped" ui-if="!!u_groups.length"  ng-cloak>
                       <thead>
                         <th>
@@ -220,21 +338,63 @@
                         <th>
                           Role
                         </th>
+                        <th ui-if="founder">
+                          Action
+                        </th>
                       </thead>
                       <tbody>
                         <tr ng-repeat="users in u_groups">
-                          <td>{{users.user}}</td>
+                          <td>
+                            <a ng-cloak href="profile.html?id={{users.user_id}}">
+                              <img id="comment_img" src="https://secure.gravatar.com/avatar/{{users.g_hash}}?s=200&r=pg&d=mm" />
+                              <span>{{users.user}}</span>
+                            </a>
+                          </td>
                           <td>{{users.role}}</td>
+                          <td ui-if="founder">
+                            <button class="btn btn-danger btn-small" ui-if="users.role == 'Member' && founder" ng-click="kickgroup(users)">Kick Out</button>
+                            <button class="btn btn-info btn-small" ui-if="users.role == 'Member' && founder" ng-click="passfounder(users)">Pass Ownership</button>
+                          </td>
                         </tr>
                       </tbody>
                     </table>
                   </div>                
                 </div>
-                <div class="tab-pane" id="GroupSketches">
-                  <div class="row-fluid">
-                    <h2>Group Sketches</h2>
-                  </div>                
-                </div>                
+                <!--Add Member Modal-->
+                <div class="modal hide fade" id="AddMember" style="display:none" ui-if="founder">
+                  <div class="modal-header">
+                    <input type="submit" class="close" value="x" data-dismiss="modal"/>
+                    <h3 id="Login">Add Member</h3>
+                  </div>
+                  <div class="modal-body">
+                    <div class="control-group">
+                      <label class="control-label" for="UserName">Search by Username:</label>
+                      <input type="text" ng-model="groupmeta.data.criteria"/> 
+                      <input type="submit" class="button btn-inverse" ng-click="groupuserlist()" value="Search"/>
+                      <br/>
+                      <label class="control-label" for="UserName">Select a User:</label>
+                      <div class="controls">
+                        <select ng-model="useradd" ng-options="userfound as userfound.u_name for userfound in usersfound.entities" ng-cloak></select>
+                        <button class="btn btn-small" ng-click="includemember(useradd)">Add</button>
+                        <br/>
+                        {{added}}
+                      </div>
+                      <div class="controls">
+                        <ul>
+                          <li ng-repeat="u_add in usertoadd.data.users">
+                            {{u_add.u_name}}
+                            <button ng-click="unincludemember(u_add)">Remove</button>
+                          </li>
+                        </ul>
+                      </div>
+                      <div class="controls">
+                        <input type="submit" ng-click="addmember()" value="Submit" data-dismiss="modal"/>
+                      </div>
+                    </div>			
+                  </div>
+                  <div class="modal-footer"></div>
+                </div>
+                                    
               </div>
             </div>
           </div>
@@ -253,25 +413,26 @@
     <!-- Le javascript
 ================================================== -->
     <!-- Placed at the end of the document so the pages load faster -->
-    <script src="js/jquery.js"></script>
-    <script src="js/moment.min.js"></script>
+    <script src="js/jquery/jquery.js"></script>
+    <script src="js/moment/moment.min.js"></script>
     <script src="lib/angular/angular.min.js"></script>
     <script src="lib/angular/angular-ui.min.js"></script>
     <script src="lib/angular/angular-resource.min.js"></script>
     <script src="js/angular/groups-controller.js"></script>
     <script src="js/app.js"></script>
-    <script src="js/bootstrap-transition.js"></script>
-    <script src="js/bootstrap-alert.js"></script>
-    <script src="js/bootstrap-modal.js"></script>
-    <script src="js/bootstrap-dropdown.js"></script>
-    <script src="js/bootstrap-scrollspy.js"></script>
-    <script src="js/bootstrap-tab.js"></script>
-    <script src="js/bootstrap-tooltip.js"></script>
-    <script src="js/bootstrap-popover.js"></script>
-    <script src="js/bootstrap-button.js"></script>
-    <script src="js/bootstrap-collapse.js"></script>
-    <script src="js/bootstrap-carousel.js"></script>
-    <script src="js/bootstrap-typeahead.js"></script>
+    <script src="js/bootbox/bootbox.min.js"></script>
+    <script src="js/bootstrap/bootstrap-transition.js"></script>
+    <script src="js/bootstrap/bootstrap-alert.js"></script>
+    <script src="js/bootstrap/bootstrap-modal.js"></script>
+    <script src="js/bootstrap/bootstrap-dropdown.js"></script>
+    <script src="js/bootstrap/bootstrap-scrollspy.js"></script>
+    <script src="js/bootstrap/bootstrap-tab.js"></script>
+    <script src="js/bootstrap/bootstrap-tooltip.js"></script>
+    <script src="js/bootstrap/bootstrap-popover.js"></script>
+    <script src="js/bootstrap/bootstrap-button.js"></script>
+    <script src="js/bootstrap/bootstrap-collapse.js"></script>
+    <script src="js/bootstrap/bootstrap-carousel.js"></script>
+    <script src="js/bootstrap/bootstrap-typeahead.js"></script>
     
   </body>
 </html>

@@ -1,3 +1,5 @@
+/*     .ng-scope { border: 1px solid red; } */
+
     html{
       height: 100%;
     }
@@ -6,10 +8,34 @@
       padding-top: 60px;
       padding-bottom: 40px;
       overflow-y: scroll;
+      height: 100%;
+      margin: 0;
+    }
+
+    .modal.fade.in{
+      top: 35%;
     }
     
-    .item{
-      min-height: 300px;
+    #comment_img {
+      width: 50px;
+    }
+    
+    .dropdown-menu {
+      min-width: 270px;
+    }
+    
+    footer {
+      width: 97.5%;
+      height: 16px;
+      position: absolute;
+      bottom: 0;
+    }
+    
+    #group_permissions {
+      width: 350px;
+      height: 350px;
+      overflow-y: scroll;
+      padding-right: -75px;
     }
     
     /*LoadingDiv*/
@@ -34,6 +60,10 @@
       height: expression(document.body.scrollHeight &gt; document.body.offsetHeight ? document.body.scrollHeight : document.body.offsetHeight + 'px');
     }
     
+    .item{
+      min-height: 300px;
+    }
+    
     #Loading {
       top: 50%;
       width: 200px;
@@ -51,11 +81,7 @@
       width: 100%;
       height: 100%;
       _height: expression(document.body.offsetHeight + "px");
-      background-color: rgba(216, 216, 216, 0.5);
-    }
-
-    #logo {
-        /*padding: 0px 5px 0px;*/
+      background-color: rgba(0, 0, 0, 0.8);
     }
     
     #main {
@@ -63,7 +89,7 @@
     }
 
     #mainbody{
-      min-height:480px;
+      padding-bottom:16px;
     }
         
     #Message {
@@ -76,7 +102,7 @@
     
     .navbar-text{
       margin-bottom: 0;
-      margin-top: 10px;
+      margin-top: -10px;
       line-height: 40px;
       color: #777;
     }
@@ -86,12 +112,26 @@
       margin-top: 12px;
       margin-bottom: 0;
     }
+    
+    .navbar-search > .search-query {
+      margin-top: -9px;
+    }
+    
+    .navbar-search > .btn {
+      margin-top: -9px;
+    }
 
     #profile_img {
       position: relative;
       top: 0;
       left: 0;
       min-width: 100%;
+    }
+    
+    #sketchDisplay {
+      width: 150px;
+      height: 100px;
+      resize: none;
     }
     
     #sketchDescription {
@@ -101,6 +141,7 @@
     }
 
     #SaveSketch{
+      top: 10%;
       height: auto;
       width: auto;
     }
@@ -114,6 +155,7 @@
     }	  	  
 
     #SaveAsSketch{
+      top: 10%;
       height: auto;
       width: auto;
     }
@@ -126,6 +168,10 @@
       overflow-y: hidden; 
     }
 
+/*     .search-query {
+    
+    } */
+    
     .sidebar-nav {
       padding: 9px 0;
     }      
@@ -179,8 +225,19 @@
     #visibleTextData { 
       /*display: none;*/
     }
-
+    
+    #wrap {
+      min-height:100%;
+      position:relative;
+    }
+    
     /*Responsive*/
+    
+    @media (min-width: 980px) {
+      #logo {
+        padding: 0px 20px 10px;
+      }
+    }
     
 	  @media (max-width: 979px) {
       .sidebar-nav-fixed {
