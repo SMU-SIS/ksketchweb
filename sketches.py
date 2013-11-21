@@ -10,6 +10,7 @@ import datetime
 import os
 import urllib
 import urllib2
+import logging
 
 import webapp2
 from google.appengine.api import memcache
@@ -39,10 +40,111 @@ class Sketch(db.Model):
   modified = db.DateTimeProperty(auto_now=True)
   appver = db.FloatProperty()
   
+  overwrite = False
+
   def to_dict(self):
        d = dict([(p, unicode(getattr(self, p))) for p in self.properties()])
        d["id"] = self.key().id()
        return d
+
+  #Creates a new Sketch entity from solving discrepancy
+  @staticmethod
+  def addDiscrepancy(data, userid):
+    result = {}
+
+    jsonData = json.loads(data)
+
+    v_count = VersionCount.get_counter(long(jsonData['sketchId']))
+    versionCount = v_count.lastVersion
+
+    #############################################################
+
+    try:
+      jsonData = json.loads(data)
+      theobject = None
+      
+      #Get latest version
+      theobject = Sketch.all().filter('sketchId =', long(jsonData['sketchId'])).filter('version =', v_count.lastVersion).get()
+
+      if theobject:
+        
+        appver = theobject.appver
+        fileName = theobject.fileName
+        owner = theobject.owner
+        check_original = False
+        if theobject.sketchId == theobject.original_sketch:
+          if theobject.version == theobject.original_version:
+            check_original = True
+            
+        theobject.delete()
+        ModelCount.decrement_counter('Sketch_count')
+        Comment.delete_by_sketch(long(jsonData['sketchId']))
+        Permissions.delete_by_sketch(long(jsonData['sketchId']))
+        Sketch_Groups.delete_by_sketch(long(jsonData['sketchId']))
+        Like.delete_by_sketch(long(jsonData['sketchId']))
+
+        try:
+          jsonData['version'] = str(versionCount)
+          versionCount_decrement = versionCount - 1
+          change = jsonData['changeDescription']
+          change = change[:255]
+
+          entity = Sketch(sketchId=long(jsonData['sketchId']),
+                        version=long(jsonData['version']),
+                        changeDescription=change,
+                        fileName=jsonData['fileName'],
+                        owner=long(jsonData['owner_id']),
+                        fileData=jsonData['fileData'],
+                        thumbnailData=jsonData['thumbnailData'],
+                        original_sketch=long(jsonData['originalSketch']),
+                        original_version=long(versionCount_decrement),
+                        appver=float(jsonData['appver']))
+         
+          verify = entity.put()
+          if (verify):
+            permissions_key = Permissions.add(long(jsonData['sketchId']),
+                                            bool(long(jsonData['p_view'])),
+                                            bool(jsonData['p_edit']),
+                                            bool(jsonData['p_comment']))
+            #Update group permissions when adding
+            
+            group_count = 0
+            #try:
+            if jsonData['group_permissions']:
+              group_permissions = jsonData['group_permissions']
+              group_count = Sketch_Groups.add(long(jsonData['sketchId']),
+                                              group_permissions)
+          
+            if (permissions_key != -1):
+              result = {'id': entity.key().id(), 
+                      'status': "success",
+                      'method': "add",
+                      'en_type': "Sketch",
+                      'data': jsonData} #this would also check if the json submitted was valid
+            
+            else:
+              #Rollback
+              rollback = Sketch.get_by_id(entity.key.id())
+              if rollback:
+                rollback.delete()
+              result = {'status': "error",
+                       'message': "Save unsuccessful. Please try again."}
+            
+          else:
+            result = {'status': "error",
+                      'message': "Save unsuccessful. Please try again."}
+        except:
+          result = {'status': "error",
+                    'message': "Save unsuccessful. Please try again."}
+
+      else:
+        result = {'status': "error",
+                  'message': "Save unsuccessful. Please try again."}
+    except:
+      result = {'status': "error",
+              'message': "Save unsuccessful. Please try again."}
+
+    return result
 
   #Creates a new Sketch entity 
   @staticmethod
@@ -90,6 +192,7 @@ class Sketch(db.Model):
           versionCount = VersionCount.get_and_increment_counter(long(jsonData['sketchId']))
         #Updated sketch was NOT created from latest version (HALT!)
         else:
+          #If overwrite status is true, force old sketch to overwrite the new one
           check_if_latest = False
       #If sketch is a new sketch created from an existing sketch (i.e. save as sketch)
       else:
@@ -174,9 +277,9 @@ class Sketch(db.Model):
       
       #If sketch was NOT created from latest version
       else:
-        result = {'status': "error",
-                  'message': "You cannot update an existing sketch from a previous version.",
-                  'submessage': "You may still save it as a new sketch."}
+        result = {'status': "errorDiscrepancy",
+                  'message': "You are trying to save an older version of this sketch.",
+                  'submessage': "Would you like to overwrite the latest version?"}
       
     else:
       result = {'status': "error",
@@ -355,6 +458,66 @@ class Sketch(db.Model):
               'entities': entities}
     return result
 
+  #Test method by Cam
+  @staticmethod
+  def get_entities_by_criteria(criteria="",userid=""):
+    utc = UTC()
+    #update ModelCount when adding
+    theQuery = Sketch.all()
+    #if model:
+      #theQuery = theQuery.filter('model', model)
+
+    objects = theQuery.run()
+
+    entities = []
+    for object in objects:
+      if long(criteria) == object.owner:
+        #Check Permissions
+        permissions = Permissions.user_access_control(object.sketchId,userid)
+        
+        user_name = User.get_name(object.owner)
+        data = {'sketchId': object.sketchId,
+                'version': object.version,
+                'changeDescription': object.changeDescription,
+                'fileName': object.fileName,
+                'thumbnailData': object.thumbnailData,
+                'owner': user_name,
+                'owner_id': object.owner,
+                'originalSketch': object.original_sketch,
+                'originalVersion': object.original_version,
+                'originalName': Sketch.get_sketch_name(object.original_sketch,object.original_version),
+                'appver': object.appver,
+                'p_view': 1,
+                'p_edit': bool(permissions['p_edit']),
+                'p_comment': bool(permissions['p_comment']),
+                'like': Like.get_entities_by_id(object.sketchId, 0)['count'],
+                'comment': Comment.get_entities_by_id(object.sketchId)['count']}
+          
+        entity = {'id': object.key().id(),
+                  'created': object.created.replace(tzinfo=utc).strftime("%d %b %Y %H:%M:%S"),
+                  'modified': object.modified.replace(tzinfo=utc).strftime("%d %b %Y %H:%M:%S"), 
+                  'data': data
+                  }
+              
+        if userid == object.owner:
+          entities.append(entity)
+        elif User.check_if_admin(userid):
+          entities.append(entity)
+        elif data['p_view'] == "Public":
+          entities.append(entity)
+        #elif data['p_view'] == "Group":
+          #Reserved for group permissions          
+          
+    count = 0
+    modelCount = ModelCount.all().filter('en_type','Sketch').get()
+    if modelCount:
+      count = modelCount.count
+    result = {'method':'get_entities_by_criteria',
+              'en_type': 'Sketch',
+              'count': count,
+              'entities': entities}
+    return result
+
   #Gets a specific Sketch by SketchID and version
   @staticmethod
   def get_entity_by_versioning(data, purpose="View", userid=""):
@@ -437,6 +600,99 @@ class Sketch(db.Model):
                    'status':"Forbidden"}
       else:
         result = {'method':'get_entity_by_versioning',
+                  'status':"Error"}
+    except (RuntimeError, ValueError):
+      result['data'] = ""
+      
+    return result
+
+  #Gets a specific Sketch by SketchID and version
+  @staticmethod
+  def get_entity_by_versioning_mobile(sketchId="", version="", purpose="View", userid=""):
+    utc = UTC()
+    versionmatch = True
+    latestversion = True
+    result = {'method':'get_entity_by_versioning_mobile',
+              'success':"no",
+              'id': 0,
+              'created': datetime.datetime.now().replace(tzinfo=utc).strftime("%d %b %Y %H:%M:%S"),
+              'modified': datetime.datetime.now().replace(tzinfo=utc).strftime("%d %b %Y %H:%M:%S"),
+              'data': ""
+              }
+    
+    try:
+      query = Sketch.all()
+      query.filter('sketchId =', long(sketchId))
+      
+      data = query.get()
+      
+      #jsonData = json.loads(data)
+      #sketchId = jsonData['id']
+      #version = data.version #jsonData['version']
+      theobject = None
+      
+      versionCount = VersionCount.get_counter(long(sketchId))
+      
+      #Get latest version
+      if versionCount and long(version) == -1:
+        theobject = Sketch.all().filter('sketchId =', long(sketchId)).filter('version =', versionCount.lastVersion).get()
+      #Get specific version
+      elif long(version) != -1:
+        theobject = Sketch.all().filter('sketchId =', long(sketchId)).filter('version =', long(version)).get()
+        if theobject:
+          if long(version) != versionCount.lastVersion:
+            latestversion = False
+        else:
+          theobject = Sketch.all().filter('sketchId =', long(sketchId)).filter('version =', versionCount.lastVersion).get()
+          versionmatch = False
+      
+      if theobject:
+        #Check Permissions
+        permissions = Permissions.user_access_control(theobject.sketchId,userid)
+        
+        #Check access type (view/edit):
+        access = False
+        if purpose == "Edit":
+          access = bool(permissions['p_edit'])
+        else:
+          access = bool(permissions['p_view'])
+        
+        if access:
+          user_name = User.get_name(theobject.owner)
+          data = {'sketchId': theobject.sketchId,
+                  'version': theobject.version,
+                  'changeDescription': theobject.changeDescription,
+                  'fileName': theobject.fileName,
+                  'owner': user_name,
+                  'owner_id': theobject.owner,
+                  'fileData': theobject.fileData,
+                  'thumbnailData': theobject.thumbnailData,
+                  'originalSketch': theobject.original_sketch,
+                  'originalVersion': theobject.original_version,
+                  'originalName': Sketch.get_sketch_name(theobject.original_sketch,theobject.original_version),
+                  'appver': theobject.appver,
+                  'p_view': 1,
+                  'p_edit': bool(permissions['p_edit']),
+                  'p_comment': bool(permissions['p_comment']),
+                  'p_public': Permissions.check_permissions(theobject.sketchId),
+                  'groups': Sketch_Groups.get_groups_for_sketch(theobject.sketchId),
+                  'ismatching': versionmatch,
+                  'islatest': latestversion}
+              
+          result = {'method':'get_entity_by_versioning_mobile',
+                    'en_type': 'Sketch',
+                    'status':'success',
+                    'id': theobject.key().id(),
+                    'created': theobject.created.replace(tzinfo=utc).strftime("%d %b %Y %H:%M:%S"),
+                    'modified': theobject.modified.replace(tzinfo=utc).strftime("%d %b %Y %H:%M:%S"), 
+                    'data': data
+                    }
+
+        else:
+          result = {'method':'get_entity_by_versioning_mobile',
+                   'status':"Forbidden"}
+      else:
+        result = {'method':'get_entity_by_versioning_mobile',
                   'status':"Error"}
     except (RuntimeError, ValueError):
       result['data'] = ""

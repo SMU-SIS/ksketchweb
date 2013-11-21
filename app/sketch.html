@@ -147,15 +147,14 @@
         
         bootbox.confirm("Do you wish to clear the canvas and create a new sketch?", function(newAlert) {
           if (newAlert === true) {
-            e = document.getElementById('SaveAsSketch');
-            scope = angular.element(e).scope();
-            scope.$apply(function() {
-              scope.setMeta("", 1, "", "", "");
-              scope.setData("");
-              scope.setPermissions(1, true, true, []);
-            });	
-
-            loadKSketchFile("");
+            if (navigator.userAgent.match(/MSIE\s(?!9.0)/))
+            {
+              var referLink = document.createElement("a");
+              referLink.href = "sketch.html";
+              document.body.appendChild(referLink);
+              referLink.click();
+            }
+            else { window.location.replace("sketch.html");}
           }
         });
       }
@@ -199,11 +198,13 @@
         <span>Loading........</span>
       </div>
     </div>
+
     <div class="modal" id="Loading" ui-if="waiting=='Saving'" ng-cloak>
       <div class="modal-body">
         <span>Saving........</span>
       </div>
     </div>
+
     <div class="modal" id="Message" ui-if="waiting=='Error'" ng-cloak>
       <div class="modal-body">
         <div class="modal-header">
@@ -227,6 +228,25 @@
       </div>
     </div>        
   
+    <div class="modal" id="Message" ui-if="waiting=='ErrorDiscrepancy'" ng-cloak>
+      <div class="modal-body">
+        <div class="control-group">
+          <div class="control-label">
+            <span style="text-align:center">{{message}}</span>
+            <br/>
+            <br/>
+            <span style="text-align:center">{{submessage}}</span>
+            <br/>
+            <br/>
+          </div>
+        </div>
+      </div>
+      <div class="modal-footer">
+        <input type="submit"  ng-click="sketchOverwrite()" value="Save Anyway" data-dismiss="modal"/>
+        <input type="submit"  ng-click="acknowledge()" value="Discard" data-dismiss="modal"/>
+      </div>
+    </div>  
+
     <!-- Top Bar -->
     <div id="topbar" class="navbar navbar-inverse navbar-fixed-top">
       <div class="navbar-inner">

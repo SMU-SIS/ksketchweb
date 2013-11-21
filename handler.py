@@ -11,6 +11,7 @@ import datetime
 import os
 import urllib
 import urllib2
+import logging
 
 from webapp2_extras import auth
 from webapp2_extras import sessions
@@ -61,6 +62,16 @@ class ActionHandler(webapp2.RequestHandler):
             
         return self.response.out.write(json.dumps(result,default=dthandler)) 
 
+    #Handler for adding a Sketch when there is a discrepancy
+    def add_sketch_discrepancy(self): #/add/sketch
+      auser = self.auth.get_user_by_session()
+      userid = 0
+      if auser:
+        userid = auser['user_id']
+      
+      result = Sketch.addDiscrepancy(self.request.body, userid=userid)
+      return self.respond(result)
+
     #Handler for adding a Sketch
     def add_sketch(self): #/add/sketch
     
@@ -72,6 +83,17 @@ class ActionHandler(webapp2.RequestHandler):
         result = Sketch.add(self.request.body, userid=userid)
         return self.respond(result)
     
+    def post(self):
+        flexData = self.request.get("fileData")
+
+        auser = self.auth.get_user_by_session()
+        userid = 0
+        if auser:
+          userid = auser['user_id']
+
+        result = Sketch.add(flexData, userid=userid)
+        return self.respond(result)
+
     #Handler for deleting a Sketch
     def delete_sketch(self, model_id):  #/delete/sketch/<model_id>
 
@@ -84,16 +106,27 @@ class ActionHandler(webapp2.RequestHandler):
         return self.respond(result)
     
     #Handler for listing Sketches by User   
-    def user_sketch(self): #/list/sketch/user
-
+    def user_sketch(self): #/list/sketch/user 
+        
         auser = self.auth.get_user_by_session()
         userid = 0
         if auser:
           userid = auser['user_id']
-          
-        result = Sketch.get_entities_by_id(self.request.body,userid=userid)
-        return self.respond(result)    
         
+        result = Sketch.get_entities_by_id(self.request.body, userid=userid)
+        return self.respond(result)    
+
+    #Test method by Cam  
+    def user_sketch_mobile(self, criteria): #/list/sketch/user 
+        
+        auser = self.auth.get_user_by_session()
+        userid = 0
+        if auser:
+          userid = auser['user_id']
+        
+        result = Sketch.get_entities_by_criteria(criteria=criteria, userid=userid)
+        return self.respond(result)
+
     #Handler for listing Sketches by Group          
     def group_sketch(self): #/list/sketch/group
 
@@ -112,7 +145,7 @@ class ActionHandler(webapp2.RequestHandler):
         userid = 0
         if auser:
           userid = auser['user_id']
-          
+
         result = Sketch.get_entities(self.request.body, userid=userid)
         return self.respond(result)
 
@@ -125,7 +158,18 @@ class ActionHandler(webapp2.RequestHandler):
           userid = auser['user_id']
         
         result = Sketch.get_entity_by_versioning(self.request.body, "View", userid=userid)
-        return self.respond(result)    
+        return self.respond(result)   
+
+    #Test method by Cam
+    def view_sketch_mobile(self, sketchId, version): #/get/sketch/view/<sketchId>/<version>
+
+        auser = self.auth.get_user_by_session()
+        userid = 0
+        if auser:
+          userid = auser['user_id']
+        
+        result = Sketch.get_entity_by_versioning_mobile(sketchId, version, "View", userid=userid)
+        return self.respond(result)   
 
     #Handler for editing a particular Sketch      
     def edit_sketch(self): #/get/sketch/edit
@@ -318,10 +362,13 @@ application = webapp2.WSGIApplication([
     webapp2.Route('/metadata', handler=ActionHandler, handler_method='metadata'),
     webapp2.Route('/delete/sketch/<model_id>', handler=ActionHandler, handler_method='delete_sketch'), 
     webapp2.Route('/add/sketch', handler=ActionHandler, handler_method='add_sketch'), # Add Sketch
+    webapp2.Route('/add/sketchDiscrepancy', handler=ActionHandler, handler_method='add_sketch_discrepancy'), # Add Sketch with discrepancy
     webapp2.Route('/list/sketch', handler=ActionHandler, handler_method='list_sketch'), # List/Search Sketch
     webapp2.Route('/list/sketch/user', handler=ActionHandler, handler_method='user_sketch'), # List Sketch By User
+    webapp2.Route('/list/sketch/user/<criteria>', handler=ActionHandler, handler_method='user_sketch_mobile'), # List Sketch By User
     webapp2.Route('/list/sketch/group', handler=ActionHandler, handler_method='group_sketch'), # List Sketch By Group
     webapp2.Route('/get/sketch/view', handler=ActionHandler, handler_method='view_sketch'), # Get Sketch (View)
+    webapp2.Route('/get/sketch/view/<sketchId>/<version>', handler=ActionHandler, handler_method='view_sketch_mobile'), # Get Sketch (View)
     webapp2.Route('/get/sketch/edit', handler=ActionHandler, handler_method='edit_sketch'), # Get Sketch (Edit)
     webapp2.Route('/add/group', handler=ActionHandler, handler_method='add_group'), # Add Group
     webapp2.Route('/get/group', handler=ActionHandler, handler_method='get_group'), # Get Group
@@ -341,7 +388,8 @@ application = webapp2.WSGIApplication([
     webapp2.Route('/toggle/like', handler=ActionHandler, handler_method='toggle_like'), # Add Comment
     webapp2.Route('/get/like', handler=ActionHandler, handler_method='get_like'), # Get Comment For Sketch
     
-    webapp2.Route('/list/version', handler=ActionHandler, handler_method='get_versions') # Get Versions
+    webapp2.Route('/list/version', handler=ActionHandler, handler_method='get_versions'), # Get Versions
+    webapp2.Route('/post/sketchxml', handler=ActionHandler)
     ],
     config=webapp2_config,
     debug=True)

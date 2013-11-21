@@ -14,6 +14,8 @@ function SketchController($scope,$resource,sharedProperties,sharedFunctions){
   $scope.search = "";
   $scope.showdetails = false;
 
+  $scope.overwrite = false;
+
   $scope.editor_location = "swf/v2/KSketch2_Web.swf";
   $scope.get_editor = function() {
     return $scope.editor_location;
@@ -55,12 +57,8 @@ function SketchController($scope,$resource,sharedProperties,sharedFunctions){
 
   //Replace this url with your final URL from the SingPath API path. 
   //$scope.remote_url = "localhost:8080";
-<<<<<<< HEAD
-  $scope.remote_url = "ksketchweb.appspot.com";
-=======
   $scope.remote_url = sharedProperties.getBackendUrl();
   $scope.janrain_ref = sharedProperties.getJanrainAccount();
->>>>>>> 57f7773d73da6e3f5bb6a146206c037708c7111c
   $scope.waiting = "Ready";
   
   //resource calls are defined here
@@ -238,13 +236,48 @@ function SketchController($scope,$resource,sharedProperties,sharedFunctions){
       });  
     }
   }
+
+  $scope.sketchOverwrite = function(){
+    $scope.fileData = $scope.fileData.replace(/(\r\n|\n|\r)/gm," ");
+      
+    $scope.item.data.sketchId = $scope.sketchId;
+    
+    $scope.item.data.originalSketch = $scope.sketchId;
+    $scope.item.data.originalVersion = $scope.version;
+    $scope.item.data.owner = $scope.owner;
+    $scope.item.data.owner_id = $scope.owner_id;
+    $scope.item.data.fileName = $scope.fileName;
+    $scope.item.data.fileData = $scope.fileData;
+    $scope.item.data.thumbnailData = $scope.thumbnailData;
+    $scope.item.data.changeDescription = $scope.changeDescription;
+    $scope.item.data.appver = $scope.User.u_version;
+    
+    $scope.item.data.p_view = $scope.permissions.p_view;
+    $scope.item.data.p_edit = $scope.permissions.p_edit;
+    $scope.item.data.p_comment = $scope.permissions.p_comment;
+    $scope.item.data.group_permissions = $scope.permissions.group_permissions;
+    
+    $scope.setMeta($scope.item.data.sketchId, $scope.item.data.version, $scope.item.data.owner, $scope.item.data.owner_id, $scope.item.data.fileName);
+    $scope.changeDescription = "" //Clears placeholder before next load.
+      
+    $scope.overwrite = true;
+    
+    $scope.add_sketch();
+  };
   
   $scope.add_sketch = function(){
     $scope.added = "";
-    $scope.SaveResource = $resource('http://:remote_url/add/sketch', 
+
+    if($scope.overwrite){
+      $scope.SaveResource = $resource('http://:remote_url/add/sketchDiscrepancy', 
                   {"remote_url":$scope.remote_url}, 
                   {'save': { method: 'POST',    params: {} }});
- 
+    }else{
+      $scope.SaveResource = $resource('http://:remote_url/add/sketch', 
+                  {"remote_url":$scope.remote_url}, 
+                  {'save': { method: 'POST',    params: {} }});
+    }
+
     $scope.waiting = "Saving";
     var item = new $scope.SaveResource($scope.item.data);
     item.$save(function(response) { 
@@ -256,7 +289,11 @@ function SketchController($scope,$resource,sharedProperties,sharedFunctions){
               $scope.sketchId = result.data.sketchId;
               $scope.setTest(result.data.sketchId);
               $scope.setVersion(result.data.version);
-            } else {
+            } else if (result.status === "errorDiscrepancy") {
+              $scope.waiting = "ErrorDiscrepancy";
+              $scope.heading = "Oops...!";
+              $scope.message = result.message;
+            }else{
               $scope.waiting = "Error";
               $scope.heading = "Oops...!";
               $scope.message = result.message;
