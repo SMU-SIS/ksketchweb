@@ -1,6 +1,6 @@
 (function() {      //Function to trigger Janrain login plugin
   var janrainAccount = "ksketch";
-  var backendUrl = "ksketchweb.appspot.com"; 
+  var backendUrl = "ksketchweb.appspot.com"
 
   if (typeof window.janrain !== 'object') window.janrain = {};
   if (typeof window.janrain.settings !== 'object') window.janrain.settings = {};

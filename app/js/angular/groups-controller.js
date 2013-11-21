@@ -42,12 +42,8 @@ function GroupsController($scope,$resource,sharedProperties, sharedFunctions){
 
   //Replace this url with your final URL from the SingPath API path. 
   //$scope.remote_url = "localhost:8080";
-<<<<<<< HEAD
-  $scope.remote_url = "ksketchweb.appspot.com";
-=======
   $scope.remote_url = sharedProperties.getBackendUrl();
   $scope.janrain_ref = sharedProperties.getJanrainAccount();
->>>>>>> 57f7773d73da6e3f5bb6a146206c037708c7111c
   $scope.waiting = "Ready";
   
   //resource calls are defined here
