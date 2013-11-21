@@ -3,9 +3,9 @@
   var myApp = angular.module('myApp', ['ui.directives', 'ngResource']);
   myApp.service('sharedProperties', function() {
     //Set variable Reference for Janrain accounr name here!
-    var accountJanrain = 'k-sketch';
+    var accountJanrain = 'ksketch';
     //Set variable Reference for Backend here!
-    var backendUrl = 'k-sketch-test.appspot.com';
+    var backendUrl = 'ksketchweb.appspot.com';
     
     return{
       getJanrainAccount: function() {
@@ -35,6 +35,3 @@
     $routeProvider.when('/view2', {templateUrl: 'partials/partial2.html', controller: SketchController});
     $routeProvider.otherwise({redirectTo: '/view1'});
   }]);*/
-  function debugStop() {
-  	console.log("stop.");
-  }
