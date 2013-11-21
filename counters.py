@@ -38,13 +38,13 @@ class ModelCount(db.Model):
   
   #Increments counter
   @staticmethod
-  def increment_counter(en_type):
-    modelCount = ModelCount.all().filter('en_type',en_type).get()
+  def increment_counter(en_name):
+    modelCount = ModelCount.all().filter('en_type',en_name).get()
     if modelCount:
       modelCount.count += 1
       modelCount.put()
     else:
-      modelCount = ModelCount(en_type='Sketch', count=1)
+      modelCount = ModelCount(en_type=en_name, count=1)
       modelCount.put()
       
   #Decrements counter
