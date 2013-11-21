@@ -37,7 +37,7 @@ if ON_LOCALHOST:
     else:
         BASE_URL = 'localhost:%s' % os.environ['SERVER_PORT']
 else:
-    BASE_URL = 'ksketchweb.appspot.com'
+    BASE_URL = 'ksketchweb.appspot.com'  #Change this to desired URL
 LOGIN_IFRAME = '<iframe src="http://gae-sesssions-demo.rpxnow.com/openid/embed?token_url=http%3A%2F%2F' + BASE_URL + '%2Frpx_response" scrolling="no" frameBorder="no" allowtransparency="true" style="width:400px;height:240px"></iframe>'
 
 class UTC(datetime.tzinfo):
@@ -395,7 +395,7 @@ class RPXTokenHandler(BaseHandler):
         url = 'https://rpxnow.com/api/v2/auth_info'
         args = {
             'format': 'json',
-            'apiKey': '6c8271a5a23692efa86799f3438e3ac7b0525ac0',   #Change to api key provided in Janrain
+            'apiKey': 'REPLACE-WITH-API-KEY-FROM-JANRAIN',   #Change to api key provided in Janrain
             'token': token
         }
         r = urlfetch.fetch(url=url,
@@ -407,6 +407,7 @@ class RPXTokenHandler(BaseHandler):
         if json_data['stat'] == 'ok':
           # extract some useful fields
           info = json_data['profile']
+
             # check provider "Google"
           if info['providerName'] == "Google":
             oid = info['identifier']
