@@ -1,0 +1,87 @@
+<!DOCTYPE html>
+<html ng-app="myApp" lang="en">
+  <head>
+    <meta charset="utf-8">
+    <title>K-Sketch: The Kinetic Sketch Pad!</title>
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta name="description" content="">
+    <meta name="author" content="">
+    
+    <!-- Le styles -->
+    <link href="css/bootstrap.css" rel="stylesheet">
+    <link href="css/bootstrap-responsive.css" rel="stylesheet">
+    
+    <!-- Additional styles for individual components -->
+    <link href="css/additional.css" rel="stylesheet">
+    
+    <!-- HTML5 shim, for IE6-8 support of HTML5 elements -->
+    <!--[if lt IE 9]>
+<script src="http://html5shim.googlecode.com/svn/trunk/html5.js"></script>
+<![endif]-->
+
+
+    <script type="text/javascript">
+      //Function to trigger Janrain login plugin
+      (function() {
+        if (typeof window.janrain !== 'object') window.janrain = {};
+        if (typeof window.janrain.settings !== 'object') window.janrain.settings = {};
+        
+        janrain.settings.tokenUrl = 'http://ksketchweb.appspot.com/user/janrain';
+        
+        function isReady() { janrain.ready = true; };
+        if (document.addEventListener) {
+          document.addEventListener("DOMContentLoaded", isReady, false);
+        } else {
+          window.attachEvent('onload', isReady);
+        }
+        
+        var e = document.createElement('script');
+        e.type = 'text/javascript';
+        e.id = 'janrainAuthWidget';
+        
+        if (document.location.protocol === 'https:') {
+          e.src = 'https://rpxnow.com/js/lib/ksketch/engage.js';
+        } else {
+          e.src = 'http://widget-cdn.rpxnow.com/js/lib/ksketch/engage.js';
+        }
+        
+        var s = document.getElementsByTagName('script')[0];
+        s.parentNode.insertBefore(e, s);
+      })();
+    </script>
+  </head>
+  <!-- body id="ksketchapp" ng-controller="LoginController" scrolling="no" -->
+  <body scrolling="no">
+	
+	<!-- Top Bar -->
+	<div class="navbar navbar-inverse navbar-fixed-top">
+	  <div class="navbar-inner">
+	    <div align="center">
+	      <a class="mobile-brand" id="logo" href=" index.html"><h1>K-Sketch<br/>Mobile</h1></a>
+	    </div>
+	  </div>
+	</div>
+	
+	<div class="mobile-space"></div>	
+    <div class="mobile-space"></div>
+	<!-- Main Body -->
+    <div align="center">
+    	
+     	<!-- Navigation Sidebar (Access separate panes). -->
+       	<ul class="nav nav-list">
+       		<div class="mobile-space"></div>
+        	<li id="sc"><a href="#" class="janrainEngage"><h2>SIGN IN</h2></a></li>
+        	<div class="mobile-space"></div>
+        	<li id="sc"><a href="skip.html"><h2>SKIP</h2></a></li>
+       	</ul>
+    </div>
+    
+    <div class="mobile-space"></div>
+    <div class="mobile-space"></div>
+    <hr>
+   
+    <footer>
+      <p align="center">This page requires JavaScript and Adobe Flash Player, and is optimized for Mozilla Firefox and Google Chrome. &copy; Richard C. Davis 2013</p>
+    </footer>
+  </body>
+</html>
