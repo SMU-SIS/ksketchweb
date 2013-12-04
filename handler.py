@@ -83,6 +83,17 @@ class ActionHandler(webapp2.RequestHandler):
         result = Sketch.add(self.request.body, userid=userid)
         return self.respond(result)
     
+    def overwrite_post(self):
+        flexData = self.request.get("fileData")
+
+        auser = self.auth.get_user_by_session()
+        userid = 0
+        if auser:
+          userid = auser['user_id']
+
+        result = Sketch.addDiscrepancy(flexData, userid=userid)
+        return self.respond(result)
+
     def post(self):
         flexData = self.request.get("fileData")
 
@@ -389,6 +400,7 @@ application = webapp2.WSGIApplication([
     webapp2.Route('/get/like', handler=ActionHandler, handler_method='get_like'), # Get Comment For Sketch
     
     webapp2.Route('/list/version', handler=ActionHandler, handler_method='get_versions'), # Get Versions
+    webapp2.Route('/post/overwritesketchxml', handler=ActionHandler, handler_method='overwrite_post'),
     webapp2.Route('/post/sketchxml', handler=ActionHandler)
     ],
     config=webapp2_config,
