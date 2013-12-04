@@ -55,88 +55,58 @@ class Sketch(db.Model):
     jsonData = json.loads(data)
 
     v_count = VersionCount.get_counter(long(jsonData['sketchId']))
-    versionCount = v_count.lastVersion
-
-    #############################################################
-
+    
     try:
       jsonData = json.loads(data)
       theobject = None
       
-      #Get latest version
-      theobject = Sketch.all().filter('sketchId =', long(jsonData['sketchId'])).filter('version =', v_count.lastVersion).get()
+      versionCount = VersionCount.get_and_increment_counter(long(jsonData['sketchId']))
+      jsonData['version'] = str(versionCount)
+      versionCount_decrement = versionCount - 1
+      change = jsonData['changeDescription']
+      change = change[:255]
 
-      if theobject:
+      entity = Sketch(sketchId=long(jsonData['sketchId']),
+                    version=long(jsonData['version']),
+                    changeDescription=change,
+                    fileName=jsonData['fileName'],
+                    owner=long(jsonData['owner_id']),
+                    fileData=jsonData['fileData'],
+                    thumbnailData=jsonData['thumbnailData'],
+                    original_sketch=long(jsonData['originalSketch']),
+                    original_version=long(versionCount_decrement),
+                    appver=float(jsonData['appver']))
+     
+      verify = entity.put()
+      if (verify):
+        permissions_key = Permissions.add(long(jsonData['sketchId']),
+                                        bool(long(jsonData['p_view'])),
+                                        bool(jsonData['p_edit']),
+                                        bool(jsonData['p_comment']))
+        #Update group permissions when adding
         
-        appver = theobject.appver
-        fileName = theobject.fileName
-        owner = theobject.owner
-        check_original = False
-        if theobject.sketchId == theobject.original_sketch:
-          if theobject.version == theobject.original_version:
-            check_original = True
-            
-        theobject.delete()
-        ModelCount.decrement_counter('Sketch_count')
-        Comment.delete_by_sketch(long(jsonData['sketchId']))
-        Permissions.delete_by_sketch(long(jsonData['sketchId']))
-        Sketch_Groups.delete_by_sketch(long(jsonData['sketchId']))
-        Like.delete_by_sketch(long(jsonData['sketchId']))
-
-        try:
-          jsonData['version'] = str(versionCount)
-          versionCount_decrement = versionCount - 1
-          change = jsonData['changeDescription']
-          change = change[:255]
-
-          entity = Sketch(sketchId=long(jsonData['sketchId']),
-                        version=long(jsonData['version']),
-                        changeDescription=change,
-                        fileName=jsonData['fileName'],
-                        owner=long(jsonData['owner_id']),
-                        fileData=jsonData['fileData'],
-                        thumbnailData=jsonData['thumbnailData'],
-                        original_sketch=long(jsonData['originalSketch']),
-                        original_version=long(versionCount_decrement),
-                        appver=float(jsonData['appver']))
-         
-          verify = entity.put()
-          if (verify):
-            permissions_key = Permissions.add(long(jsonData['sketchId']),
-                                            bool(long(jsonData['p_view'])),
-                                            bool(jsonData['p_edit']),
-                                            bool(jsonData['p_comment']))
-            #Update group permissions when adding
-            
-            group_count = 0
-            #try:
-            if jsonData['group_permissions']:
-              group_permissions = jsonData['group_permissions']
-              group_count = Sketch_Groups.add(long(jsonData['sketchId']),
-                                              group_permissions)
-          
-            if (permissions_key != -1):
-              result = {'id': entity.key().id(), 
-                      'status': "success",
-                      'method': "add",
-                      'en_type': "Sketch",
-                      'data': jsonData} #this would also check if the json submitted was valid
-            
-            else:
-              #Rollback
-              rollback = Sketch.get_by_id(entity.key.id())
-              if rollback:
-                rollback.delete()
-              result = {'status': "error",
-                       'message': "Save unsuccessful. Please try again."}
-            
-          else:
-            result = {'status': "error",
-                      'message': "Save unsuccessful. Please try again."}
-        except:
+        group_count = 0
+        #try:
+        if jsonData['group_permissions']:
+          group_permissions = jsonData['group_permissions']
+          group_count = Sketch_Groups.add(long(jsonData['sketchId']),
+                                          group_permissions)
+      
+        if (permissions_key != -1):
+          result = {'id': entity.key().id(), 
+                  'status': "success",
+                  'method': "add",
+                  'en_type': "Sketch",
+                  'data': jsonData} #this would also check if the json submitted was valid
+        
+        else:
+          #Rollback
+          rollback = Sketch.get_by_id(entity.key.id())
+          if rollback:
+            rollback.delete()
           result = {'status': "error",
-                    'message': "Save unsuccessful. Please try again."}
-
+                   'message': "Save unsuccessful. Please try again."}
+        
       else:
         result = {'status': "error",
                   'message': "Save unsuccessful. Please try again."}
@@ -194,6 +164,8 @@ class Sketch(db.Model):
         else:
           #If overwrite status is true, force old sketch to overwrite the new one
           check_if_latest = False
+          thelatestobject = Sketch.all().filter('sketchId =', long(jsonData['sketchId'])).filter('version =', v_count.lastVersion).get()
+          thelatestobject_created = thelatestobject.created
       #If sketch is a new sketch created from an existing sketch (i.e. save as sketch)
       else:
         #Creates new version counter for the new Sketch.
@@ -278,9 +250,8 @@ class Sketch(db.Model):
       #If sketch was NOT created from latest version
       else:
         result = {'status': "errorDiscrepancy",
-                  'message': "You are trying to save an older version of this sketch.",
-                  'submessage': "Would you like to overwrite the latest version?"}
-      
+                  'message': "This sketch was recently updated to Version " + str(versionCount) + " at " +  thelatestobject_created.strftime("%Y-%m-%d %H:%M") + ". You are trying to save from an older version.",
+                  'submessage': " Would you like to overwrite the latest version?"} 
     else:
       result = {'status': "error",
                 'message': "Save unsuccessful. Please try again."}
@@ -458,25 +429,33 @@ class Sketch(db.Model):
               'entities': entities}
     return result
 
-  #Test method by Cam
+  #Test method by Cam NEW
   @staticmethod
   def get_entities_by_criteria(criteria="",userid=""):
     utc = UTC()
     #update ModelCount when adding
     theQuery = Sketch.all()
-    #if model:
-      #theQuery = theQuery.filter('model', model)
-
     objects = theQuery.run()
 
+    show = "latest"
+
     entities = []
+    
     for object in objects:
       if long(criteria) == object.owner:
+        #Latest Version Filter
+        latest_check = True
+        if show == "latest":
+          versionCount = VersionCount.get_counter(long(object.sketchId))
+          if object.version < versionCount.lastVersion:
+            latest_check = False
+
         #Check Permissions
         permissions = Permissions.user_access_control(object.sketchId,userid)
-        
-        user_name = User.get_name(object.owner)
-        data = {'sketchId': object.sketchId,
+          
+        if bool(permissions['p_view']) and latest_check:
+          user_name = User.get_name(object.owner)
+          data = {'sketchId': object.sketchId,
                 'version': object.version,
                 'changeDescription': object.changeDescription,
                 'fileName': object.fileName,
@@ -493,29 +472,27 @@ class Sketch(db.Model):
                 'like': Like.get_entities_by_id(object.sketchId, 0)['count'],
                 'comment': Comment.get_entities_by_id(object.sketchId)['count']}
           
-        entity = {'id': object.key().id(),
-                  'created': object.created.replace(tzinfo=utc).strftime("%d %b %Y %H:%M:%S"),
-                  'modified': object.modified.replace(tzinfo=utc).strftime("%d %b %Y %H:%M:%S"), 
-                  'data': data
-                  }
-              
-        if userid == object.owner:
-          entities.append(entity)
-        elif User.check_if_admin(userid):
-          entities.append(entity)
-        elif data['p_view'] == "Public":
-          entities.append(entity)
-        #elif data['p_view'] == "Group":
-          #Reserved for group permissions          
+          entity = {'id': object.key().id(),
+                'created': object.created.replace(tzinfo=utc).strftime("%d %b %Y %H:%M:%S"),
+                'modified': object.modified.replace(tzinfo=utc).strftime("%d %b %Y %H:%M:%S"), 
+                'data': data}
           
+          if userid == object.owner:
+            entities.append(entity)
+          elif User.check_if_admin(userid):
+            entities.append(entity)
+          elif data['p_view'] == "Public":
+            entities.append(entity)
+    
     count = 0
     modelCount = ModelCount.all().filter('en_type','Sketch').get()
     if modelCount:
       count = modelCount.count
-    result = {'method':'get_entities_by_criteria',
+    result = {'method':'get_entities_by_criteria_new',
               'en_type': 'Sketch',
               'count': count,
               'entities': entities}
+
     return result
 
   #Gets a specific Sketch by SketchID and version
