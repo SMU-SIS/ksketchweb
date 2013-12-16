@@ -293,6 +293,7 @@ function SketchController($scope,$resource,sharedProperties,sharedFunctions){
               $scope.waiting = "ErrorDiscrepancy";
               $scope.heading = "Oops...!";
               $scope.message = result.message;
+              $scope.setVersion(result.version);
             }else{
               $scope.waiting = "Error";
               $scope.heading = "Oops...!";

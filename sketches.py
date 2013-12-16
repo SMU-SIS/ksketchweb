@@ -251,7 +251,8 @@ class Sketch(db.Model):
       else:
         result = {'status': "errorDiscrepancy",
                   'message': "This sketch was recently updated to Version " + str(versionCount) + " at " +  thelatestobject_created.strftime("%Y-%m-%d %H:%M") + ". You are trying to save from an older version.",
-                  'submessage': " Would you like to overwrite the latest version?"} 
+                  'submessage': " Would you like to overwrite the latest version?",
+                  'version': long(versionCount - 1)} 
     else:
       result = {'status': "error",
                 'message': "Save unsuccessful. Please try again."}
