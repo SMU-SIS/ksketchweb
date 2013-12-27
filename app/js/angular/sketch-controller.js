@@ -450,15 +450,11 @@ function SketchController($scope,$resource,sharedProperties,sharedFunctions){
   }
   
   $scope.getStatus = function() {
-    if ($scope.waiting == "Ready") {
-      if ($scope.oldThumbnailData !== $scope.thumbnailData) {
-        return true;
-      } else {
-        return false;
-      }
-    } else {
-      return false;
-    }
+    if($scope.fileData != "") {
+          return true;
+        } else {
+          return false;
+        }
   }
   
   $scope.getuser();
