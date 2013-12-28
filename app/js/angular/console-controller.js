@@ -5,7 +5,14 @@
 //angular.module('app', ['ngResource']);
 function ConsoleController($scope,$resource,sharedProperties, sharedFunctions){
     
-	$scope.User = {"id": 0, "u_name" :"Anonymous User",  "u_realname" :"Anonymous User", "u_login": false, "u_email": "", "g_hash": "", 'u_created': "", 'u_lastlogin': "", 'u_logincount': "", 'u_version': 1.0, 'u_isadmin': false, 'u_isactive': false};
+	$scope.User = {
+                "id": 0, "u_name" :"Anonymous User",  "u_realname" :"Anonymous User", 
+                "u_login": false, "u_email": "", "g_hash": "", "u_created": "", 
+                "u_lastlogin": "", "u_logincount": "", "u_version": 1.0, 
+                "u_isadmin": false, "u_isactive": false, "is_approved": false,
+                "birth_day": "", "birth_month": "", "birth_year": "",
+                "parent_email": "", "contact_studies": true, "contact_updates": true
+                };
 
   $scope.backend_locations = [
     {url : sharedProperties.getBackendUrl(), urlName : 'remote backend' },       
@@ -82,7 +89,14 @@ function ConsoleController($scope,$resource,sharedProperties, sharedFunctions){
             $scope.alluserlist();
             $scope.versionlist();         
           } else {
-            $scope.User = {"id": 0, "u_name" :"Anonymous User",  "u_realname" :"Anonymous User", "u_login": false, "u_email": "", "g_hash": "",  'u_created': "", 'u_lastlogin': "", 'u_logincount': "", 'u_version': 1.0, 'u_isadmin': false, 'u_isactive': false};
+            $scope.User = {
+                          "id": 0, "u_name" :"Anonymous User",  "u_realname" :"Anonymous User", 
+                          "u_login": false, "u_email": "", "g_hash": "", "u_created": "", 
+                          "u_lastlogin": "", "u_logincount": "", "u_version": 1.0, 
+                          "u_isadmin": false, "u_isactive": false, "is_approved": false,
+                          "birth_day": "", "birth_month": "", "birth_year": "",
+                          "parent_email": "", "contact_studies": true, "contact_updates": true
+                          };
             if (navigator.userAgent.match(/MSIE\s(?!9.0)/))
             {
               var referLink = document.createElement("a");
@@ -280,30 +294,6 @@ function ConsoleController($scope,$resource,sharedProperties, sharedFunctions){
         $scope.waiting = "Ready";
     });  
   };
-  
-/*   $scope.delete_sketch = function(id) {
-    var confirm_delete = confirm('Are you sure you want to delete this sketch?');
-    if (confirm_delete == true){
-      $scope.DeleteSketchResource = $resource('http://:remote_url/delete/sketch/:model_id',
-      {"remote_url":$scope.remote_url,"model_id":id}, 
-             {'get': {method: 'JSONP', isArray: false, params:{callback: 'JSON_CALLBACK'}}});
-      $scope.waiting = "Deleting";
-      $scope.DeleteSketchResource.remove(function(response) { 
-        var check = response.status
-        $scope.list();
-        if (check === 'error') {
-            $scope.waiting = "Error";
-            $scope.heading = "Oops!";
-            $scope.message = "Error in deleting sketch.";
-            $scope.submessage = "Please try again later.";         
-        } else {
-            $scope.waiting = "Error";
-            $scope.heading = "Sketch Deleted";
-            $scope.message = "You have successfully deleted the sketch.";     
-        }
-      });  
-    }
-  }; */
   
   $scope.acknowledge = function() {
     $scope.waiting = "Ready";

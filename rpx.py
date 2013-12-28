@@ -62,6 +62,13 @@ class User(db.Model):
   assigned_version   = db.FloatProperty() #Application version assigned to user
   is_admin           = db.BooleanProperty() #User administrator status
   is_active          = db.BooleanProperty() #User active status
+  is_approved        = db.BooleanProperty() #User parental consent status
+  birth_day          = db.IntegerProperty() #User birth day
+  birth_month        = db.IntegerProperty() #User birth month
+  birth_year         = db.IntegerProperty() #User birth year
+  parent_email       = db.StringProperty()  #email add of User's parent
+  contact_studies    = db.BooleanProperty() #User option for participation in studies
+  contact_updates    = db.BooleanProperty() #User option for participation in updates
 
   def to_dict(self):
        d = dict([(p, unicode(getattr(self, p))) for p in self.properties()])
@@ -107,16 +114,24 @@ class User(db.Model):
       result = {'status':'success',
                 'id': userid,
                 'u_login': bool(True),
-                  'u_name': user.display_name,
-                  'u_realname': user.real_name,
-                  'u_email': user.email,
-                  'g_hash': g_hash,
-                  'u_created': user.created.replace(tzinfo=utc).strftime("%d %b %Y %H:%M:%S"),
-                  'u_lastlogin': "",
-                  'u_logincount': user.logincount,
-                  'u_version': user.assigned_version,
-                  'u_isadmin': user.is_admin,
-                  'u_isactive': user.is_active}
+                'u_name': user.display_name,
+                'u_realname': user.real_name,
+                'u_email': user.email,
+                'g_hash': g_hash,
+                'u_created': user.created.replace(tzinfo=utc).strftime("%d %b %Y %H:%M:%S"),
+                'u_lastlogin': "",
+                'u_logincount': user.logincount,
+                'u_version': user.assigned_version,
+                'u_isadmin': user.is_admin,
+                'u_isactive': user.is_active,
+                'is_approved': user.is_approved,
+                'birth_day': user.birth_day,
+                'birth_month': user.birth_month,
+                'birth_year': user.birth_year,
+                'parent_email': user.parent_email,
+                'contact_studies': user.contact_studies,
+                'contact_updates': user.contact_updates
+              }
       if (user.lastlogin):
         result['u_lastlogin'] = user.lastlogin.replace(tzinfo=utc).strftime("%d %b %Y %H:%M:%S")
     else:
@@ -178,11 +193,11 @@ class User(db.Model):
         user.put()
       result = {'status':'success',
                 'id': id,
-                  'u_name': user.display_name,
-                  'u_realname': user.real_name,
-                  'g_hash': g_hash,
-                  'u_isadmin': user.is_admin,
-                  'u_isactive': user.is_active}
+                'u_name': user.display_name,
+                'u_realname': user.real_name,
+                'g_hash': g_hash,
+                'u_isadmin': user.is_admin,
+                'u_isactive': user.is_active}
     else:
       result['message'] = "Unable to retrieve selected user."
     return result
@@ -282,16 +297,24 @@ class User(db.Model):
             object.real_name = object.display_name #default to display name
             object.put()
           data = {'id': object.key().id(),
-                      'u_name': object.display_name,
-                      'u_realname': object.real_name,
-                      'u_email': object.email,
-                      'g_hash': g_hash,
-                      'u_created': object.created.replace(tzinfo=utc).strftime("%d %b %Y %H:%M:%S"),
-                      'u_lastlogin': "",
-                      'u_logincount': object.logincount,
-                      'u_version': object.assigned_version,
-                      'u_isadmin': object.is_admin,
-                      'u_isactive': object.is_active}
+                  'u_name': object.display_name,
+                  'u_realname': object.real_name,
+                  'u_email': object.email,
+                  'g_hash': g_hash,
+                  'u_created': object.created.replace(tzinfo=utc).strftime("%d %b %Y %H:%M:%S"),
+                  'u_lastlogin': "",
+                  'u_logincount': object.logincount,
+                  'u_version': object.assigned_version,
+                  'u_isadmin': object.is_admin,
+                  'u_isactive': object.is_active,
+                  'is_approved': object.is_approved,
+                  'birth_day': object.birth_day,
+                  'birth_month': object.birth_month,
+                  'birth_year': object.birth_year,
+                  'parent_email': object.parent_email,
+                  'contact_studies': object.contact_studies,
+                  'contact_updates': object.contact_updates
+                }
           if (object.lastlogin):
             data['u_lastlogin'] = object.lastlogin.replace(tzinfo=utc).strftime("%d %b %Y %H:%M:%S")
           entities.append(data)
@@ -395,7 +418,7 @@ class RPXTokenHandler(BaseHandler):
         url = 'https://rpxnow.com/api/v2/auth_info'
         args = {
             'format': 'json',
-            'apiKey': 'REPLACE-WITH-API-KEY-FROM-JANRAIN',   #Change to api key provided in Janrain
+            'apiKey': 'REPLACE-YOUR-JANRAIN-KEY',   #Change to api key provided in Janrain
             'token': token
         }
         r = urlfetch.fetch(url=url,
@@ -410,6 +433,7 @@ class RPXTokenHandler(BaseHandler):
 
             # check provider "Google"
           if info['providerName'] == "Google":
+            #return self.response.out.write(content)
             oid = info['identifier']
             email = info.get('email', '')
             try:
@@ -418,16 +442,22 @@ class RPXTokenHandler(BaseHandler):
               display_name = email.partition('@')[0]
 
             # check if there is a user present with that auth_id
+            exist = True
             user = self.auth.store.user_model.get_by_auth_id(oid)
             if not user:
               #Starting appver is always 1.0.
               appver = 1.0
               
-              success, user = self.auth.store.user_model.create_user(oid, email=email, display_name=display_name, real_name=display_name, logincount=0, assigned_version=appver, is_admin=False, is_active=True)
+              success, user = self.auth.store.user_model.create_user(oid, email=email, display_name=display_name, real_name=display_name, logincount=0, 
+                                                                          assigned_version=appver, is_admin=False, is_active=True, is_approved=False,
+                                                                          birth_day=0, birth_month=0, birth_year=0, parent_email="", contact_studies=True, 
+                                                                          contact_updates=True)
               logging.info('New user created in the DS')
               
               #update AppUserCount when adding
               AppUserCount.get_and_increment_counter(appver)
+
+              exist = False
             
             userid = user.get_id()
             if not user.logincount:
@@ -437,14 +467,20 @@ class RPXTokenHandler(BaseHandler):
             user.lastlogin = datetime.datetime.now()
             user.put()
                    
-            
             token = self.auth.store.user_model.create_auth_token(userid)
             self.auth.get_user_by_token(userid, token)
             logging.info('The user is already present in the DS')
             
             # assign a session
             self.session.add_flash('You have successfully logged in', 'success')
-            self.redirect('/app/profile.html')
+            if exist:
+              if user.is_approved:
+                self.redirect('/app/profile.html')
+              else:
+                self.redirect('app/approval.html')
+            else:
+              self.redirect('/app/register.html')
+
           else:
             self.session.add_flash('There was an error while processing the login', 'error')
             self.redirect('/')

@@ -5,8 +5,15 @@
 //angular.module('app', ['ngResource']);
 function GroupsController($scope,$resource,sharedProperties, sharedFunctions){
     
-	$scope.User = {"id": 0, "u_name" :"Anonymous User",  "u_realname" :"Anonymous User", "u_login": false, "u_email": "", "g_hash": "",  'u_created': "", 'u_lastlogin': "", 'u_logincount': "", 'u_version': 1.0, 'u_isadmin': false, 'u_isactive': false};
-    
+	$scope.User = {
+                "id": 0, "u_name" :"Anonymous User",  "u_realname" :"Anonymous User", 
+                "u_login": false, "u_email": "", "g_hash": "", "u_created": "", 
+                "u_lastlogin": "", "u_logincount": "", "u_version": 1.0, 
+                "u_isadmin": false, "u_isactive": false, "is_approved": false,
+                "birth_day": "", "birth_month": "", "birth_year": "",
+                "parent_email": "", "contact_studies": true, "contact_updates": true
+                };
+
   $scope.backend_locations = [
     {url : sharedProperties.getBackendUrl(), urlName : 'remote backend' },       
     {url : 'localhost:8080', urlName : 'localhost' } ];
@@ -65,7 +72,15 @@ function GroupsController($scope,$resource,sharedProperties, sharedFunctions){
             $scope.User = result;
             $scope.get_notification();             
           } else {
-            $scope.User = {"id": 0, "u_name" :"Anonymous User",  "u_realname" :"Anonymous User", "u_login": false, "u_email": "", "g_hash": "",  'u_created': "", 'u_lastlogin': "", 'u_logincount': "", 'u_version': 1.0, 'u_isadmin': false, 'u_isactive': false};
+            $scope.User = {
+                          "id": 0, "u_name" :"Anonymous User",  "u_realname" :"Anonymous User", 
+                          "u_login": false, "u_email": "", "g_hash": "", "u_created": "", 
+                          "u_lastlogin": "", "u_logincount": "", "u_version": 1.0, 
+                          "u_isadmin": false, "u_isactive": false, "is_approved": false,
+                          "birth_day": "", "birth_month": "", "birth_year": "",
+                          "parent_email": "", "contact_studies": true, "contact_updates": true
+                          };
+
             if (navigator.userAgent.match(/MSIE\s(?!9.0)/))
             {
               var referLink = document.createElement("a");

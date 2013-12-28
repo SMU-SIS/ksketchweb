@@ -5,8 +5,15 @@
 //angular.module('app', ['ngResource']);
 function NotificationsController($scope,$resource,sharedProperties, sharedFunctions){
     
-	$scope.User = {"id": 0, "u_name" :"Anonymous User",  "u_realname" :"Anonymous User", "u_login": false, "u_email": "", "g_hash": "",  'u_created': "", 'u_lastlogin': "", 'u_logincount': "", 'u_version': 1.0, 'u_isadmin': false, 'u_isactive': false};
-  
+	$scope.User = {
+                "id": 0, "u_name" :"Anonymous User",  "u_realname" :"Anonymous User", 
+                "u_login": false, "u_email": "", "g_hash": "", "u_created": "", 
+                "u_lastlogin": "", "u_logincount": "", "u_version": 1.0, 
+                "u_isadmin": false, "u_isactive": false, "is_approved": false,
+                "birth_day": "", "birth_month": "", "birth_year": "",
+                "parent_email": "", "contact_studies": true, "contact_updates": true
+                };
+
   $scope.backend_locations = [
     {url : sharedProperties.getBackendUrl(), urlName : 'remote backend' },       
     {url : 'localhost:8080', urlName : 'localhost' } ];
@@ -62,7 +69,8 @@ function NotificationsController($scope,$resource,sharedProperties, sharedFuncti
             else { window.location.replace("index.html");} 
           }
     });
-  }                          
+  }   
+                         
   $scope.getuser = function(){
     $scope.UserResource = $resource('http://:remote_url/user/getuser',
                         {'remote_url':$scope.remote_url},
@@ -114,9 +122,6 @@ function NotificationsController($scope,$resource,sharedProperties, sharedFuncti
         $scope.waiting = "Ready";
      });  
   }  
-  
-  
-
   
   $scope.accept = {};
   $scope.accept.data = {'n_id': -1, 'u_g' : -1, 'status': ''};
