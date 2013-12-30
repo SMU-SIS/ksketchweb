@@ -117,6 +117,20 @@ function ProfileController($scope,$resource,sharedProperties, sharedFunctions){
             else { window.location.replace("index.html");}
           }
     });
+  }
+
+  $scope.determineAccess = function(){
+    if($scope.User.id != 0)
+    {
+      var access = false;
+      if($scope.User.is_approved){access = true;}
+
+      if(!access)
+      {
+        if($scope.User.birth_day == 0) {window.location.replace("register.html");}
+        else if($scope.User.parent_email != "") {window.location.replace("pending.html");}
+      }
+    }
   }  
   
   $scope.setTest = function(test) {

@@ -38,23 +38,22 @@ function IndexController($scope,$resource,sharedProperties, sharedFunctions){
   $scope.waiting = "Ready";
   
   //resource calls are defined here
-
   $scope.Model = $resource('http://:remote_url/:model_type/:id',
-                          {},{'get': {method: 'JSONP', isArray: false, params:{callback: 'JSON_CALLBACK'}}
-                             }
-                      );
+                          {},{'get': {method: 'JSONP', isArray: false, params:{callback: 'JSON_CALLBACK'}}}
+                          );
                           
   $scope.getuser = function(){
     $scope.UserResource = $resource('http://:remote_url/user/getuser',
                         {'remote_url':$scope.remote_url},
                         {'get': {method: 'JSONP', isArray: false, params:{callback: 'JSON_CALLBACK'}}
                            });  
-    $scope.waiting = "Loading";     
+
+    $scope.waiting = "Loading";   
     $scope.UserResource.get(function(response) {
           var result = response;
-          if (result.u_login === "True" || result.u_login === true) {
+          if (result.u_login == "True" || result.u_login == true) {
             $scope.User = result;
-            $scope.get_notification();            
+            $scope.get_notification();   
           } else {
             $scope.User = {
                           "id": 0, "u_name" :"Anonymous User",  "u_realname" :"Anonymous User", 
@@ -66,7 +65,9 @@ function IndexController($scope,$resource,sharedProperties, sharedFunctions){
                           };
           }
           $scope.waiting = "Ready";
-    });
+          $scope.determineAccess();
+    }
+    );
   }
   
   $scope.setData = function(fileData) {
@@ -148,5 +149,12 @@ function IndexController($scope,$resource,sharedProperties, sharedFunctions){
     sharedFunctions.simpleSearch($scope.search);
   }
   
+  $scope.determineAccess = function(){
+    if($scope.User.id > 0)
+    {
+      if(!$scope.User.is_approved){ window.location.replace("register.html"); }
+    }
+  }
+
   $scope.getuser();
 }
