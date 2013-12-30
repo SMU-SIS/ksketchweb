@@ -57,45 +57,18 @@
       <div class="modal-body">
         <span>Loading........</span>
       </div>
-    </div>
-    <div class="modal" id="Loading" ui-if="waiting=='Saving'" ng-cloak>
-      <div class="modal-body">
-        <span>Saving........</span>
-      </div>
-    </div>
-    <div class="modal" id="Message" ui-if="waiting=='Error'" ng-cloak>
-      <div class="modal-body">
-        <div class="modal-header">
-          <input type="submit" class="close" value="x" data-dismiss="modal" ng-click="acknowledge()"/>
-          <h3 id="myUploadItems">{{heading}}</h3>
-        </div>
-        <br/>
-        <div class="control-group">
-          <div class="control-label">
-            <span style="text-align:center">{{message}}</span>
-            <br/>
-            <br/>
-            <span style="text-align:center">{{submessage}}</span>
-            <br/>
-            <br/>
-          </div>
-        </div>
-      </div>
-      <div class="modal-footer">
-        <input type="submit"  ng-click="acknowledge()" value="Ok" data-dismiss="modal"/>
-      </div>
-    </div>        
-
+    </div>  
     
     <!-- Top Bar -->
     <div id="topbar" class="navbar navbar-inverse navbar-fixed-top">
       <div class="navbar-inner">
         <div class="container-fluid" ng-show="waiting=='Ready'" ng-cloak>
           <!-- a class="brand" id="logo" href="#"><img style="height:36px" src="ico/KSketch-logo.png"></a -->
-          <a class="brand" id="logo" href=" index.html">K-Sketch</a>
+          <a class="brand" id="logo" href="index.html">K-Sketch</a>
         </div>
       </div>
     </div>
+
     
     <!-- Main Body -->
     <div class="container-fluid" id="wrap">
@@ -123,37 +96,9 @@
             {{message}} <br/>
             <div ng-show="parentalConsent" ng-cloak>
               <input type="text" ng-model="parentEmail"/>
-              <button ng-click="calcAge(selectedMonth, selectedDay, selectedYear)">Submit</button>
+              <button ng-click="addParentEmail(parentEmail)">Submit</button>
             </div>
-
-          <!-- Dialog Box for entering parent's email if age is below 18 -->
-          <div class="modal hide fade in" id="SaveSketch" style="display:none" ng-show="allow_save()">
-            <div class="modal-header">
-              <input type="submit" class="close" value="x" data-dismiss="modal"/>
-              <h3 id="myUploadItems">Save Sketch</h3>
-            </div>
-            <div class="modal-body">
-              <div class="row-fluid">
-                <div class="span5">
-                  <div class="control-group">
-                    <label class="control-label" for="sketchName">Enter Parent's Email</label>
-                    <div class="controls">
-                      <input type="text" ng-model="tempFileName" id="sketchName"/>
-                    </div>
-                  </div>
-                </div>
-              </div>
-              <div class="row-fluid">
-                <div class="control-group">
-                  <div class="controls">
-                    <input type="submit" ng-click="save()" value="Submit" data-dismiss="modal"/>
-                  </div>
-                </div>
-              </div>
-            </div>
-          </div>
-          <!-- End of Dialog Box for entering parent's email if age is below 18 -->
-
+            {{submessage}}
 
         </div><!--/span-->
         <div class="footer-table">
