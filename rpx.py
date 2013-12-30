@@ -353,7 +353,43 @@ class User(db.Model):
           entity.is_active = bool(jsonData['u_isactive'])
         except (KeyError, ValueError):
           entity.is_active = entity.is_active
-          #Other fields to be added as necessary.
+
+        try:
+          entity.birth_day = jsonData['birth_day']
+        except (KeyError, ValueError):
+          entity.birth_day = entity.birth_day
+
+        try:
+          entity.birth_month = jsonData['birth_month']
+        except (KeyError, ValueError):
+          entity.birth_month = entity.birth_month
+
+        try:
+          entity.birth_year = jsonData['birth_year']
+        except (KeyError, ValueError):
+          entity.birth_year = entity.birth_year
+
+        try:
+          entity.parent_email = jsonData['parent_email']
+        except (KeyError, ValueError):
+          entity.parent_email = entity.parent_email
+
+        try:
+          entity.is_approved = bool(jsonData['is_approved'])
+        except (KeyError, ValueError):
+          entity.is_approved = entity.is_approved
+
+        try:
+          entity.contact_updates = bool(jsonData['contact_updates'])
+        except (KeyError, ValueError):
+          entity.contact_updates = entity.contact_updates
+
+        try:
+          entity.contact_studies = bool(jsonData['contact_studies'])
+        except (KeyError, ValueError):
+          entity.contact_studies = entity.contact_studies
+
+        #Other fields to be added as necessary.
         entity.put()
       
         result = {'status': 'success',
@@ -418,7 +454,7 @@ class RPXTokenHandler(BaseHandler):
         url = 'https://rpxnow.com/api/v2/auth_info'
         args = {
             'format': 'json',
-            'apiKey': 'REPLACE-YOUR-JANRAIN-KEY',   #Change to api key provided in Janrain
+            'apiKey': 'REPLACE-WITH-YOUR-JANRAIN-KEY',   #Change to api key provided in Janrain
             'token': token
         }
         r = urlfetch.fetch(url=url,
@@ -477,7 +513,7 @@ class RPXTokenHandler(BaseHandler):
               if user.is_approved:
                 self.redirect('/app/profile.html')
               else:
-                self.redirect('app/approval.html')
+                self.redirect('/app/register.html')
             else:
               self.redirect('/app/register.html')
 
@@ -550,6 +586,7 @@ class GetUser(webapp2.RequestHandler):
         userid = auser['user_id']
         if userid:
           result = User.get_entity(userid, result)
+          result['u_login'] = bool(True)
         else:
           result['message'] = "Unable to retrieve selected user."
       else:
