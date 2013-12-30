@@ -64,17 +64,6 @@ function ConsoleController($scope,$resource,sharedProperties, sharedFunctions){
                              }
                       );
   
-  /*$scope.edituser = function() {
-    $scope.EditUserResource = $resource('http://:remote_url/edituser',
-                              {'remote_url':$scope.remote_url}, 
-                              {'update': { method: 'PUT', params: {} }});
-    var edit_user = new $scope.EditUserResource($scope.User);
-    $scope.waiting = "Loading";
-    edit_user.$update(function(response) {
-          $scope.User = response;
-          
-        });
-  };*/
   $scope.getuser = function(){
     $scope.UserResource = $resource('http://:remote_url/user/getuser',
                         {'remote_url':$scope.remote_url},
