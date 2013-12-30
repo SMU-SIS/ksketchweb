@@ -121,10 +121,14 @@ function RegisterController($scope,$resource,sharedProperties,sharedFunctions){
                                     'birth_month': parseInt(birthMonth.id),
                                     'birth_year': parseInt(birthYear)};
 
-        $scope.edit_redirect = "parent-email";
         $scope.edit_profile($scope.editprofilemeta.data);
+
+        message = " Under 18 applicants require parental consent for participation. Please provide your parent's email address."; 
+        $scope.parentalConsent = true; 
+        return $scope.message = message;
       }
     }
+    
   };
 
   $scope.addParentEmail = function (parentEmail) {
@@ -178,13 +182,6 @@ function RegisterController($scope,$resource,sharedProperties,sharedFunctions){
             //redirect to pending.html
             window.location.replace("pending.html");
           }
-
-          if($scope.edit_redirect == "parent-email")
-          {
-            message = " Under 18 applicants require parental consent for participation. Please provide your parent's email address."; 
-            $scope.parentalConsent = true;
-            return $scope.message = message;
-          }
     });
   };
 
@@ -203,6 +200,7 @@ function RegisterController($scope,$resource,sharedProperties,sharedFunctions){
           var tempDay = {date: $scope.User.birth_day},
               tempMonth = {date: $scope.User.birth_month},
               tempYear = $scope.User.birth_year + "";
+          
           $scope.calcAge(tempDay, tempMonth, tempYear);
         }
         
