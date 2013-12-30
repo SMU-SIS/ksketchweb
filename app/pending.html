@@ -64,11 +64,11 @@
       </div>
     </div>
     <div class="modal" id="Message" ui-if="waiting=='Error'" ng-cloak>
-      <div class="modal-body">
         <div class="modal-header">
           <input type="submit" class="close" value="x" data-dismiss="modal" ng-click="acknowledge()"/>
           <h3 id="myUploadItems">{{heading}}</h3>
         </div>
+        <div class="modal-body">
         <br/>
         <div class="control-group">
           <div class="control-label">
@@ -84,7 +84,7 @@
       <div class="modal-footer">
         <input type="submit"  ng-click="acknowledge()" value="Ok" data-dismiss="modal"/>
       </div>
-    </div>        
+    </div>          
 
     
     <!-- Top Bar -->
@@ -110,9 +110,10 @@
 
             <!-- Pending approval-->
             <p><h4>Pending for Parent's Approval</h4></p>
-            <div >
+            <div>
               <p>
-                A link to activate your KSketch account has been sent to your parent at: {{email}}
+                A link to activate your KSketch account has been sent to your parent at: 
+                <b ng-show="User.u_login" ng-cloak id="heading" disabled>{{User.parent_email}}</b>
               </p>
 
               <p>
@@ -124,7 +125,7 @@
             <br/>
             <table width="100%">
               <tr>
-                <td width="15%"><button ng-click="sendLink()">Send the link again</button></td>
+                <td width="15%"><button ng-click="sendApprovalEmail()">Send the link again</button></td>
                 <td width="15%" align="right">
                   <button data-toggle="modal" href="#EditProfile">Cancel my account</button> 
                 </td>
@@ -141,16 +142,12 @@
               <div class="modal-body">
                 <div class="control-group">
                   <label class="control-label">Are you sure?</label>
-                  <table width="100%">
-                    <tr>
-                      <td></td>
-                      <td width="10%" align="right"><input type="submit" value="Yes" ng-click="cancel()"/></td>
-                      <td width="10%" align="right"><input type="submit" value="No" data-dismiss="modal"/></td>
-                    </tr>
-                  </table>
                 </div>      
               </div>
-              <div class="modal-footer"></div>
+              <div class="modal-footer">
+                <input type="submit" value="Yes" ng-click="cancel()"/>
+                <input type="submit" value="No" data-dismiss="modal"/>
+              </div>
             </div>
 
           </div>
@@ -175,7 +172,7 @@
     <script src="js/moment/moment.min.js"></script>
     <script src="lib/angular/angular-ui.min.js"></script>
     <script src="lib/angular/angular-resource.min.js"></script>
-    <script src="js/angular/approval-controller.js"></script>
+    <script src="js/angular/pending-controller.js"></script>
     <script src="js/app.js"></script>
     <script src="js/bootbox/bootbox.min.js"></script>
     <script src="js/bootstrap/bootstrap-transition.js"></script>

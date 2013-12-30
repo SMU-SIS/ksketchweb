@@ -175,15 +175,25 @@ function RegisterController($scope,$resource,sharedProperties,sharedFunctions){
 
           if($scope.edit_redirect == "approval"){ window.location.replace("approval.html");}
     
-          if($scope.edit_redirect == "pending")
-          { 
-            //send out email to parent's email
-            //logout user
-            //redirect to pending.html
-            window.location.replace("pending.html");
-          }
+          if($scope.edit_redirect == "pending"){ $scope.sendApprovalEmail();}
     });
   };
+
+  $scope.sendApprovalEmail = function()
+  {
+    $scope.VerifyResource = $resource('http://:remote_url/user/parentapproval',
+                        {'remote_url':$scope.remote_url},
+                        {'get': {method: 'JSONP', isArray: false, params:{callback: 'JSON_CALLBACK'}}
+                           });  
+
+    $scope.waiting = "Loading";     
+    $scope.VerifyResource.get(function(response) {
+          var result = response;
+          $scope.waiting = "Ready";
+          if (result.status === 'success') 
+          { window.location.replace("pending.html");}
+    });
+  }
 
   $scope.determineAccess = function() 
   {

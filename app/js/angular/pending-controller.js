@@ -49,7 +49,7 @@ function PendingController($scope,$resource,sharedProperties,sharedFunctions){
           if (result.u_login) 
           { 
             $scope.User = result;
-            $scope.determineAccess();
+            //$scope.determineAccess();
           } 
           else { window.location.replace('index.html'); }
     });
@@ -95,6 +95,43 @@ function PendingController($scope,$resource,sharedProperties,sharedFunctions){
       else {window.location.replace("register.html");}
     }
   }
+
+  $scope.sendApprovalEmail = function()
+  {
+    $scope.VerifyResource = $resource('http://:remote_url/user/parentapproval',
+                        {'remote_url':$scope.remote_url},
+                        {'get': {method: 'JSONP', isArray: false, params:{callback: 'JSON_CALLBACK'}}
+                           });  
+
+    $scope.waiting = "Loading";     
+    $scope.VerifyResource.get(function(response) {
+          var result = response;
+          if (result.status === 'success') 
+          { 
+            $scope.waiting = "Error";
+            $scope.message = "A copy of the activation link has been sent to your parent's email.";
+          }
+    });
+  }
+
+  $scope.acknowledge = function() {
+    if ($scope.reload === true) {
+      if (navigator.userAgent.match(/MSIE\s(?!9.0)/))
+      {
+        var referLink = document.createElement("a");
+        referLink.href = "pending.html";
+        document.body.appendChild(referLink);
+        referLink.click();
+      }
+      else { window.location.replace("pending.html");} 
+    } else {
+      $scope.waiting = "Ready";
+      $scope.heading = "";
+      $scope.message = "";
+      $scope.submessage = "";
+    }
+  }
+
 
   $scope.getuser();
 }

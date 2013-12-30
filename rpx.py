@@ -454,7 +454,7 @@ class RPXTokenHandler(BaseHandler):
         url = 'https://rpxnow.com/api/v2/auth_info'
         args = {
             'format': 'json',
-            'apiKey': 'REPLACE-WITH-YOUR-JANRAIN-KEY',   #Change to api key provided in Janrain
+            'apiKey': 'REPLACE-JANRAIN-KEY',   #Change to api key provided in Janrain
             'token': token
         }
         r = urlfetch.fetch(url=url,
@@ -640,8 +640,26 @@ class GetUser(webapp2.RequestHandler):
       else:
         result['message'] = "Not authenticated."
       return self.respond(result)
+
+    #Handler for a User to retrieve their own data after logging in
+    def get_approval(self, **kwargs): #/user/getuser
+      result = {'status':'Error',
+                'message':''}
+      auser = self.auth.get_user_by_session()
+      if auser:
+        userid = auser['user_id']
+        result['status'] = 'success'
       
- #Handler for logging out and cancelling of session
+      #generate random string
+      token = "R4T7eqmlzRWyDU4IQNq6rwcefze6VeQC8zAdNKmcs8zVRtrx6I"
+
+      verification_url = self.uri_for('user-page', token=token, user_id=userid)
+      msg = 'Please visit <a href="{url}">{url}</a> to complete this registration.' 
+      result['message'] = msg.format(url=verification_url)
+      #<a href="/user?page=testing123&user_id=5179807331516416">/user?page=testing123&user_id=5179807331516416</a>
+      return self.respond(result)
+
+#Handler for logging out and cancelling of session
 class LogoutPage(BaseHandler):
     def get(self): #/user/logout
       self.auth.unset_session()
@@ -653,16 +671,19 @@ class LogoutPage(BaseHandler):
 
 #Configuration and URI mapping
 webapp2_config = {}
+
 webapp2_config['webapp2_extras.sessions'] = {
 		'secret_key': 'n\xd99\xd4\x01Y\xea5/\xd0\x8e\x1ba\\:\x91\x10\x16\xbcTA\xe0\x87lf\xfb\x0e\xd2\xc4\x15\\\xaf\xb0\x91S\x12_\x86\t\xadZ\xae]\x96\xd0\x11\x80Ds\xd5\x86.\xbb\xd5\xcbb\xac\xc3T\xaf\x9a+\xc5',
-	}
+}
 
 application = webapp2.WSGIApplication([
+    webapp2.Route('/user', handler=GetUser, name='user-page'),
     webapp2.Route('/user/getuser', handler=GetUser, handler_method='get_user'),
     webapp2.Route('/user/getuserid', handler=GetUser, handler_method='get_user_by_id'),
     webapp2.Route('/user/listuser', handler=GetUser, handler_method='list_user'),
     webapp2.Route('/user/profileuser', handler=GetUser, handler_method='profile_user'),
     webapp2.Route('/user/edituser', handler=GetUser, handler_method='edit_user'),
+    webapp2.Route('/user/parentapproval', handler=GetUser, handler_method='get_approval'),
     webapp2.Route('/user/logout', handler=LogoutPage),
     webapp2.Route('/user/janrain', handler=RPXTokenHandler)],
     config=webapp2_config,
