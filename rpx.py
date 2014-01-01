@@ -14,6 +14,8 @@ import urllib
 import urllib2
 import webapp2
 import logging
+import string
+import random
 
 from webapp2_extras import auth
 from webapp2_extras import sessions
@@ -23,6 +25,7 @@ from webapp2_extras.auth import InvalidPasswordError
 import json
 
 from google.appengine.api import urlfetch
+from google.appengine.api import mail
 from google.appengine.ext import db, webapp
 from google.appengine.ext.webapp import template
 from google.appengine.ext.webapp.util import run_wsgi_app
@@ -405,6 +408,30 @@ class User(db.Model):
               
     return result
 
+    #Edits a User's data
+  @staticmethod
+  def edit_approval_entity(model_id):
+    result = {}
+    value = True
+
+    entity = User.get_by_id(long(model_id))
+    if entity:
+      try:
+        entity.is_approved = bool(value)
+      except (KeyError, ValueError):
+        entity.is_approved = entity.is_approved
+
+      entity.put()
+      
+      result = {'status': 'success',
+                'method':'edit_approval_entity',
+                'en_type':'User'}
+    else:
+      result = {'status': 'Error',
+              'message': 'Unable to retrieve selected user.'}
+
+    return result
+
 #Basic URI Handler for auth
 class BaseHandler(webapp2.RequestHandler):
     """
@@ -641,22 +668,72 @@ class GetUser(webapp2.RequestHandler):
         result['message'] = "Not authenticated."
       return self.respond(result)
 
+    #Handler for approving User
+    def edit_approval(self): #/user/edituser
+      userid = self.request.get("user_id")
+      urltype = self.request.get("type")
+
+      if urltype == "approve":
+        result = User.edit_approval_entity(userid)
+        self.redirect('http://ksketchweb.appspot.com/app/profile.html');
+      else:
+        #delete account
+        self.redirect('app/index.html');
+
     #Handler for a User to retrieve their own data after logging in
     def get_approval(self, **kwargs): #/user/getuser
+      utc = UTC()
       result = {'status':'Error',
+                'u_login': bool(False),
                 'message':''}
       auser = self.auth.get_user_by_session()
       if auser:
         userid = auser['user_id']
-        result['status'] = 'success'
+        if userid:
+          result = User.get_entity(userid, result)
+          result['u_login'] = bool(True)
+       
+        to_addr = result['parent_email']
       
       #generate random string
-      token = "R4T7eqmlzRWyDU4IQNq6rwcefze6VeQC8zAdNKmcs8zVRtrx6I"
+      alphabet = "abcdefghijklmnopqrstuvwxyz0123456789ABCDEFGHIJKLMNOPQRSTUVWXYZ"
+      pw_length = 50
+      token_approve = ""
+      token_disapprove = ""
+      type_1 = "approve"
+      type_2 = "disapprove"
 
-      verification_url = self.uri_for('user-page', token=token, user_id=userid)
-      msg = 'Please visit <a href="{url}">{url}</a> to complete this registration.' 
-      result['message'] = msg.format(url=verification_url)
-      #<a href="/user?page=testing123&user_id=5179807331516416">/user?page=testing123&user_id=5179807331516416</a>
+      for i in range(pw_length):
+          next_index1 = random.randrange(len(alphabet))
+          next_index2 = random.randrange(len(alphabet))
+          token_approve = token_approve + alphabet[next_index1]
+          token_disapprove = token_disapprove + alphabet[next_index2]
+
+      url_approve = self.uri_for('user_approval', type=type_1, token=token_approve, user_id=userid)
+      url_disapprove = self.uri_for('user_approval', type=type_2, token=token_disapprove, user_id=userid)
+
+      if not mail.is_email_valid(to_addr):
+        # Return an error message...
+        result['status'] = 'fail'
+        pass
+
+      message = mail.EmailMessage()
+      message.sender = "nczakaria@gmail.com"
+      message.to = to_addr
+      message.subject = "KSketch: Approval for Registration"
+      message.body = "Dear Parent, \n\
+      \n\
+KSketch would like to request permission for your child, "+ result['u_name'] + ", to participate in using our system. \n\
+      \n\
+Please click the following link to activate your child's account: http://ksketchweb.appspot.com" + url_approve + "\n\
+      \n\
+To cancel participation, please click the following link: http://ksketchweb.appspot.com" + url_disapprove + "\n\
+\n\
+\n\
+KSketch Team"
+      
+      message.send()
+
       return self.respond(result)
 
 #Handler for logging out and cancelling of session
@@ -677,7 +754,7 @@ webapp2_config['webapp2_extras.sessions'] = {
 }
 
 application = webapp2.WSGIApplication([
-    webapp2.Route('/user', handler=GetUser, name='user-page'),
+    webapp2.Route('/user/approval', handler=GetUser, name='user_approval', handler_method='edit_approval'),
     webapp2.Route('/user/getuser', handler=GetUser, handler_method='get_user'),
     webapp2.Route('/user/getuserid', handler=GetUser, handler_method='get_user_by_id'),
     webapp2.Route('/user/listuser', handler=GetUser, handler_method='list_user'),

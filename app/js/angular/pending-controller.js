@@ -106,10 +106,16 @@ function PendingController($scope,$resource,sharedProperties,sharedFunctions){
     $scope.waiting = "Loading";     
     $scope.VerifyResource.get(function(response) {
           var result = response;
+          $scope.waiting = "Ready";
           if (result.status === 'success') 
           { 
             $scope.waiting = "Error";
             $scope.message = "A copy of the activation link has been sent to your parent's email.";
+          }
+          else
+          {
+            $scope.waiting = "Error";
+            $scope.message = "Failed to send email to Parent";
           }
     });
   }
