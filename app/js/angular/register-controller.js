@@ -141,7 +141,10 @@ function RegisterController($scope,$resource,sharedProperties,sharedFunctions){
                                     'id': $scope.User.id,
                                     'u_displayname': $scope.User.u_name,
                                     'u_realname': $scope.User.u_realname,
-                                    'parent_email': parentEmail + ""};
+                                    'parent_email': parentEmail + "",
+                                    'birth_day': $scope.User.birth_day,
+                                    'birth_month': $scope.User.birth_month,
+                                    'birth_year': $scope.User.birth_year};
 
       $scope.edit_redirect = "pending";
       $scope.edit_profile($scope.editprofilemeta.data);
