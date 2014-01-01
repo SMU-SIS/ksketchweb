@@ -325,7 +325,22 @@ class User(db.Model):
                 'en_type':'User',
                 'entities':entities}
       return result
-            
+  
+  #Deletes a User's data
+  @staticmethod
+  def delete_entity(data):
+    jsonData = json.loads(data)
+    userid = long(jsonData['id'])
+
+
+    user_entity = User.get_by_id(long(userid))
+    user_entity.delete()
+
+    result = {'status':'success',
+              'message': 'You have successfully deleted this profile!'}
+
+    return result
+
   #Edits a User's data
   @staticmethod
   def edit_entity(data, userid):
@@ -602,6 +617,11 @@ class GetUser(webapp2.RequestHandler):
           
       return self.respond(result) 
 
+    #Handler for deleteing User
+    def delete_user(self, **kwargs): #/user/edituser
+      result = User.delete_entity(self.request.body)
+      return self.respond(result) 
+
     #Handler for a User to retrieve their own data after logging in
     def get_user(self, **kwargs): #/user/getuser
       utc = UTC()
@@ -652,7 +672,15 @@ class GetUser(webapp2.RequestHandler):
         result['message'] = "Not authenticated."
       
       return self.respond(result) 
-      
+    
+    #Handler for retrieving a particular User's profile (partial) data
+    def profile_user_unauthenticated(self, **kwargs): #/user/profileuser
+      utc = UTC()
+      result = {'status':'Error',
+                'message':''}
+      result = User.get_profile(self.request.body, result)
+      return self.respond(result) 
+
     #Handler for searching for Users by criteria
     def list_user(self, **kwargs): #/user/listuser
       result = {'status':'Error',
@@ -670,15 +698,25 @@ class GetUser(webapp2.RequestHandler):
 
     #Handler for approving User
     def edit_approval(self): #/user/edituser
-      userid = self.request.get("user_id")
+      userid = self.request.get("id")
       urltype = self.request.get("type")
 
-      if urltype == "approve":
-        result = User.edit_approval_entity(userid)
-        self.redirect('http://ksketchweb.appspot.com/app/profile.html');
+      result = {'status':'Error',
+                'u_login': bool(False),
+                'message':''}
+
+      if userid:
+        result = User.get_entity(long(userid), result)
+        entity = result['status']
+
+      if entity == 'success':
+        if urltype == "approve":
+          result = User.edit_approval_entity(userid)
+          self.redirect('http://ksketchweb.appspot.com/app/profile.html');
+        else:
+          self.redirect(('http://ksketchweb.appspot.com/app/profile_delete.html?id=' + userid).encode('ascii'));
       else:
-        #delete account
-        self.redirect('app/index.html');
+        self.redirect('http://ksketchweb.appspot.com/app/index.html');
 
     #Handler for a User to retrieve their own data after logging in
     def get_approval(self, **kwargs): #/user/getuser
@@ -709,8 +747,8 @@ class GetUser(webapp2.RequestHandler):
           token_approve = token_approve + alphabet[next_index1]
           token_disapprove = token_disapprove + alphabet[next_index2]
 
-      url_approve = self.uri_for('user_approval', type=type_1, token=token_approve, user_id=userid)
-      url_disapprove = self.uri_for('user_approval', type=type_2, token=token_disapprove, user_id=userid)
+      url_approve = self.uri_for('user_approval', type=type_1, token=token_approve, id=userid)
+      url_disapprove = self.uri_for('user_approval', type=type_2, token=token_disapprove, id=userid)
 
       if not mail.is_email_valid(to_addr):
         # Return an error message...
@@ -759,7 +797,9 @@ application = webapp2.WSGIApplication([
     webapp2.Route('/user/getuserid', handler=GetUser, handler_method='get_user_by_id'),
     webapp2.Route('/user/listuser', handler=GetUser, handler_method='list_user'),
     webapp2.Route('/user/profileuser', handler=GetUser, handler_method='profile_user'),
+    webapp2.Route('/user/profileuser2', handler=GetUser, handler_method='profile_user_unauthenticated'),
     webapp2.Route('/user/edituser', handler=GetUser, handler_method='edit_user'),
+    webapp2.Route('/user/deleteuser', handler=GetUser, handler_method='delete_user'),
     webapp2.Route('/user/parentapproval', handler=GetUser, handler_method='get_approval'),
     webapp2.Route('/user/logout', handler=LogoutPage),
     webapp2.Route('/user/janrain', handler=RPXTokenHandler)],
