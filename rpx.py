@@ -21,6 +21,10 @@ from webapp2_extras import auth
 from webapp2_extras import sessions
 from webapp2_extras.auth import InvalidAuthIdError
 from webapp2_extras.auth import InvalidPasswordError
+from webapp2_extras.appengine.auth.models import Unique
+
+from sendgrid import Sendgrid
+from sendgrid import Message
 
 import json
 
@@ -53,6 +57,23 @@ class UTC(datetime.tzinfo):
   def tzname(self, dt):
     return "UTC"
     
+
+class Unique(db.Model):
+  @classmethod
+  def check(cls, scope, value):
+    def tx(scope, value):
+      key_name = "U%s:%s" % (scope, value,)
+      ue = Unique.get_by_key_name(key_name)
+      if ue:
+        raise UniqueConstraintViolation(scope, value)
+      ue = Unique(key_name=key_name)
+      ue.put()
+    db.run_in_transaction(tx, scope, value)
+
+class UniqueConstraintViolation(Exception):
+  def __init__(self, scope, value):
+    super(UniqueConstraintViolation, self).__init__("Value '%s' is not unique within scope '%s'." % (value, scope, ))
+
 # Handles Users and its methods
 class User(db.Model):
   email              = db.EmailProperty() #email address of User
@@ -332,7 +353,6 @@ class User(db.Model):
     jsonData = json.loads(data)
     userid = long(jsonData['id'])
 
-
     user_entity = User.get_by_id(long(userid))
     user_entity.delete()
 
@@ -421,30 +441,6 @@ class User(db.Model):
               'message': 'You are not allowed to edit this profile.',
               'submessage': 'Only the original user or an administrator may do so.'}
               
-    return result
-
-    #Edits a User's data
-  @staticmethod
-  def edit_approval_entity(model_id):
-    result = {}
-    value = True
-
-    entity = User.get_by_id(long(model_id))
-    if entity:
-      try:
-        entity.is_approved = bool(value)
-      except (KeyError, ValueError):
-        entity.is_approved = entity.is_approved
-
-      entity.put()
-      
-      result = {'status': 'success',
-                'method':'edit_approval_entity',
-                'en_type':'User'}
-    else:
-      result = {'status': 'Error',
-              'message': 'Unable to retrieve selected user.'}
-
     return result
 
 #Basic URI Handler for auth
@@ -549,8 +545,12 @@ class RPXTokenHandler(BaseHandler):
             self.auth.get_user_by_token(userid, token)
             logging.info('The user is already present in the DS')
             
+            
+            db.delete(Unique.all())
+
             # assign a session
             self.session.add_flash('You have successfully logged in', 'success')
+
             if exist:
               if user.is_approved:
                 self.redirect('/app/profile.html')
@@ -600,6 +600,9 @@ class GetUser(webapp2.RequestHandler):
         
     #Handler for editing of User
     def edit_user(self, **kwargs): #/user/edituser
+      data = json.loads(self.request.body)
+      edit_type = data['edit_type']
+
       utc = UTC()
       auser = self.auth.get_user_by_session()
       result = {'method':'edit_entity',
@@ -613,13 +616,18 @@ class GetUser(webapp2.RequestHandler):
         else:
           result['message'] = "Unable to retrieve selected user."
       else:
-        result['message'] = "Not authenticated."   
+        if edit_type == "parentApproval":
+          profile_user_id = data['id']
+          result = User.edit_entity(self.request.body, profile_user_id)
+        else:
+          result['message'] = "Not authenticated."   
           
       return self.respond(result) 
 
     #Handler for deleteing User
     def delete_user(self, **kwargs): #/user/edituser
       result = User.delete_entity(self.request.body)
+      result = Sketch.delete_sketch_by_user(self.request.body)
       return self.respond(result) 
 
     #Handler for a User to retrieve their own data after logging in
@@ -707,16 +715,22 @@ class GetUser(webapp2.RequestHandler):
 
       if userid:
         result = User.get_entity(long(userid), result)
-        entity = result['status']
+        status = result['status']
 
-      if entity == 'success':
-        if urltype == "approve":
-          result = User.edit_approval_entity(userid)
-          self.redirect('http://ksketchweb.appspot.com/app/profile.html');
+      if status == 'success':
+        approve_state = result['is_approved']
+
+        if approve_state:
+          #implement backdoor for parent to view profile
+          self.redirect('http://ksketchweb.appspot.com/app/index.html');
         else:
-          self.redirect(('http://ksketchweb.appspot.com/app/profile_delete.html?id=' + userid).encode('ascii'));
+          if urltype == "approve":
+            self.redirect(('http://ksketchweb.appspot.com/app/approval.html?id=' + userid).encode('ascii'));
+          else:
+            self.redirect(('http://ksketchweb.appspot.com/app/profile_delete.html?id=' + userid).encode('ascii'));
       else:
         self.redirect('http://ksketchweb.appspot.com/app/index.html');
+      
 
     #Handler for a User to retrieve their own data after logging in
     def get_approval(self, **kwargs): #/user/getuser
@@ -758,20 +772,32 @@ class GetUser(webapp2.RequestHandler):
       message = mail.EmailMessage()
       message.sender = "nczakaria@gmail.com"
       message.to = to_addr
-      message.subject = "KSketch: Approval for Registration"
-      message.body = "Dear Parent, \n\
+      message.subject = "K-Sketch: Approval for Registration"
+      #message.body =  
+      strMessage = "Dear Parent, \n\
       \n\
-KSketch would like to request permission for your child, "+ result['u_name'] + ", to participate in using our system. \n\
+K-Sketch would like to request permission for your child, "+ result['u_name'] + ", to participate in using our system. \n\
       \n\
 Please click the following link to activate your child's account: http://ksketchweb.appspot.com" + url_approve + "\n\
       \n\
-To cancel participation, please click the following link: http://ksketchweb.appspot.com" + url_disapprove + "\n\
+Please click the following link to cancel participation: http://ksketchweb.appspot.com" + url_disapprove + "\n\
 \n\
 \n\
-KSketch Team"
+K-Sketch Team"
       
-      message.send()
+      # make a secure connection to SendGrid
+      s = Sendgrid('nurcamelliaz', 'spiderMan1987a', secure=True)
 
+      # make a message object
+      msg = Message("nurcamelliaz@smu.edu.sg", "K-Sketch: Approval for Registration", strMessage, "")
+
+      # add a recipient
+      msg.add_to(to_addr)
+
+      # use the Web API to send your message
+      s.web.send(msg)
+
+      #message.send()
       return self.respond(result)
 
 #Handler for logging out and cancelling of session
@@ -808,3 +834,4 @@ application = webapp2.WSGIApplication([
     
 #Imports placed below to avoid circular imports
 from counters import AppUserCount
+from sketches import Sketch
