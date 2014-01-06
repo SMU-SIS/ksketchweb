@@ -97,7 +97,15 @@ function SketchController($scope,$resource,sharedProperties,sharedFunctions){
                           };
           }
           $scope.waiting = "Ready";
+          $scope.determineAccess();
     });
+  }
+  
+  $scope.determineAccess = function(){
+    if($scope.User.id > 0)
+    {
+      if(!$scope.User.is_approved){ window.location.replace("register.html"); }
+    }
   }
   
   $scope.item = {};
@@ -471,5 +479,15 @@ function SketchController($scope,$resource,sharedProperties,sharedFunctions){
         }
   }
   
+  $scope.year;
+  $scope.setFooterYear = function()
+  {
+    var today = new Date(),
+        today_year = today.getFullYear();
+
+    $scope.year = today_year;
+  }
+
+  $scope.setFooterYear();
   $scope.getuser();
 }

@@ -43,7 +43,7 @@ function NotificationsController($scope,$resource,sharedProperties, sharedFuncti
                           {},{'get': {method: 'JSONP', isArray: false, params:{callback: 'JSON_CALLBACK'}}
                              }
                       );
-  $scope.getuser = function(){
+  /*$scope.getuser = function(){
     $scope.getusermeta = {};
     $scope.getusermeta.data = {'id':0};
     $scope.UserResource = $resource('http://:remote_url/user/getuser',
@@ -69,7 +69,7 @@ function NotificationsController($scope,$resource,sharedProperties, sharedFuncti
             else { window.location.replace("index.html");} 
           }
     });
-  }   
+  } */
                          
   $scope.getuser = function(){
     $scope.UserResource = $resource('http://:remote_url/user/getuser',
@@ -93,7 +93,17 @@ function NotificationsController($scope,$resource,sharedProperties, sharedFuncti
             }
             else { window.location.replace("index.html");} 
           }
+
+          $scope.waiting = "Ready";
+          $scope.determineAccess();
     });
+  }
+
+  $scope.determineAccess = function(){
+    if($scope.User.id > 0)
+    {
+      if(!$scope.User.is_approved){ window.location.replace("register.html"); }
+    }
   }
   
   $scope.setData = function(fileData) {
@@ -174,5 +184,15 @@ function NotificationsController($scope,$resource,sharedProperties, sharedFuncti
     sharedFunctions.simpleSearch($scope.search);
   }
   
+  $scope.year;
+  $scope.setFooterYear = function()
+  {
+    var today = new Date(),
+        today_year = today.getFullYear();
+
+    $scope.year = today_year;
+  }
+
+  $scope.setFooterYear();
   $scope.getuser();
 }

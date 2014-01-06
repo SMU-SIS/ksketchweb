@@ -92,9 +92,19 @@ function ViewController($scope,$resource,sharedProperties,sharedFunctions){
                           "parent_email": "", "contact_studies": true, "contact_updates": true
                           };
           }
+
+          $scope.waiting = "Ready";
+          $scope.determineAccess();
     });
   }
   
+  $scope.determineAccess = function(){
+    if($scope.User.id > 0)
+    {
+      if(!$scope.User.is_approved){ window.location.replace("register.html"); }
+    }
+  }
+
   $scope.item = {};
 	$scope.item.data = {"sketchId":"", "version":"", "originalSketch":"","originalVersion":"", "owner":"", "owner_id":"", "fileName":"", "fileData":"", "changeDescription":"", "appver":"", "p_view": true, "p_edit": true, "p_comment": true}; 
           
@@ -317,5 +327,15 @@ function ViewController($scope,$resource,sharedProperties,sharedFunctions){
     sharedFunctions.simpleSearch($scope.search);
   }
   
+  $scope.year;
+  $scope.setFooterYear = function()
+  {
+    var today = new Date(),
+        today_year = today.getFullYear();
+
+    $scope.year = today_year;
+  }
+
+  $scope.setFooterYear();
   $scope.getuser();
 }

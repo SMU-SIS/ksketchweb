@@ -290,5 +290,16 @@ function ConsoleController($scope,$resource,sharedProperties, sharedFunctions){
     $scope.message = "";
     $scope.submessage = "";
   }
+
+  $scope.year;
+  $scope.setFooterYear = function()
+  {
+    var today = new Date(),
+        today_year = today.getFullYear();
+
+    $scope.year = today_year;
+  }
+
+  $scope.setFooterYear();
   $scope.getuser();
 }

@@ -49,7 +49,7 @@ function PendingController($scope,$resource,sharedProperties,sharedFunctions){
           if (result.u_login) 
           { 
             $scope.User = result;
-            //$scope.determineAccess();
+            $scope.determineAccess();
           } 
           else { window.location.replace('index.html'); }
     });
@@ -62,38 +62,13 @@ function PendingController($scope,$resource,sharedProperties,sharedFunctions){
   $scope.edit_redirect = "";
 
   $scope.cancel = function () {
-    //delete user account in database
-    window.location.replace("/user/logout");
-  };
-
-  $scope.edit_profile = function(meta) {
-    $scope.EditUserResource = $resource('http://:remote_url/user/edituser',
-                                {'remote_url':$scope.remote_url}, 
-                                {'update': { method: 'PUT', params: {} }});
-    var edit_user = new $scope.EditUserResource(meta);
-    $scope.waiting = "Loading";
-    edit_user.$update(function(response) {
-          var result = response;
-          $scope.waiting = "Ready";
-          if($scope.edit_redirect == "agree"){ window.location.replace("profile.html");}
-    });
+    window.location.replace("profile_delete.html?type=disapprove&id=" + $scope.User.id);
   };
 
   $scope.determineAccess = function() 
   {
     if ($scope.User.is_approved)
     { window.location.replace("profile.html"); }
-    else
-    {
-      if($scope.User.birth_day != 0 && $scope.User.birth_month != 0 && $scope.User.birth_year != 0)
-      {
-        if($scope.User.parent_email != "" && $scope.User.parent_email != "not required") 
-          { window.location.replace("pending.html");}
-        else if($scope.User.parent_email == "") 
-          { window.location.replace("register.html");}
-      }
-      else {window.location.replace("register.html");}
-    }
   }
 
   $scope.sendApprovalEmail = function()
@@ -138,6 +113,15 @@ function PendingController($scope,$resource,sharedProperties,sharedFunctions){
     }
   }
 
+  $scope.year;
+  $scope.setFooterYear = function()
+  {
+    var today = new Date(),
+        today_year = today.getFullYear();
 
+    $scope.year = today_year;
+  }
+
+  $scope.setFooterYear();
   $scope.getuser();
 }

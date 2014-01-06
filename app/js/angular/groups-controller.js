@@ -454,5 +454,16 @@ function GroupsController($scope,$resource,sharedProperties, sharedFunctions){
   $scope.simpleSearch = function() {
     sharedFunctions.simpleSearch($scope.search);
   }
+
+  $scope.year;
+  $scope.setFooterYear = function()
+  {
+    var today = new Date(),
+        today_year = today.getFullYear();
+
+    $scope.year = today_year;
+  }
+
+  $scope.setFooterYear();
   $scope.getuser();
 }
