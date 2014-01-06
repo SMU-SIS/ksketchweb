@@ -61,6 +61,7 @@ function RegisterController($scope,$resource,sharedProperties,sharedFunctions){
   $scope.parentEmail;
   $scope.validEmail;
   $scope.message;
+  $scope.parent_message;
   $scope.editprofilemeta = {};
   $scope.edit_redirect = "";
   $scope.parentalConsent = false;
@@ -70,17 +71,39 @@ function RegisterController($scope,$resource,sharedProperties,sharedFunctions){
                   {id: 9, date: "September"}, {id: 10, date: "October"}, {id: 11, date: "November"}, 
                   {id: 12, date: "December"}];
 
-  $scope.calcAge = function (birthMonth, birthDay, birthYear) {
+  $scope.calcAge = function (birthMonth, birthYear, type) {
     var todayDate = new Date(),
         todayYear = todayDate.getFullYear(),
         todayMonth = todayDate.getMonth(),
         todayDay = todayDate.getDate(),
+        is_valid = false,
+        age = 0,
+        parent_message = "";
+
+    var isnum = /^\d+$/.test(birthYear);
+    if (isnum) { is_valid = true; }
+
+    if (is_valid) 
+    { 
+      is_valid = false;
+      if(todayYear > parseInt(birthYear)) { is_valid = true; }
+
+      if (is_valid) 
+      {
         age = todayYear - parseInt(birthYear);
-    var message = "";
+        if (todayMonth < birthMonth.id) 
+        { 
+          if(age > 1) {age--;}
+        }
+      }
+    }
 
-    if (todayMonth < birthMonth.id) { age--; }
-
-    if(age == null) { message = "Please enter a valid year. (e.g. YYYY)"; }
+    if(age == 0 && type != "determineAccess") 
+    { 
+      $scope.waiting = "Error";
+      $scope.heading = "Oops...!";
+      $scope.message = "Please enter a valid birth date. (Month - YYYY)";
+    }
     else
     {
       if (age >= 18) 
@@ -112,9 +135,9 @@ function RegisterController($scope,$resource,sharedProperties,sharedFunctions){
 
         $scope.edit_profile($scope.editprofilemeta.data);
 
-        message = " Under 18 participants require parental consent. Please provide your parent's email address."; 
+        parent_message = " Under 18 participants require parental consent. Please provide your parent's email address."; 
         $scope.parentalConsent = true; 
-        return $scope.message = message;
+        return $scope.parent_message = parent_message;
       }
     }
     
@@ -127,35 +150,46 @@ function RegisterController($scope,$resource,sharedProperties,sharedFunctions){
 
     if($scope.validEmail)
     {
-      if($scope.selectedMonth)
+      if(parentEmail != $scope.User.u_email)
       {
-        date_month = $scope.selectedMonth.id;
-        date_year = parseInt($scope.selectedYear);
+        if($scope.selectedMonth)
+        {
+          date_month = $scope.selectedMonth.id;
+          date_year = parseInt($scope.selectedYear);
+        }
+        else
+        {
+          date_month = $scope.User.birth_month;
+          date_year = $scope.User.birth_year;
+        }
+
+        //update database with parent's email
+        $scope.editprofilemeta.data = {
+                                      'id': $scope.User.id,
+                                      'u_displayname': $scope.User.u_name,
+                                      'u_realname': $scope.User.u_realname,
+                                      'parent_email': parentEmail + "",
+                                      'birth_month': date_month,
+                                      'birth_year': date_year,
+                                      'edit_type': "self"};
+
+        $scope.edit_redirect = "pending";
+        $scope.edit_profile($scope.editprofilemeta.data);
       }
       else
       {
-        date_month = $scope.User.birth_month;
-        date_year = $scope.User.birth_year;
+        //add error message back to the page
+        $scope.waiting = "Error";
+        $scope.heading = "Oops...!";
+        $scope.message = "Please enter a different email address";
       }
-
-      //update database with parent's email
-      $scope.editprofilemeta.data = {
-                                    'id': $scope.User.id,
-                                    'u_displayname': $scope.User.u_name,
-                                    'u_realname': $scope.User.u_realname,
-                                    'parent_email': parentEmail + "",
-                                    'birth_month': date_month,
-                                    'birth_year': date_year,
-                                    'edit_type': "self"};
-
-      $scope.edit_redirect = "pending";
-      $scope.edit_profile($scope.editprofilemeta.data);
     }
     else
     {
       //add error message back to the page
-      $scope.submessage = "Please enter a valid email address"
-      return $scope.submessage;
+      $scope.waiting = "Error";
+      $scope.heading = "Oops...!";
+      $scope.message = "Please enter a valid email address";
     }
   };
 
@@ -163,7 +197,7 @@ function RegisterController($scope,$resource,sharedProperties,sharedFunctions){
     if (/^\w+([\.-]?\w+)*@\w+([\.-]?\w+)*(\.\w{2,3})+$/.test(email))  
     {  
       return $scope.validEmail = true;  
-    }  
+    } 
     
     return $scope.validEmail = false;
   }
@@ -215,7 +249,7 @@ function RegisterController($scope,$resource,sharedProperties,sharedFunctions){
           var tempMonth = {id: $scope.User.birth_month, date: $scope.User.birth_month},
               tempYear = $scope.User.birth_year + "";
           
-          $scope.calcAge(tempMonth, tempYear);
+          $scope.calcAge(tempMonth, tempYear, "determineAccess");
         }
         
       }

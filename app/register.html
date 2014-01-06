@@ -68,6 +68,28 @@
         </div>
       </div>
     </div>
+    <div class="modal" id="Message" ui-if="waiting=='Error'" ng-cloak>
+        <div class="modal-header">
+          <input type="submit" class="close" value="x" data-dismiss="modal" ng-click="acknowledge()"/>
+          <h3 id="myUploadItems">{{heading}}</h3>
+        </div>
+        <div class="modal-body">
+        <br/>
+        <div class="control-group">
+          <div class="control-label">
+            <span style="text-align:center">{{message}}</span>
+            <br/>
+            <br/>
+            <span style="text-align:center">{{submessage}}</span>
+            <br/>
+            <br/>
+          </div>
+        </div>
+      </div>
+      <div class="modal-footer">
+        <input type="submit"  ng-click="acknowledge()" value="Ok" data-dismiss="modal"/>
+      </div>
+    </div> 
 
     <!-- Main Body -->
     <div class="container-fluid" id="wrap">
@@ -86,13 +108,13 @@
                 Year
                 <input type="text" ng-model="selectedYear" ng-options="year as year.date for year in years"/>
 
-                <button ng-click="calcAge(selectedMonth, selectedDay, selectedYear)">Register</button>
+                <button ng-click="calcAge(selectedMonth, selectedYear, 'register')">Register</button>
 
                 <div style="padding-top: 50px;"><button ng-click="cancel()">Cancel my account</button></div>
                 
             </div>
             <p></p>
-            {{message}} <br/>
+            {{parent_message}} <br/>
             <div ng-show="parentalConsent" ng-cloak>
               <input type="text" ng-model="parentEmail"/>
               <button ng-click="addParentEmail(parentEmail)">Submit</button>
