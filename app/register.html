@@ -57,8 +57,8 @@
       <div class="modal-body">
         <span>Loading........</span>
       </div>
-    </div>  
-    
+    </div>
+
     <!-- Top Bar -->
     <div id="topbar" class="navbar navbar-inverse navbar-fixed-top">
       <div class="navbar-inner">
@@ -69,7 +69,6 @@
       </div>
     </div>
 
-    
     <!-- Main Body -->
     <div class="container-fluid" id="wrap">
         
@@ -91,19 +90,24 @@
                 <input type="text" ng-model="selectedYear" ng-options="year as year.date for year in years"/>
 
                 <button ng-click="calcAge(selectedMonth, selectedDay, selectedYear)">Register</button>
+
+                <div style="padding-top: 50px;"><button ng-click="cancel()">Cancel my account</button></div>
+                
             </div>
             <p></p>
             {{message}} <br/>
             <div ng-show="parentalConsent" ng-cloak>
               <input type="text" ng-model="parentEmail"/>
               <button ng-click="addParentEmail(parentEmail)">Submit</button>
+              
+              <div style="padding-top: 50px;"><button ng-click="cancel()">Cancel my account</button></div>
             </div>
             {{submessage}}
 
         </div><!--/span-->
-        <div class="footer-table">
+        <div class="footer-table" ng-model="year">
           <img src="img/footer_logo_small.png"/><br/>
-                Copyright &copy; 2014 Singapore Management University. Developed under a grant from the Singapore-MIT GAMBIT Game Lab   <br/>
+                Copyright &copy; {{year}} Singapore Management University. Developed under a grant from the Singapore-MIT GAMBIT Game Lab   <br/>
                 <a href="about.html">About the Team</a> &nbsp;&nbsp;|&nbsp; &nbsp;
                 <a href="faq.html">FAQ</a> &nbsp;&nbsp;|&nbsp; &nbsp;
                 <a href="terms.html">Terms of Use</a> &nbsp;&nbsp;|&nbsp; &nbsp;

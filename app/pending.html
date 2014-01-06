@@ -106,18 +106,18 @@
         <div>
           <span id="testdiv" ng-model="test" hidden></span>        
           <div class="hero-unit-sub">
-            <p><h1>KSketch Account Activation</h1></p>
+            <p><h1>K-Sketch Account Activation</h1></p>
 
             <!-- Pending approval-->
             <p><h4>Pending for Parent's Approval</h4></p>
             <div>
               <p>
-                A link to activate your KSketch account has been sent to your parent at: 
+                A link to activate your K-Sketch account has been sent to your parent at: 
                 <b ng-show="User.u_login" ng-cloak id="heading" disabled>{{User.parent_email}}</b>
               </p>
 
               <p>
-                In the meantime, use KSketch <a href="/user/logout">anonymously</a>.
+                In the meantime, use K-Sketch <a href="/user/logout">anonymously</a>.
               </p>
             </div>
 
@@ -127,34 +127,17 @@
               <tr>
                 <td width="15%"><button ng-click="sendApprovalEmail()">Send the link again</button></td>
                 <td width="15%" align="right">
-                  <button data-toggle="modal" href="#EditProfile">Cancel my account</button> 
+                  <button data-toggle="modal" ng-click="cancel()">Cancel my account</button> 
                 </td>
                 <td></td>
               <tr>
             </table>
 
-            <!--Edit Profile Modal-->
-            <div class="modal hide fade" id="EditProfile" style="display:none">
-              <div class="modal-header">
-                <input type="submit" class="close" value="x" data-dismiss="modal"/>
-                <h4>Cancel My Account</h4>
-              </div>
-              <div class="modal-body">
-                <div class="control-group">
-                  <label class="control-label">Are you sure?</label>
-                </div>      
-              </div>
-              <div class="modal-footer">
-                <input type="submit" value="Yes" ng-click="cancel()"/>
-                <input type="submit" value="No" data-dismiss="modal"/>
-              </div>
-            </div>
-
           </div>
         </div><!--/span-->
-        <div class="footer-table">
+        <div class="footer-table" ng-model="year">
           <img src="img/footer_logo_small.png"/><br/>
-                Copyright &copy; 2014 Singapore Management University. Developed under a grant from the Singapore-MIT GAMBIT Game Lab   <br/>
+                Copyright &copy; {{year}} Singapore Management University. Developed under a grant from the Singapore-MIT GAMBIT Game Lab   <br/>
                 <a href="about.html">About the Team</a> &nbsp;&nbsp;|&nbsp; &nbsp;
                 <a href="faq.html">FAQ</a> &nbsp;&nbsp;|&nbsp; &nbsp;
                 <a href="terms.html">Terms of Use</a> &nbsp;&nbsp;|&nbsp; &nbsp;

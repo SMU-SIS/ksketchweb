@@ -52,10 +52,44 @@
     <script type="text/javascript" src="js/janrain/janrain_widget.js"></script>
     <script type="text/javascript" src="js/common/notification.js"></script>
     
+    <script type="text/javascript">
+      function QueryString() {
+        // This function is anonymous, is executed immediately and 
+        // the return value is assigned to QueryString!
+        var query_string = {};
+        var query = window.location.search.substring(1);
+        var vars = query.split("&");
+        for (var i=0;i<vars.length;i++) {
+          var pair = vars[i].split("=");
+            // If first entry with this name
+          if (typeof query_string[pair[0]] === "undefined") {
+            query_string[pair[0]] = pair[1];
+            // If second entry with this name
+          } else if (typeof query_string[pair[0]] === "string") {
+            var arr = [ query_string[pair[0]], pair[1] ];
+            query_string[pair[0]] = arr;
+            // If third or later entry with this name
+          } else {
+            query_string[pair[0]].push(pair[1]);
+          }
+        }
+        e = document.getElementById('testdiv');
+        scope = angular.element(e).scope();
+        if (query_string.id !== undefined && query_string.id !== "") {
+          scope.$apply(function() {
+              scope.setTest(query_string.id);
+          });
+        }
+        scope.$apply(function() {
+          scope.get_profile();
+        });        
+      }
+    </script>
+
   </head>
   
   <!-- body id="ksketchapp" ng-controller="LoginController" scrolling="no" -->
-  <body ng-controller="ApprovalController" id="ksketchapp"  scrolling="no">
+  <body ng-controller="ApprovalController" id="ksketchapp"  scrolling="no" onLoad="QueryString()">
     <!-- Loading -->      
     <div id="LoadingDiv" ui-if="waiting!='Ready'"></div>
     <div class="modal" id="Loading" ui-if="waiting=='Loading'">
@@ -106,7 +140,7 @@
         <div>
           <span id="testdiv" ng-model="test" hidden></span>        
           <div class="hero-unit-sub">
-            <p><h1>KSketch Agreement</h1></p>
+            <p><h1>K-Sketch Agreement</h1></p>
 
             <!-- Privacy policy -->
             <p><h4>Privacy Policy</h4></p>
@@ -163,7 +197,7 @@
 
             <!-- Agreement checkbox-->
             <div id="" style="border:1px solid grey;padding:10px;">
-                <input type="checkbox" ng-model="mark"> By checking this box I confirm that I have read and agree to KSketch Agreement above.
+                <input type="checkbox" ng-model="mark"> By checking this box I confirm that I have read and agree to K-Sketch Agreement above.
             </div>
 
             <!-- Table for buttons-->
@@ -179,9 +213,9 @@
                 
           </div>
         </div><!--/span-->
-        <div class="footer-table">
+        <div class="footer-table" ng-model="year">
           <img src="img/footer_logo_small.png"/><br/>
-                Copyright &copy; 2014 Singapore Management University. Developed under a grant from the Singapore-MIT GAMBIT Game Lab   <br/>
+                Copyright &copy; {{year}} Singapore Management University. Developed under a grant from the Singapore-MIT GAMBIT Game Lab   <br/>
                 <a href="about.html">About the Team</a> &nbsp;&nbsp;|&nbsp; &nbsp;
                 <a href="faq.html">FAQ</a> &nbsp;&nbsp;|&nbsp; &nbsp;
                 <a href="terms.html">Terms of Use</a> &nbsp;&nbsp;|&nbsp; &nbsp;
