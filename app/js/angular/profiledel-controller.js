@@ -160,7 +160,7 @@ function ProfileDeleteController($scope,$resource,sharedProperties, sharedFuncti
           var result = response;
           if (result.status === 'success') {
             $scope.waiting = "Error";
-            $scope.heading = "Deleted Successfully!";
+            $scope.heading = "Account Deleted!";
             $scope.message = "Your account has been deleted. Thank you for using K-Sketch!";
             $scope.reload = true;
           } else {
