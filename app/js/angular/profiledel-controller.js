@@ -89,6 +89,7 @@ function ProfileDeleteController($scope,$resource,sharedProperties, sharedFuncti
     $scope.waiting = "Loading";       
     $scope.UserResource.get(function(response) {
           var result = response;
+          $scope.waiting = "Ready";  
           if (result.u_login === "True" || result.u_login === true) {
             $scope.User = result;
             $scope.User.u_created = $scope.tzformat($scope.User.u_created);
@@ -106,27 +107,36 @@ function ProfileDeleteController($scope,$resource,sharedProperties, sharedFuncti
   
   $scope.get_profile = function() {
     var same = (parseInt($scope.test) === parseInt($scope.User.id));
-    if (same === true) {
+    if ((same === true) || ($scope.test == "-" && $scope.User.id > 0))
+    {
       $scope.waiting = "Ready"; 
       $scope.profile_user = $scope.User;
       $scope.profile_meta();
       $scope.belong = true;
-    
-    } else {
-      $scope.belong = false;
-      $scope.profilemeta.data.id = $scope.test;
-      $scope.ProfileUserResource = $resource('http://:remote_url/user/profileuser2',
-                                 {"remote_url":$scope.remote_url}, 
-                                 {'save': {method: 'POST', params:{} }});
-      $scope.waiting = "Loading";       
-      var profilemeta = new $scope.ProfileUserResource($scope.profilemeta.data);
-      profilemeta.$save(function(response) {
-        $scope.waiting = "Ready";  
-        var result = response;
-        $scope.profile_user = result;
-        $scope.profile_meta();     
-      });
+    } 
+    else {
+      if($scope.test != "-")
+      {
+        $scope.belong = false;
+        $scope.profilemeta.data.id = $scope.test;
+        $scope.ProfileUserResource = $resource('http://:remote_url/user/profileuser2',
+                                   {"remote_url":$scope.remote_url}, 
+                                   {'save': {method: 'POST', params:{} }});
+        $scope.waiting = "Loading";       
+        var profilemeta = new $scope.ProfileUserResource($scope.profilemeta.data);
+        profilemeta.$save(function(response) {
+          $scope.waiting = "Ready";  
+          var result = response;
+          $scope.profile_user = result;
+          $scope.profile_meta();  
+          
+          if($scope.profile_user.status == "Error")
+          { window.location.replace('index.html');}
+        });
+      }
     }
+
+    $scope.determineAccess();
   }
   
   $scope.profile_meta = function() {
@@ -170,5 +180,21 @@ function ProfileDeleteController($scope,$resource,sharedProperties, sharedFuncti
     window.location.replace("http://ksketchweb.appspot.com/user/logout");
   }
 
+  $scope.determineAccess = function() 
+  {
+    if($scope.test == "-" && $scope.User.id == 0) 
+    { window.location.replace('index.html');}
+  }
+
+  $scope.year;
+  $scope.setFooterYear = function()
+  {
+    var today = new Date(),
+        today_year = today.getFullYear();
+
+    $scope.year = today_year;
+  }
+
+  $scope.setFooterYear();
   $scope.getuser();
 }

@@ -49,7 +49,9 @@ function ProfileController($scope,$resource,sharedProperties, sharedFunctions){
   $scope.editprofilemeta = {};
   $scope.editprofilemeta.data = {'id': 0,
                                  'u_displayname': "",
-                                 'u_realname': ""};
+                                 'contact_updates': false,
+                                 'contact_studies': false,
+                                 'edit_type': 'self'};
                                  
   
   $scope.reload = false;
@@ -77,9 +79,8 @@ function ProfileController($scope,$resource,sharedProperties, sharedFunctions){
   //resource calls are defined here
 
   $scope.Model = $resource('http://:remote_url/:model_type/:id',
-                          {},{'get': {method: 'JSONP', isArray: false, params:{callback: 'JSON_CALLBACK'}}
-                             }
-                      );
+                          {},{'get': {method: 'JSONP', isArray: false, params:{callback: 'JSON_CALLBACK'}}}
+                          );
   
   $scope.getuser = function(){
     $scope.UserResource = $resource('http://:remote_url/user/getuser',
@@ -96,7 +97,8 @@ function ProfileController($scope,$resource,sharedProperties, sharedFunctions){
             if ($scope.User.u_lastlogin !== "") {
               $scope.User.u_lastlogin = $scope.tzformat($scope.User.u_lastlogin);
             }
-            $scope.get_notification();            
+            $scope.get_notification();   
+
           } else {
             $scope.User = {
                           "id": 0, "u_name" :"Anonymous User",  "u_realname" :"Anonymous User", 
@@ -107,31 +109,26 @@ function ProfileController($scope,$resource,sharedProperties, sharedFunctions){
                           "parent_email": "", "contact_studies": true, "contact_updates": true
                           };
 
-            if (navigator.userAgent.match(/MSIE\s(?!9.0)/))
+            /*if (navigator.userAgent.match(/MSIE\s(?!9.0)/))
             {
               var referLink = document.createElement("a");
               referLink.href = "index.html";
               document.body.appendChild(referLink);
               referLink.click();
             }
-            else { window.location.replace("index.html");}
+            else { window.location.replace("index.html");}*/
           }
+          //$scope.waiting = "Ready";
+          $scope.determineAccess();
     });
   }
 
   $scope.determineAccess = function(){
-    if($scope.User.id != 0)
+    if($scope.User.id > 0)
     {
-      var access = false;
-      if($scope.User.is_approved){access = true;}
-
-      if(!access)
-      {
-        if($scope.User.birth_day == 0) {window.location.replace("register.html");}
-        else if($scope.User.parent_email != "") {window.location.replace("pending.html");}
-      }
+      if(!$scope.User.is_approved){ window.location.replace("register.html"); }
     }
-  }  
+  }
   
   $scope.setTest = function(test) {
     $scope.test = test;
@@ -184,21 +181,26 @@ function ProfileController($scope,$resource,sharedProperties, sharedFunctions){
   $scope.profile_meta = function() {
   
     $scope.editprofilemeta.data = {'id': $scope.profile_user.id,
-                                 'u_displayname': $scope.profile_user.u_name,
-                                 'u_realname': $scope.profile_user.u_realname};
+                                    'u_displayname': $scope.profile_user.u_name,
+                                    'contact_updates': $scope.profile_user.contact_updates,
+                                    'contact_studies': $scope.profile_user.contact_studies,
+                                    'edit_type': 'self'};
   }
-  
+
   $scope.change_profile = function() {
     if ($scope.belong === true) {
       if ($scope.editprofilemeta.data.u_displayname != $scope.profile_user.u_name
-        || $scope.editprofilemeta.data.u_realname != $scope.profile_user.u_realname) {
+        || $scope.editprofilemeta.data.contact_updates != $scope.profile_user.contact_updates
+        || $scope.editprofilemeta.data.contact_studies != $scope.profile_user.contact_studies) {
         bootbox.confirm("Do you really wish to change your profile data?", function(changeAlert) {
           if (changeAlert === true) {
             $scope.edit_profile($scope.editprofilemeta.data);
           } else {
             $scope.editprofilemeta.data = {'id': $scope.profile_user.id,
                                            'u_displayname': $scope.profile_user.u_name,
-                                           'u_realname': $scope.profile_user.u_realname};
+                                           'contact_updates': $scope.profile_user.contact_updates,
+                                           'contact_studies': $scope.profile_user.contact_studies,
+                                           'edit_type': 'self'};
           }
         });
       }
@@ -401,5 +403,15 @@ function ProfileController($scope,$resource,sharedProperties, sharedFunctions){
     sharedFunctions.simpleSearch($scope.search);
   }
   
+  $scope.year;
+  $scope.setFooterYear = function()
+  {
+    var today = new Date(),
+        today_year = today.getFullYear();
+
+    $scope.year = today_year;
+  }
+
+  $scope.setFooterYear();
   $scope.getuser();
 }
