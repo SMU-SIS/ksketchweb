@@ -85,12 +85,14 @@ function PendingController($scope,$resource,sharedProperties,sharedFunctions){
           if (result.status === 'success') 
           { 
             $scope.waiting = "Error";
+            $scope.heading = "Success";
             $scope.message = "A copy of the activation link has been sent to your parent's email.";
           }
           else
           {
             $scope.waiting = "Error";
-            $scope.message = "Failed to send email to Parent";
+            $scope.heading = "Oops...";
+            $scope.message = "Failed to send email your parent. Please try again.";
           }
     });
   }

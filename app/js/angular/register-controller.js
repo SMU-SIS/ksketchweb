@@ -112,7 +112,7 @@ function RegisterController($scope,$resource,sharedProperties,sharedFunctions){
 
         $scope.edit_profile($scope.editprofilemeta.data);
 
-        message = " Under 18 applicants require parental consent for participation. Please provide your parent's email address."; 
+        message = " Under 18 participants require parental consent. Please provide your parent's email address."; 
         $scope.parentalConsent = true; 
         return $scope.message = message;
       }
