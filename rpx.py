@@ -87,7 +87,6 @@ class User(db.Model):
   is_admin           = db.BooleanProperty() #User administrator status
   is_active          = db.BooleanProperty() #User active status
   is_approved        = db.BooleanProperty() #User parental consent status
-  birth_day          = db.IntegerProperty() #User birth day
   birth_month        = db.IntegerProperty() #User birth month
   birth_year         = db.IntegerProperty() #User birth year
   parent_email       = db.StringProperty()  #email add of User's parent
@@ -149,7 +148,6 @@ class User(db.Model):
                 'u_isadmin': user.is_admin,
                 'u_isactive': user.is_active,
                 'is_approved': user.is_approved,
-                'birth_day': user.birth_day,
                 'birth_month': user.birth_month,
                 'birth_year': user.birth_year,
                 'parent_email': user.parent_email,
@@ -332,7 +330,6 @@ class User(db.Model):
                   'u_isadmin': object.is_admin,
                   'u_isactive': object.is_active,
                   'is_approved': object.is_approved,
-                  'birth_day': object.birth_day,
                   'birth_month': object.birth_month,
                   'birth_year': object.birth_year,
                   'parent_email': object.parent_email,
@@ -391,11 +388,6 @@ class User(db.Model):
           entity.is_active = bool(jsonData['u_isactive'])
         except (KeyError, ValueError):
           entity.is_active = entity.is_active
-
-        try:
-          entity.birth_day = jsonData['birth_day']
-        except (KeyError, ValueError):
-          entity.birth_day = entity.birth_day
 
         try:
           entity.birth_month = jsonData['birth_month']
@@ -524,7 +516,7 @@ class RPXTokenHandler(BaseHandler):
               
               success, user = self.auth.store.user_model.create_user(oid, email=email, display_name=display_name, real_name=display_name, logincount=0, 
                                                                           assigned_version=appver, is_admin=False, is_active=True, is_approved=False,
-                                                                          birth_day=0, birth_month=0, birth_year=0, parent_email="", contact_studies=True, 
+                                                                          birth_month=0, birth_year=0, parent_email="", contact_studies=True, 
                                                                           contact_updates=True)
               logging.info('New user created in the DS')
               
@@ -786,10 +778,10 @@ Please click the following link to cancel participation: http://ksketchweb.appsp
 K-Sketch Team"
       
       # make a secure connection to SendGrid
-      s = Sendgrid('<sendgrid-account>', '<sendgrid-password>', secure=True)
+      s = Sendgrid('<sendgrid_username>', '<sendgrid_password>', secure=True)
 
       # make a message object
-      msg = Message("<email-address-of-sender>", "K-Sketch: Approval for Registration", strMessage, "")
+      msg = Message("<sender_email>", "K-Sketch: Approval for Registration", strMessage, "")
 
       # add a recipient
       msg.add_to(to_addr)
