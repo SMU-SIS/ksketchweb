@@ -378,6 +378,8 @@
                           <div class="row-fluid">
                           <div class="span8">
                             <span style="font-weight:bold">Display Name:</span> {{profile_user.u_name}}<br>
+                            <span style="font-weight:bold">Contact for Updates:</span> {{profile_user.contact_updates}}<br>
+                            <span style="font-weight:bold">Contact for Studies:</span> {{profile_user.contact_studies}}<br>
                             <!--<span style="font-weight:bold">Full Name:</span> {{profile_user.u_realname}}<br> -->
                           </div>
                           <div class="span4">
@@ -385,6 +387,7 @@
                           </div>
                           </div>
                           <hr ui-if="belong">
+                          <span ui-if="belong" style="font-weight:bold">Birth Date:</span> {{profile_user.birth_day}} / {{profile_user.birth_month}} / {{profile_user.birth_year}}<br>
                           <span ui-if="belong" style="font-weight:bold">E-mail:</span> {{profile_user.u_email}}<br>
                           <span ui-if="belong" style="font-weight:bold">Date Created:</span> {{profile_user.u_created}}<br>
                           <span ui-if="belong" style="font-weight:bold">Last Login:</span> {{profile_user.u_lastlogin}}<br>
@@ -408,17 +411,28 @@
                         </div>
                         <div class="modal-body">
                           <div class="control-group">
+
+                            <!--Display Name-->
                             <label class="control-label" for="DisplayName">Display Name</label>
                             <div class="controls">
-                              <input type="text" ng-model="editprofilemeta.data.u_displayname"/>
+                              <input type="text" ng-model="editprofilemeta.data.u_displayname" />
                             </div>
-                            <label class="control-label" for="RealName">Real Name</label>
+
+                            <!--Can contact for updates-->
                             <div class="controls">
-                              <input type="text" ng-model="editprofilemeta.data.u_realname"/>
+                              <input type="checkbox" ng-model="editprofilemeta.data.contact_updates">Can be contacted for K-Sketch updates
                             </div>
+
+                            <!--Can contact for studies-->
                             <div class="controls">
+                              <input type="checkbox" ng-model="editprofilemeta.data.contact_studies">Can be contacted for K-Sketch studies
+                            </div>
+
+                            <!--Submit-->
+                            <div class="controls" style="padding-top:20px">
                               <input type="submit" ng-click="change_profile()" value="Submit" data-dismiss="modal"/>
                             </div>
+
                           </div>			
                         </div>
                         <div class="modal-footer"></div>
@@ -481,9 +495,9 @@
             </div>
           </div>
         </div><!--/span-->
-        <div class="footer-table">
+        <div class="footer-table" ng-model="year">
           <img src="img/footer_logo_small.png"/><br/>
-                Copyright &copy; 2014 Singapore Management University. Developed under a grant from the Singapore-MIT GAMBIT Game Lab   <br/>
+                Copyright &copy; {{year}} Singapore Management University. Developed under a grant from the Singapore-MIT GAMBIT Game Lab   <br/>
                 <a href="about.html">About the Team</a> &nbsp;&nbsp;|&nbsp; &nbsp;
                 <a href="faq.html">FAQ</a> &nbsp;&nbsp;|&nbsp; &nbsp;
                 <a href="terms.html">Terms of Use</a> &nbsp;&nbsp;|&nbsp; &nbsp;
