@@ -786,10 +786,10 @@ Please click the following link to cancel participation: http://ksketchweb.appsp
 K-Sketch Team"
       
       # make a secure connection to SendGrid
-      s = Sendgrid('nurcamelliaz', 'spiderMan1987a', secure=True)
+      s = Sendgrid('<sendgrid-account>', '<sendgrid-password>', secure=True)
 
       # make a message object
-      msg = Message("nurcamelliaz@smu.edu.sg", "K-Sketch: Approval for Registration", strMessage, "")
+      msg = Message("<email-address-of-sender>", "K-Sketch: Approval for Registration", strMessage, "")
 
       # add a recipient
       msg.add_to(to_addr)
