@@ -10,7 +10,7 @@ function ApprovalController($scope,$resource,sharedProperties,sharedFunctions){
                 "u_login": false, "u_email": "", "g_hash": "", "u_created": "", 
                 "u_lastlogin": "", "u_logincount": "", "u_version": 1.0, 
                 "u_isadmin": false, "u_isactive": false, "is_approved": false,
-                "birth_day": "", "birth_month": "", "birth_year": "",
+                "birth_month": "", "birth_year": "",
                 "parent_email": "", "contact_studies": true, "contact_updates": true
                 };
 
@@ -19,7 +19,7 @@ function ApprovalController($scope,$resource,sharedProperties,sharedFunctions){
                         "u_login": false, "u_email": "", "g_hash": "", "u_created": "", 
                         "u_lastlogin": "", "u_logincount": "", "u_version": 1.0, 
                         "u_isadmin": false, "u_isactive": false, "is_approved": false,
-                        "birth_day": "", "birth_month": "", "birth_year": "",
+                        "birth_month": "", "birth_year": "",
                         "parent_email": "", "contact_studies": true, "contact_updates": true
                         };
 
@@ -187,7 +187,7 @@ function ApprovalController($scope,$resource,sharedProperties,sharedFunctions){
     { window.location.replace("profile.html"); }
     else
     {
-      if($scope.User.birth_day > 0 && $scope.User.birth_month > 0 && $scope.User.birth_year > 0)
+      if($scope.User.birth_month > 0 && $scope.User.birth_year > 0)
       {
         if($scope.User.parent_email == "") 
           { window.location.replace("register.html");}

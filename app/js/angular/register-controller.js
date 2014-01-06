@@ -10,7 +10,7 @@ function RegisterController($scope,$resource,sharedProperties,sharedFunctions){
                 "u_login": false, "u_email": "", "g_hash": "", "u_created": "", 
                 "u_lastlogin": "", "u_logincount": "", "u_version": 1.0, 
                 "u_isadmin": false, "u_isactive": false, "is_approved": false,
-                "birth_day": 0, "birth_month": 0, "birth_year": 0,
+                "birth_month": 0, "birth_year": 0,
                 "parent_email": "", "contact_studies": true, "contact_updates": true
                 };
 
@@ -56,7 +56,6 @@ function RegisterController($scope,$resource,sharedProperties,sharedFunctions){
   }
   
   //variables and method concerning birth date registration
-  $scope.selectedDay;
   $scope.selectedMonth;
   $scope.selectedYear;
   $scope.parentEmail;
@@ -65,14 +64,6 @@ function RegisterController($scope,$resource,sharedProperties,sharedFunctions){
   $scope.editprofilemeta = {};
   $scope.edit_redirect = "";
   $scope.parentalConsent = false;
-  
-  $scope.days = [{id: 1, date: 1}, {id: 2, date: 2}, {id: 3, date: 3}, {id: 4, date: 4}, {id: 5, date: 5},
-                {id: 6, date: 6}, {id: 7, date: 7}, {id: 8, date: 8}, {id: 9, date: 9}, {id: 10, date: 10},
-                {id: 11, date: 11}, {id: 12, date: 12}, {id: 13, date: 13}, {id: 14, date: 14}, {id: 15, date: 15},
-                {id: 16, date: 16}, {id: 17, date: 17}, {id: 18, date: 18}, {id: 19, date: 19}, {id: 20, date: 20},
-                {id: 21, date: 21}, {id: 22, date: 22}, {id: 23, date: 23}, {id: 24, date: 24}, {id: 25, date: 25},
-                {id: 26, date: 26}, {id: 27, date: 27}, {id: 28, date: 28}, {id: 29, date: 29}, {id: 30, date: 30}, 
-                {id: 31, date: 31}];
 
   $scope.months = [{id: 1, date: "January"}, {id: 2, date: "February"}, {id: 3, date: "March"}, {id: 4, date: "April"}, 
                   {id: 5, date: "May"}, {id: 6, date: "June"}, {id: 7, date: "July"}, {id: 8, date: "August"}, 
@@ -87,9 +78,7 @@ function RegisterController($scope,$resource,sharedProperties,sharedFunctions){
         age = todayYear - parseInt(birthYear);
     var message = "";
 
-    if (todayMonth < birthMonth.date - 1) { age--; }
-
-    if (birthMonth.date - 1 === todayMonth && todayDay < birthDay.date) { age--; }
+    if (todayMonth < birthMonth.id) { age--; }
 
     if(age == null) { message = "Please enter a valid year. (e.g. YYYY)"; }
     else
@@ -103,7 +92,6 @@ function RegisterController($scope,$resource,sharedProperties,sharedFunctions){
                                     'u_displayname': $scope.User.u_name,
                                     'u_realname': $scope.User.u_realname,
                                     'parent_email': "not required",
-                                    'birth_day': parseInt(birthDay.date),
                                     'birth_month': parseInt(birthMonth.id),
                                     'birth_year': parseInt(birthYear),
                                     'edit_type': "self"};
@@ -118,7 +106,6 @@ function RegisterController($scope,$resource,sharedProperties,sharedFunctions){
                                     'id': $scope.User.id,
                                     'u_displayname': $scope.User.u_name,
                                     'u_realname': $scope.User.u_realname,
-                                    'birth_day': parseInt(birthDay.date),
                                     'birth_month': parseInt(birthMonth.id),
                                     'birth_year': parseInt(birthYear),
                                     'edit_type': "self"};
@@ -135,21 +122,18 @@ function RegisterController($scope,$resource,sharedProperties,sharedFunctions){
 
   $scope.addParentEmail = function (parentEmail) {
     $scope.validateEmail(parentEmail);
-    var date_day = 0,
-        date_month = 0,
+    var date_month = 0,
         date_year = 0;
 
     if($scope.validEmail)
     {
-      if($scope.selectedDay && $scope.selectedMonth)
+      if($scope.selectedMonth)
       {
-        date_day = $scope.selectedDay.date;
         date_month = $scope.selectedMonth.id;
         date_year = parseInt($scope.selectedYear);
       }
       else
       {
-        date_day = $scope.User.birth_day;
         date_month = $scope.User.birth_month;
         date_year = $scope.User.birth_year;
       }
@@ -160,7 +144,6 @@ function RegisterController($scope,$resource,sharedProperties,sharedFunctions){
                                     'u_displayname': $scope.User.u_name,
                                     'u_realname': $scope.User.u_realname,
                                     'parent_email': parentEmail + "",
-                                    'birth_day': date_day,
                                     'birth_month': date_month,
                                     'birth_year': date_year,
                                     'edit_type': "self"};
@@ -223,17 +206,16 @@ function RegisterController($scope,$resource,sharedProperties,sharedFunctions){
       { window.location.replace("profile.html");}
     else
     {
-      if($scope.User.birth_day != 0 && $scope.User.birth_month != 0 && $scope.User.birth_year != 0)
+      if($scope.User.birth_month != 0 && $scope.User.birth_year != 0)
       {
         if($scope.User.parent_email == "not required") { window.location.replace("approval.html"); }
         else if($scope.User.parent_email != "") { window.location.replace("pending.html"); }
         else if($scope.User.parent_email == "")
         {
-          var tempDay = {id: $scope.User.birth_day, date: $scope.User.birth_day},
-              tempMonth = {id: $scope.User.birth_month, date: $scope.User.birth_month},
+          var tempMonth = {id: $scope.User.birth_month, date: $scope.User.birth_month},
               tempYear = $scope.User.birth_year + "";
           
-          $scope.calcAge(tempDay, tempMonth, tempYear);
+          $scope.calcAge(tempMonth, tempYear);
         }
         
       }
