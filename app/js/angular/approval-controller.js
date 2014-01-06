@@ -64,6 +64,8 @@ function ApprovalController($scope,$resource,sharedProperties,sharedFunctions){
   
   //variables and method concerning approval process
   $scope.mark;
+  $scope.opt_updates = false;
+  $scope.opt_studies = false;
   $scope.agree;
   $scope.message;
   $scope.editprofilemeta = {};
@@ -81,12 +83,19 @@ function ApprovalController($scope,$resource,sharedProperties,sharedFunctions){
     {
       //update is_approved status to true
       //redirect to profile.html
-      var type = "";
+      var contact_updates = false,
+          contact_studies = false,
+          type = "";
+      if($scope.opt_updates) { contact_updates = true; }
+      if($scope.opt_studies) { contact_studies = true; }
+
       if($scope.User.id == 0)
       {
         $scope.editprofilemeta.data = { 'id': $scope.profile_user.id,
                                         'u_displayname': $scope.profile_user.u_name,
                                         'u_realname': $scope.profile_user.u_realname,
+                                        'contact_updates': contact_updates,
+                                        'contact_studies': contact_studies,
                                         'is_approved': true, 
                                         'edit_type': 'parentApproval'};                        
       }
@@ -95,6 +104,8 @@ function ApprovalController($scope,$resource,sharedProperties,sharedFunctions){
         $scope.editprofilemeta.data = { 'id': $scope.User.id,
                                         'u_displayname': $scope.User.u_name,
                                         'u_realname': $scope.User.u_realname,
+                                        'contact_updates': contact_updates,
+                                        'contact_studies': contact_studies,
                                         'is_approved': true,
                                         'edit_type':'self'};
       }
@@ -106,7 +117,7 @@ function ApprovalController($scope,$resource,sharedProperties,sharedFunctions){
       //return error message to check agreement
       $scope.waiting = "Error";
       $scope.heading = "Oops...";
-      $scope.message = "Please mark the checkbox in order to proceed.";
+      $scope.message = "Please indicate that you have read and agree to K-Sketch Agreement.";
       $scope.submessage = "";
     }
   }
