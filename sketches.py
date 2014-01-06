@@ -883,6 +883,38 @@ class Sketch(db.Model):
               'data': json.dumps(jsonData) #this would also check if the json submitted was valid
               }
     return result
+
+  #Deletes a User's data
+  @staticmethod
+  def delete_sketch_by_user(data):
+    jsonData = json.loads(data)
+    criteria = long(jsonData['id'])
+    
+    utc = UTC()
+    #update ModelCount when adding
+    theQuery = Sketch.all()
+    objects = theQuery.run()
+
+    result = {'status':'success',
+              'message': 'No sketches to delete'}
+
+    for object in objects:
+      if long(criteria) == object.owner:
+        sketch_id = object.sketchId
+        appver = object.appver
+
+        object.delete()
+        ModelCount.decrement_counter('Sketch_count')
+        AppVersionCount.decrement_counter(appver, True)
+        Comment.delete_by_sketch(long(sketch_id))
+        Permissions.delete_by_sketch(long(sketch_id))
+        Sketch_Groups.delete_by_sketch(long(sketch_id))
+        Like.delete_by_sketch(long(sketch_id))
+
+        result = {'status':'success',
+                  'message': 'Deleted user sketches'}
+
+    return result
     
 #Imports placed below to avoid circular imports
 from rpx import User, UTC
