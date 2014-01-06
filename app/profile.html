@@ -349,16 +349,33 @@
                   <div class="tab-pane" id="Profile">
                     <div class="row-fluid">
                       <div class="row-fluid" ui-if="belong">
-                        <div class="span6">
-                          <h2>
-                            My Profile
-                            <span ui-if="!profile_user.u_isactive">  
-                               (Inactive)
-                            </span>
-                          </h2>
-                        </div>
-                        <div class="span6">
-                          <a style="float:right" class="btn btn-inverse btn-small" href="notifications.html" ui-if="belong">See My Notifications</a>
+                        <div>
+                          <table width="100%">
+                            <tr>
+
+                              <td>
+                                <h2>
+                                  My Profile
+                                  <span ui-if="!profile_user.u_isactive">  
+                                     (Inactive)
+                                  </span>
+                                </h2>
+                              </td>
+
+                              <td></td>
+
+                              <td width="15%">
+                                <a style="float:right" class="btn btn-inverse btn-small" href="notifications.html" ui-if="belong">See My Notifications</a>
+                              </td>
+
+                              <td width="15%">
+                                <button style="float:right" class="btn btn-inverse btn-small" data-toggle="modal" ng-click="cancel()" ui-if="belong">Cancel my account</button>
+                              </td>
+
+                              <td width="7%"></td>
+                            </tr>
+                          </table>  
+                          
                         </div>
                       </div>
                       <h2 ui-if="!belong">

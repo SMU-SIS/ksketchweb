@@ -402,6 +402,10 @@ function ProfileController($scope,$resource,sharedProperties, sharedFunctions){
   $scope.simpleSearch = function() {
     sharedFunctions.simpleSearch($scope.search);
   }
+
+  $scope.cancel = function () {
+    window.location.replace("profile_delete.html?type=disapprove&id=" + $scope.User.id);
+  };
   
   $scope.year;
   $scope.setFooterYear = function()
