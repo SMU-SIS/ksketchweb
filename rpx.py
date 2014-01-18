@@ -658,7 +658,33 @@ class GetUser(webapp2.RequestHandler):
         result['message'] = "Not authenticated."     
       
       return self.respond(result) 
+
+    #new implementation
+    def get_user_mobile(self):
+      userid = self.request.get("id")
+
+      result = {'status':'Error',
+                'u_login': bool(False),
+                'message':''}
+
+      if userid:
+        result = User.get_entity(long(userid), result)
+        result['u_login'] = bool(True)
+      else:
+        result['message'] = "Unable to retrieve selected user."
       
+      return self.respond(result)
+    
+    #Handler for redirecting page with a user's id for mobile implementation
+    def url_user(self): #/user/urlUser
+      auser = self.auth.get_user_by_session()
+      if auser:
+        userid = auser['user_id']
+        strid = str(userid)
+        self.redirect(('http://ksketchweb.appspot.com/app/login_successful.html?id=' + strid).encode('ascii'))
+      else:
+        self.redirect('http://ksketchweb.appspot.com/app/index.html')
+
     #Handler for retrieving a particular User's profile (partial) data
     def profile_user(self, **kwargs): #/user/profileuser
       utc = UTC()
@@ -714,14 +740,14 @@ class GetUser(webapp2.RequestHandler):
 
         if approve_state:
           #implement backdoor for parent to view profile
-          self.redirect('http://ksketchweb.appspot.com/app/index.html');
+          self.redirect('http://ksketchweb.appspot.com/app/index.html')
         else:
           if urltype == "approve":
-            self.redirect(('http://ksketchweb.appspot.com/app/approval.html?id=' + userid).encode('ascii'));
+            self.redirect(('http://ksketchweb.appspot.com/app/approval.html?id=' + userid).encode('ascii'))
           else:
-            self.redirect(('http://ksketchweb.appspot.com/app/profile_delete.html?id=' + userid).encode('ascii'));
+            self.redirect(('http://ksketchweb.appspot.com/app/profile_delete.html?id=' + userid).encode('ascii'))
       else:
-        self.redirect('http://ksketchweb.appspot.com/app/index.html');
+        self.redirect('http://ksketchweb.appspot.com/app/index.html')
       
 
     #Handler for a User to retrieve their own data after logging in
@@ -811,8 +837,10 @@ webapp2_config['webapp2_extras.sessions'] = {
 
 application = webapp2.WSGIApplication([
     webapp2.Route('/user/approval', handler=GetUser, name='user_approval', handler_method='edit_approval'),
+    webapp2.Route('/user/getusermobile', handler=GetUser, name='user_mobile_login', handler_method='get_user_mobile'),
     webapp2.Route('/user/getuser', handler=GetUser, handler_method='get_user'),
     webapp2.Route('/user/getuserid', handler=GetUser, handler_method='get_user_by_id'),
+    webapp2.Route('/user/urlUser', handler=GetUser, handler_method='url_user'),
     webapp2.Route('/user/listuser', handler=GetUser, handler_method='list_user'),
     webapp2.Route('/user/profileuser', handler=GetUser, handler_method='profile_user'),
     webapp2.Route('/user/profileuser2', handler=GetUser, handler_method='profile_user_unauthenticated'),

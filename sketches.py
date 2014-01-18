@@ -432,7 +432,7 @@ class Sketch(db.Model):
 
   #Test method by Cam NEW
   @staticmethod
-  def get_entities_by_criteria(criteria="",userid=""):
+  def get_entities_by_criteria(criteria=""):
     utc = UTC()
     #update ModelCount when adding
     theQuery = Sketch.all()
@@ -442,8 +442,13 @@ class Sketch(db.Model):
 
     entities = []
     
+    userid = long(criteria) 
+
+    test = "hello " + criteria
+
     for object in objects:
-      if long(criteria) == object.owner:
+      if userid == object.owner:
+        test = "works!"
         #Latest Version Filter
         latest_check = True
         if show == "latest":
@@ -455,6 +460,7 @@ class Sketch(db.Model):
         permissions = Permissions.user_access_control(object.sketchId,userid)
           
         if bool(permissions['p_view']) and latest_check:
+          test = "works too!"
           user_name = User.get_name(object.owner)
           data = {'sketchId': object.sketchId,
                 'version': object.version,
@@ -489,7 +495,7 @@ class Sketch(db.Model):
     modelCount = ModelCount.all().filter('en_type','Sketch').get()
     if modelCount:
       count = modelCount.count
-    result = {'method':'get_entities_by_criteria_new',
+    result = {'method': test, #'get_entities_by_criteria_new',
               'en_type': 'Sketch',
               'count': count,
               'entities': entities}

@@ -85,22 +85,14 @@ class ActionHandler(webapp2.RequestHandler):
     
     def overwrite_post(self):
         flexData = self.request.get("fileData")
-
-        auser = self.auth.get_user_by_session()
-        userid = 0
-        if auser:
-          userid = auser['user_id']
+        userid = self.request.get("userid")
 
         result = Sketch.addDiscrepancy(flexData, userid=userid)
         return self.respond(result)
 
     def post(self):
         flexData = self.request.get("fileData")
-
-        auser = self.auth.get_user_by_session()
-        userid = 0
-        if auser:
-          userid = auser['user_id']
+        userid = self.request.get("userid")
 
         result = Sketch.add(flexData, userid=userid)
         return self.respond(result)
@@ -129,13 +121,7 @@ class ActionHandler(webapp2.RequestHandler):
 
     #Test method by Cam  
     def user_sketch_mobile(self, criteria): #/list/sketch/user 
-        
-        auser = self.auth.get_user_by_session()
-        userid = 0
-        if auser:
-          userid = auser['user_id']
-        
-        result = Sketch.get_entities_by_criteria(criteria=criteria, userid=userid)
+        result = Sketch.get_entities_by_criteria(criteria=criteria)
         return self.respond(result)
 
     #Handler for listing Sketches by Group          
@@ -172,13 +158,7 @@ class ActionHandler(webapp2.RequestHandler):
         return self.respond(result)   
 
     #Test method by Cam
-    def view_sketch_mobile(self, sketchId, version): #/get/sketch/view/<sketchId>/<version>
-
-        auser = self.auth.get_user_by_session()
-        userid = 0
-        if auser:
-          userid = auser['user_id']
-        
+    def view_sketch_mobile(self, sketchId, version, userid): #/get/sketch/view/<sketchId>/<version>/<userid>
         result = Sketch.get_entity_by_versioning_mobile(sketchId, version, "View", userid=userid)
         return self.respond(result)   
 
@@ -379,7 +359,7 @@ application = webapp2.WSGIApplication([
     webapp2.Route('/list/sketch/user/<criteria>', handler=ActionHandler, handler_method='user_sketch_mobile'), # List Sketch By User
     webapp2.Route('/list/sketch/group', handler=ActionHandler, handler_method='group_sketch'), # List Sketch By Group
     webapp2.Route('/get/sketch/view', handler=ActionHandler, handler_method='view_sketch'), # Get Sketch (View)
-    webapp2.Route('/get/sketch/view/<sketchId>/<version>', handler=ActionHandler, handler_method='view_sketch_mobile'), # Get Sketch (View)
+    webapp2.Route('/get/sketch/view/<sketchId>/<version>/<userid>', handler=ActionHandler, handler_method='view_sketch_mobile'), # Get Sketch (View)
     webapp2.Route('/get/sketch/edit', handler=ActionHandler, handler_method='edit_sketch'), # Get Sketch (Edit)
     webapp2.Route('/add/group', handler=ActionHandler, handler_method='add_group'), # Add Group
     webapp2.Route('/get/group', handler=ActionHandler, handler_method='get_group'), # Get Group
