@@ -72,6 +72,7 @@
             query_string[pair[0]].push(pair[1]);
           }
         }
+
         e = document.getElementById('testdiv');
         scope = angular.element(e).scope();
         if (query_string.id !== undefined && query_string.id !== "") {
@@ -79,14 +80,18 @@
               scope.setTest(query_string.id);
           });
         }
+
+        if (query_string.type !== undefined && query_string.type !== "") {
+          scope.$apply(function() {
+            scope.setType(query_string.type);
+          });
+        }
+
         scope.$apply(function() {
           scope.get_profile();
         });        
       }
-    </script>    
-    
-    
-    <script type="text/javascript">
+
       function delete_sketch(id) {
         if (parseInt(id) !== 'NaN') {
           e = document.getElementById('testdiv');
@@ -96,7 +101,24 @@
           });
         }
       }
-    </script>
+
+      function group(gid) {
+        e = document.getElementById('testdiv');
+        scope = angular.element(e).scope();
+        scope.$apply(function() {
+          scope.group(gid);
+        }); 
+      }
+
+      function view_sketch(sketchid) {
+        e = document.getElementById('testdiv');
+        scope = angular.element(e).scope();
+        scope.$apply(function() {
+          scope.view_sketch(sketchid);
+        }); 
+      }
+
+    </script> 
   </head>
   
   <!-- body id="ksketchapp" ng-controller="LoginController" scrolling="no" -->
@@ -296,7 +318,7 @@
                           <div class="well well-small">
                             <div class="row-fluid">
                               <div class="span3">
-                                <a href="view.html?id={{files.data.sketchId}}"  title="View this sketch">
+                                <a onClick ="view_sketch({{files.data.sketchId}})" title="View this sketch">
                                   <img src="data:image/png;base64,{{files.data.thumbnailData}}" alt="Red dot" ui-if="!!files.data.thumbnailData">
                                   <div class="well well-small" ui-if="!files.data.thumbnailData">
                                     <span>No preview available</span>
@@ -306,7 +328,7 @@
                               <div class="span9">
                                 <div class="row-fluid">
                                   <div class="span6">
-                                    <a href="view.html?id={{files.data.sketchId}}"  title="View this sketch">
+                                    <a onClick = "view_sketch({{files.data.sketchId}})" title="View this sketch">
                                       <h4>{{files.data.fileName}}</h4>
                                     </a>
                                   </div>
@@ -365,7 +387,7 @@
                               <td></td>
 
                               <td width="15%">
-                                <a style="float:right" class="btn btn-inverse btn-small" href="notifications.html" ui-if="belong">See My Notifications</a>
+                                <a style="float:right" class="btn btn-inverse btn-small" ng-click="notification()" ui-if="belong">See My Notifications</a>
                               </td>
 
                               <td width="15%">
@@ -475,7 +497,7 @@
                         <tbody>
                           <tr ng-repeat="group in groups.entities">
                             <td>
-                              <a href="groups.html?id={{group.id}}">
+                              <a onClick="group({{group.id}})">
                                 {{group.data.group_name}}
                               </a>
                             </td>

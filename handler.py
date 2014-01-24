@@ -111,8 +111,15 @@ class ActionHandler(webapp2.RequestHandler):
     #Handler for listing Sketches by User   
     def user_sketch(self): #/list/sketch/user 
         
-        auser = self.auth.get_user_by_session()
         userid = 0
+
+        jsonData = json.loads(self.request.body)
+        parentalview = jsonData['urltype']
+        if parentalview == "parent":
+          userid = jsonData['id']
+
+        auser = self.auth.get_user_by_session()
+        
         if auser:
           userid = auser['user_id']
         
@@ -149,8 +156,15 @@ class ActionHandler(webapp2.RequestHandler):
     #Handler for viewing a particular Sketch
     def view_sketch(self): #/get/sketch/view
 
-        auser = self.auth.get_user_by_session()
         userid = 0
+        
+        jsonData = json.loads(self.request.body)
+        parentalview = jsonData['urltype']
+        if parentalview == "parent":
+          userid = jsonData['urlid']
+
+        auser = self.auth.get_user_by_session()
+        
         if auser:
           userid = auser['user_id']
         
@@ -165,8 +179,15 @@ class ActionHandler(webapp2.RequestHandler):
     #Handler for editing a particular Sketch      
     def edit_sketch(self): #/get/sketch/edit
 
-        auser = self.auth.get_user_by_session()
         userid = 0
+        
+        jsonData = json.loads(self.request.body)
+        parentalview = jsonData['urltype']
+        if parentalview == "parent":
+          userid = jsonData['urlid']
+
+        auser = self.auth.get_user_by_session()
+        
         if auser:
           userid = auser['user_id']
         

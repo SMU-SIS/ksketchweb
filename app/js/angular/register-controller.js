@@ -10,8 +10,8 @@ function RegisterController($scope,$resource,sharedProperties,sharedFunctions){
                 "u_login": false, "u_email": "", "g_hash": "", "u_created": "", 
                 "u_lastlogin": "", "u_logincount": "", "u_version": 1.0, 
                 "u_isadmin": false, "u_isactive": false, "is_approved": false,
-                "birth_month": 0, "birth_year": 0,
-                "parent_email": "", "contact_studies": true, "contact_updates": true
+                "birth_month": 0, "birth_year": 0, "parent_email": "",
+                "contact_studies": true, "contact_updates": true
                 };
 
   $scope.backend_locations = [

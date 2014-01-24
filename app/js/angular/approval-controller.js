@@ -10,8 +10,8 @@ function ApprovalController($scope,$resource,sharedProperties,sharedFunctions){
                 "u_login": false, "u_email": "", "g_hash": "", "u_created": "", 
                 "u_lastlogin": "", "u_logincount": "", "u_version": 1.0, 
                 "u_isadmin": false, "u_isactive": false, "is_approved": false,
-                "birth_month": "", "birth_year": "",
-                "parent_email": "", "contact_studies": true, "contact_updates": true
+                "birth_month": "", "birth_year": "", "parent_email": "",
+                "contact_studies": true, "contact_updates": true
                 };
 
   $scope.profile_user = {
@@ -19,8 +19,8 @@ function ApprovalController($scope,$resource,sharedProperties,sharedFunctions){
                         "u_login": false, "u_email": "", "g_hash": "", "u_created": "", 
                         "u_lastlogin": "", "u_logincount": "", "u_version": 1.0, 
                         "u_isadmin": false, "u_isactive": false, "is_approved": false,
-                        "birth_month": "", "birth_year": "",
-                        "parent_email": "", "contact_studies": true, "contact_updates": true
+                        "birth_month": "", "birth_year": "", "parent_email": "",
+                        "contact_studies": true, "contact_updates": true
                         };
 
   $scope.backend_locations = [
@@ -123,11 +123,17 @@ function ApprovalController($scope,$resource,sharedProperties,sharedFunctions){
   }
 
   $scope.test = "-";
+  $scope.is_parent = false;
   $scope.profilemeta = {};
   $scope.profilemeta.data = {'id':0};
 
   $scope.setTest = function(test) {
     $scope.test = test;
+
+    if($scope.test != "-")
+    { 
+      $scope.is_parent = true;
+    }
   }
   
   $scope.get_profile = function() {
@@ -157,7 +163,6 @@ function ApprovalController($scope,$resource,sharedProperties,sharedFunctions){
         });
       }
     }
-
     $scope.determineAccess();
   }
 
@@ -170,7 +175,19 @@ function ApprovalController($scope,$resource,sharedProperties,sharedFunctions){
     edit_user.$update(function(response) {
           var result = response;
           $scope.waiting = "Ready";
-          if($scope.edit_redirect == "agree"){ window.location.replace("register_complete.html");}
+          if($scope.edit_redirect == "agree")
+          { 
+            if($scope.is_parent) 
+            { 
+              //if it is a parent, then append the user id of the user
+              window.location.replace("register_complete.html?id=" + meta.id); 
+            }
+            else
+            {
+              //if it is a user, then redirect to complete link
+              window.location.replace("register_complete.html");
+            }
+          }
     });
   };
 

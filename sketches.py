@@ -920,6 +920,10 @@ class Sketch(db.Model):
         result = {'status':'success',
                   'message': 'Deleted user sketches'}
 
+        logging.info("Delete: Sketch " + str(sketch_id) + " has been deleted")
+
+    logging.info("Delete: All sketches of user (" + str(criteria) + ") successfully deleted")
+
     return result
     
 #Imports placed below to avoid circular imports

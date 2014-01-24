@@ -3,7 +3,7 @@
 /* Controller for profile.html */
 
 //angular.module('app', ['ngResource']);
-function ProfileDeleteController($scope,$resource,sharedProperties, sharedFunctions){
+function RegisterCompleteController($scope,$resource,sharedProperties, sharedFunctions){
     
   $scope.User = {
                 "id": 0, "u_name" :"Anonymous User",  "u_realname" :"Anonymous User", 
@@ -19,7 +19,7 @@ function ProfileDeleteController($scope,$resource,sharedProperties, sharedFuncti
                         "u_login": false, "u_email": "", "g_hash": "", "u_created": "", 
                         "u_lastlogin": "", "u_logincount": "", "u_version": 1.0, 
                         "u_isadmin": false, "u_isactive": false, "is_approved": false,
-                        "birth_month": "", "birth_year": "", "parent_email": "", 
+                        "birth_month": "", "birth_year": "", "parent_email": "",
                         "contact_studies": true, "contact_updates": true
                         };
 
@@ -35,16 +35,11 @@ function ProfileDeleteController($scope,$resource,sharedProperties, sharedFuncti
     var d = moment(utc_date, "DD MMM YYYY HH:mm:ss");
     return d.format("dddd, Do MMM YYYY, hh:mm:ss");
   };
-  
+
+  $scope.belong = true;
   $scope.test = "-";
   $scope.profilemeta = {};
   $scope.profilemeta.data = {'id':0};
-  
-  $scope.editprofilemeta = {};
-  $scope.editprofilemeta.data = {'id': 0,
-                                 'u_displayname': "",
-                                 'u_realname': ""};
-                                 
   
   $scope.reload = false;
   $scope.heading = "";
@@ -80,12 +75,23 @@ function ProfileDeleteController($scope,$resource,sharedProperties, sharedFuncti
             if ($scope.User.u_lastlogin !== "") {
               $scope.User.u_lastlogin = $scope.tzformat($scope.User.u_lastlogin);
             }            
+
+            $scope.User.parent_email == "not required"
+            { $scope.belong = true; }
           }
     });
   }
   
   $scope.setTest = function(test) {
     $scope.test = test;
+
+    if($scope.test != "-")
+    { 
+      //this action is from a parent approving the registration
+      //end it by sending complete registration email
+      alert("going to send complete email");
+      $scope.sendCompleteEmail();
+    }
   }
   
   $scope.get_profile = function() {
@@ -95,7 +101,6 @@ function ProfileDeleteController($scope,$resource,sharedProperties, sharedFuncti
       $scope.waiting = "Ready"; 
       $scope.profile_user = $scope.User;
       $scope.profile_meta();
-      $scope.belong = true;
     } 
     else {
       if($scope.test != "-")
@@ -111,7 +116,6 @@ function ProfileDeleteController($scope,$resource,sharedProperties, sharedFuncti
           $scope.waiting = "Ready";  
           var result = response;
           $scope.profile_user = result;
-          $scope.profile_meta();  
           
           if($scope.profile_user.status == "Error")
           { window.location.replace('index.html');}
@@ -121,42 +125,25 @@ function ProfileDeleteController($scope,$resource,sharedProperties, sharedFuncti
 
     $scope.determineAccess();
   }
-  
-  $scope.profile_meta = function() {
-  
-    $scope.editprofilemeta.data = {'id': $scope.profile_user.id,
-                                 'u_displayname': $scope.profile_user.u_name,
-                                 'u_realname': $scope.profile_user.u_realname};
-  }
 
-  $scope.delete = function(){
-    $scope.delete_profile($scope.editprofilemeta.data);
-  }
+  $scope.sendCompleteEmail = function()
+  {
+    alert("userid: " + $scope.test);
 
-  $scope.delete_profile = function(meta) {
-    $scope.DeleteUserResource = $resource('http://:remote_url/user/deleteuser',
-                              {'remote_url':$scope.remote_url}, 
-                              {'update': { method: 'PUT', params: {} }});
-    var delete_user = new $scope.DeleteUserResource(meta);
-    $scope.waiting = "Loading";
-    delete_user.$update(function(response) {
-          var result = response;
-          if (result.status === 'success') {
-            $scope.waiting = "Error";
-            $scope.heading = "Account Deleted!";
-            $scope.message = "Your account has been deleted. Thank you for using K-Sketch!";
-            $scope.reload = true;
-          } else {
-            $scope.waiting = "Error";
-            $scope.heading = "Oops...!";
-            $scope.message = result.message;
-            $scope.submessage = result.submessage;
-          }
+    $scope.SendResource = $resource('http://:remote_url/user/parentcomplete',
+                                   {"remote_url":$scope.remote_url}, 
+                                   {'save': {method: 'POST', params:{} }});
+    $scope.waiting = "Loading";    
+
+    var data = {};
+    data.data = {'id':0};
+    data.data.id = $scope.test;   
+    var sendmeta = new $scope.SendResource(data.data);
+    sendmeta.$save(function(response) {
+      var result = response;
+      $scope.waiting = "Ready";
+      alert("Send complete email: " + result); 
     });
-  };
-
-  $scope.cancel = function(){
-    window.location.replace("index.html");
   }
 
   $scope.logout = function(){

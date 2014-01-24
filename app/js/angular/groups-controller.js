@@ -10,8 +10,8 @@ function GroupsController($scope,$resource,sharedProperties, sharedFunctions){
                 "u_login": false, "u_email": "", "g_hash": "", "u_created": "", 
                 "u_lastlogin": "", "u_logincount": "", "u_version": 1.0, 
                 "u_isadmin": false, "u_isactive": false, "is_approved": false,
-                "birth_month": "", "birth_year": "",
-                "parent_email": "", "contact_studies": true, "contact_updates": true
+                "birth_month": "", "birth_year": "", "parent_email": "",
+                "contact_studies": true, "contact_updates": true
                 };
 
   $scope.backend_locations = [
@@ -31,6 +31,7 @@ function GroupsController($scope,$resource,sharedProperties, sharedFunctions){
   $scope.predicate_users = '-data.fileName';  
   $scope.derp = "derp";
   $scope.test = "-";
+  $scope.urltype = "-";
   $scope.belong = false;
   $scope.founder = false;
   $scope.leave = false;
@@ -77,18 +78,9 @@ function GroupsController($scope,$resource,sharedProperties, sharedFunctions){
                           "u_login": false, "u_email": "", "g_hash": "", "u_created": "", 
                           "u_lastlogin": "", "u_logincount": "", "u_version": 1.0, 
                           "u_isadmin": false, "u_isactive": false, "is_approved": false,
-                          "birth_month": "", "birth_year": "",
-                          "parent_email": "", "contact_studies": true, "contact_updates": true
+                          "birth_month": "", "birth_year": "", "parent_email": "",
+                          "contact_studies": true, "contact_updates": true
                           };
-
-            if (navigator.userAgent.match(/MSIE\s(?!9.0)/))
-            {
-              var referLink = document.createElement("a");
-              referLink.href = "index.html";
-              document.body.appendChild(referLink);
-              referLink.click();
-            }
-            else { window.location.replace("index.html");}
           }
     });
   }
@@ -104,6 +96,14 @@ function GroupsController($scope,$resource,sharedProperties, sharedFunctions){
     $scope.groupmeta.data.id = $scope.test;
   }
   
+  $scope.setType = function(type) {
+    $scope.urltype = type;
+  }
+
+  $scope.determineAccess = function(){
+    if($scope.urltype != "parent" && $scope.test == "-") { window.location.replace('index.html'); }
+  }
+
   
   $scope.get_group = function() {
     $scope.GroupResource = $resource('http://:remote_url/get/group', 

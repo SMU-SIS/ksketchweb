@@ -10,8 +10,8 @@ function ViewController($scope,$resource,sharedProperties,sharedFunctions){
                 "u_login": false, "u_email": "", "g_hash": "", "u_created": "", 
                 "u_lastlogin": "", "u_logincount": "", "u_version": 1.0, 
                 "u_isadmin": false, "u_isactive": false, "is_approved": false,
-                "birth_month": "", "birth_year": "",
-                "parent_email": "", "contact_studies": true, "contact_updates": true
+                "birth_month": "", "birth_year": "", "parent_email": "",
+                "contact_studies": true, "contact_updates": true
                 };
 
   $scope.backend_locations = [
@@ -40,6 +40,8 @@ function ViewController($scope,$resource,sharedProperties,sharedFunctions){
   
   $scope.leave = false;
   $scope.test = -1;
+  $scope.urltype = "-";
+  $scope.urlid = 0;
   $scope.version = -1;
   $scope.heading = "";
   $scope.message = "";
@@ -88,8 +90,8 @@ function ViewController($scope,$resource,sharedProperties,sharedFunctions){
                           "u_login": false, "u_email": "", "g_hash": "", "u_created": "", 
                           "u_lastlogin": "", "u_logincount": "", "u_version": 1.0, 
                           "u_isadmin": false, "u_isactive": false, "is_approved": false,
-                          "birth_month": "", "birth_year": "",
-                          "parent_email": "", "contact_studies": true, "contact_updates": true
+                          "birth_month": "", "birth_year": "", "parent_email": "",
+                          "contact_studies": true, "contact_updates": true
                           };
           }
 
@@ -113,6 +115,12 @@ function ViewController($scope,$resource,sharedProperties,sharedFunctions){
     $scope.test = test;
   }
 
+  $scope.setType = function(type,uid) {
+    alert("setType");
+    $scope.urltype = type;
+    $scope.urlid = uid;
+  }
+
     
   $scope.setVersion = function(version) {
     $scope.version = version;
@@ -130,7 +138,7 @@ function ViewController($scope,$resource,sharedProperties,sharedFunctions){
  
   $scope.get_sketch = function() {
     $scope.sketchmeta = {};
-    $scope.sketchmeta.data = {'id':$scope.test, 'version':$scope.version};
+    $scope.sketchmeta.data = {'id':$scope.test, 'urltype': $scope.urltype, 'urlid': $scope.urlid, 'version':$scope.version};
     $scope.SketchResource = $resource('http://:remote_url/get/sketch/view', 
              {"remote_url":$scope.remote_url}, 
              {'save': {method: 'POST', params:{} }});
@@ -322,6 +330,17 @@ function ViewController($scope,$resource,sharedProperties,sharedFunctions){
         $scope.likes = response;       
      });               
   }  
+
+  $scope.edit_sketch = function(sid) {
+    alert("edit_sketch");
+    var redirectLink = "sketch.html?id=" + sid;
+
+    if($scope.urltype == "parent") {
+      var redirectLink = "sketch.html?id=" + sid + "&type=parent&uid=" + $scope.urlid;  
+    }
+
+    window.location.replace(redirectLink);
+  }
   
   $scope.simpleSearch = function() {
     sharedFunctions.simpleSearch($scope.search);

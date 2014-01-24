@@ -10,8 +10,8 @@ function SketchController($scope,$resource,sharedProperties,sharedFunctions){
                 "u_login": false, "u_email": "", "g_hash": "", "u_created": "", 
                 "u_lastlogin": "", "u_logincount": "", "u_version": 1.0, 
                 "u_isadmin": false, "u_isactive": false, "is_approved": false,
-                "birth_month": "", "birth_year": "",
-                "parent_email": "", "contact_studies": true, "contact_updates": true
+                "birth_month": "", "birth_year": "", "parent_email": "",
+                "contact_studies": true, "contact_updates": true
                 };
 
   $scope.backend_locations = [
@@ -47,7 +47,8 @@ function SketchController($scope,$resource,sharedProperties,sharedFunctions){
   $scope.added = ""; //Notification placeholder if permissions for a group have already been added.
 
 
-  
+  $scope.urltype = "-";
+  $scope.urlid = 0;
   $scope.loaded_id = -1;
   $scope.loaded_version = -1;
   $scope.is_latest = true;
@@ -92,8 +93,8 @@ function SketchController($scope,$resource,sharedProperties,sharedFunctions){
                           "u_login": false, "u_email": "", "g_hash": "", "u_created": "", 
                           "u_lastlogin": "", "u_logincount": "", "u_version": 1.0, 
                           "u_isadmin": false, "u_isactive": false, "is_approved": false,
-                          "birth_month": "", "birth_year": "",
-                          "parent_email": "", "contact_studies": true, "contact_updates": true
+                          "birth_month": "", "birth_year": "", "parent_email": "",
+                          "contact_studies": true, "contact_updates": true
                           };
           }
           $scope.waiting = "Ready";
@@ -177,7 +178,7 @@ function SketchController($scope,$resource,sharedProperties,sharedFunctions){
     $scope.waiting = "Ready";
 	}
 
-  $scope.permissions = {"p_view": 1, "p_edit": true, "p_comment": true, "group_permissions": []};
+  $scope.permissions = {"p_view": 0, "p_edit": false, "p_comment": false, "group_permissions": []};
   $scope.group_data = {"edit": false, "comment": false};
   //$scope.group_data.data = undefined;
   
@@ -220,6 +221,10 @@ function SketchController($scope,$resource,sharedProperties,sharedFunctions){
     $scope.loaded_id = loaded_id;
   }
 
+  $scope.setType = function(type,uid) {
+    $scope.urltype = type;
+    $scope.urlid = uid;
+  }
     
   $scope.setVersion = function(version) {
     $scope.version = version;
@@ -340,8 +345,9 @@ function SketchController($scope,$resource,sharedProperties,sharedFunctions){
   }
   
   $scope.get_sketch = function() {
+    alert("type: " + $scope.urltype + "  urlid: " + $scope.urlid);
     $scope.sketchmeta = {};
-    $scope.sketchmeta.data = {"id":$scope.loaded_id,"version":$scope.version};
+    $scope.sketchmeta.data = {"id":$scope.loaded_id, 'urltype': $scope.urltype, 'urlid': $scope.urlid, "version":$scope.version};
     $scope.SketchResource = $resource('http://:remote_url/get/sketch/edit', 
              {"remote_url":$scope.remote_url}, 
              {'save': {method: 'POST', params:{} }});

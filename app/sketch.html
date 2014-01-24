@@ -94,6 +94,13 @@
         } 
         e = document.getElementById('testdiv');
         scope = angular.element(e).scope();
+
+        if (query_string.type !== undefined && query_string.type !== "") {
+          scope.$apply(function() {
+            scope.setType(query_string.type, query_string.uid);
+          });
+        }
+        
         if (query_string.id !== undefined && query_string.id !== "") {
           scope.$apply(function() {
               scope.setTest(query_string.id);

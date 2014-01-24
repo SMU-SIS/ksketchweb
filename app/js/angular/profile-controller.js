@@ -10,8 +10,8 @@ function ProfileController($scope,$resource,sharedProperties, sharedFunctions){
                 "u_login": false, "u_email": "", "g_hash": "", "u_created": "", 
                 "u_lastlogin": "", "u_logincount": "", "u_version": 1.0, 
                 "u_isadmin": false, "u_isactive": false, "is_approved": false,
-                "birth_month": "", "birth_year": "",
-                "parent_email": "", "contact_studies": true, "contact_updates": true
+                "birth_month": "", "birth_year": "", "parent_email": "",
+                "contact_studies": true, "contact_updates": true
                 };
 
   $scope.profile_user = {
@@ -19,8 +19,8 @@ function ProfileController($scope,$resource,sharedProperties, sharedFunctions){
                         "u_login": false, "u_email": "", "g_hash": "", "u_created": "", 
                         "u_lastlogin": "", "u_logincount": "", "u_version": 1.0, 
                         "u_isadmin": false, "u_isactive": false, "is_approved": false,
-                        "birth_month": "", "birth_year": "",
-                        "parent_email": "", "contact_studies": true, "contact_updates": true
+                        "birth_month": "", "birth_year": "", "parent_email": "",
+                        "contact_studies": true, "contact_updates": true
                         };
 
   $scope.backend_locations = [
@@ -43,6 +43,7 @@ function ProfileController($scope,$resource,sharedProperties, sharedFunctions){
   $scope.newgroup.data = {"group_name":"", "user_id":""};
   
   $scope.test = "-";
+  $scope.urltype = "-";
   $scope.profilemeta = {};
   $scope.profilemeta.data = {'id':0};
   
@@ -105,8 +106,8 @@ function ProfileController($scope,$resource,sharedProperties, sharedFunctions){
                           "u_login": false, "u_email": "", "g_hash": "", "u_created": "", 
                           "u_lastlogin": "", "u_logincount": "", "u_version": 1.0, 
                           "u_isadmin": false, "u_isactive": false, "is_approved": false,
-                          "birth_month": "", "birth_year": "",
-                          "parent_email": "", "contact_studies": true, "contact_updates": true
+                          "birth_month": "", "birth_year": "", "parent_email": "",
+                          "contact_studies": true, "contact_updates": true
                           };
           }
           
@@ -115,14 +116,21 @@ function ProfileController($scope,$resource,sharedProperties, sharedFunctions){
   }
 
   $scope.determineAccess = function(){
+    
     if($scope.User.id > 0)
     {
+      alert("determineAccess: " + $scope.urltype);
       if(!$scope.User.is_approved){ window.location.replace("register.html"); }
     }
   }
   
   $scope.setTest = function(test) {
     $scope.test = test;
+  }
+
+  $scope.setType = function(type) {
+    $scope.urltype = type;
+    alert("set test: " + urltype);
   }
   
   $scope.get_profile = function() {
@@ -156,17 +164,42 @@ function ProfileController($scope,$resource,sharedProperties, sharedFunctions){
               $scope.grouplist();
               $scope.profile_meta();
             } else {
-              if (navigator.userAgent.match(/MSIE\s(?!9.0)/))
+              
+              if($scope.urltype == "parent")
               {
-                var referLink = document.createElement("a");
-                referLink.href = "index.html";
-                document.body.appendChild(referLink);
-                referLink.click();
+                //if this is a parent, then show profile to parent
+                $scope.get_profile_for_parent();
               }
-              else { window.location.replace("index.html");}
+              else
+              {
+                window.location.replace("index.html");
+              }
             }            
       });
     }
+  }
+
+  $scope.get_profile_for_parent = function(){
+    $scope.belong = true;
+    $scope.profilemeta.data.id = $scope.test;
+    $scope.ProfileUserResource = $resource('http://:remote_url/user/profileuser2',
+                               {"remote_url":$scope.remote_url}, 
+                               {'save': {method: 'POST', params:{} }});
+    $scope.waiting = "Loading";       
+    var profilemeta = new $scope.ProfileUserResource($scope.profilemeta.data);
+    profilemeta.$save(function(response) {
+      $scope.waiting = "Ready";  
+      var result = response;
+      $scope.profile_user = result;
+      
+      if (result.status === "success") {
+        $scope.User = result;
+        $scope.list();
+        $scope.grouplist();
+        $scope.profile_meta();
+      }
+      else{ window.location.replace('index.html');}
+    });
   }
   
   $scope.profile_meta = function() {
@@ -204,25 +237,30 @@ function ProfileController($scope,$resource,sharedProperties, sharedFunctions){
   
   $scope.edit_profile = function(meta) {
     if ($scope.belong === true) {
+      if($scope.urltype == "parent"){
+        meta['edit_type'] = "parentApproval"
+      }
+
       $scope.EditUserResource = $resource('http://:remote_url/user/edituser',
                                 {'remote_url':$scope.remote_url}, 
                                 {'update': { method: 'PUT', params: {} }});
       var edit_user = new $scope.EditUserResource(meta);
       $scope.waiting = "Loading";
       edit_user.$update(function(response) {
-            var result = response;
-            if (result.status === 'success') {
-              $scope.waiting = "Error";
-              $scope.heading = "Success!";
-              $scope.message = "You have successfully changed your profile!";
-              $scope.reload = true;
-            } else {
-              $scope.waiting = "Error";
-              $scope.heading = "Oops...!";
-              $scope.message = result.message;
-              $scope.submessage = result.submessage;
-            }
+        var result = response;
+        if (result.status === 'success') {
+          $scope.waiting = "Error";
+          $scope.heading = "Success!";
+          $scope.message = "You have successfully changed your profile!";
+          $scope.reload = true;
+        } else {
+          $scope.waiting = "Error";
+          $scope.heading = "Oops...!";
+          $scope.message = result.message;
+          $scope.submessage = result.submessage;
+        }
       });
+
     }
   };
   
@@ -273,14 +311,21 @@ function ProfileController($scope,$resource,sharedProperties, sharedFunctions){
 
   $scope.acknowledge = function() {
     if ($scope.reload === true) {
-      if (navigator.userAgent.match(/MSIE\s(?!9.0)/))
+      var redirectLink = "profile.html";
+
+      if ($scope.urltype == "parent"){
+        redirectLink = "profile.html?id="+ $scope.profile_user.id + "&type=parent";
+      }
+      
+      if(navigator.userAgent.match(/MSIE\s(?!9.0)/))
       {
         var referLink = document.createElement("a");
-        referLink.href = "profile.html";
+        referLink.href = redirectLink;
         document.body.appendChild(referLink);
         referLink.click();
       }
-      else { window.location.replace("profile.html");} 
+      else { window.location.replace(redirectLink); } 
+    
     } else {
       $scope.waiting = "Ready";
       $scope.heading = "";
@@ -333,6 +378,7 @@ function ProfileController($scope,$resource,sharedProperties, sharedFunctions){
   $scope.list = function(){
     $scope.listmeta = {};
     $scope.listmeta.data = {'id':$scope.profile_user.id,
+                            'urltype': $scope.urltype,
                             'show':"latest",
                             "limit":$scope.sketch_pagination.limit,
                             "offset":$scope.sketch_pagination.offset};
@@ -389,13 +435,44 @@ function ProfileController($scope,$resource,sharedProperties, sharedFunctions){
             $scope.get_profile();
           }); 
   };
+
+  $scope.notification = function() {
+    alert("notification");
+    var redirectLink = "notifications.html";
+    
+    if($scope.urltype == "parent" && $scope.test != "-") {
+      var redirectLink = "notifications.html?id=" + $scope.profile_user.id + "&type=parent";  
+    }
+
+    window.location.replace(redirectLink);
+  }
+
+  $scope.group = function(gid) {
+    var redirectLink = "groups.html?id=" + gid;
+
+    if($scope.urltype == "parent" && $scope.test != "-") {
+      var redirectLink = "groups.html?id=" + gid + "&type=parent";  
+    }
+
+    window.location.replace(redirectLink);
+  }
+
+  $scope.view_sketch = function(sid) {
+    var redirectLink = "view.html?id=" + sid;
+
+    if($scope.urltype == "parent" && $scope.test != "-") {
+      var redirectLink = "view.html?id=" + sid + "&type=parent&uid=" + $scope.profile_user.id ;  
+    }
+
+    window.location.replace(redirectLink);
+  }
   
   $scope.simpleSearch = function() {
     sharedFunctions.simpleSearch($scope.search);
   }
 
   $scope.cancel = function () {
-    window.location.replace("profile_delete.html?type=disapprove&id=" + $scope.User.id);
+    window.location.replace("profile_delete.html?type=disapprove&id=" + $scope.profile_user.id);
   };
   
   $scope.year;

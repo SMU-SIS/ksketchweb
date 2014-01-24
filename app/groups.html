@@ -79,16 +79,18 @@
               scope.setTest(query_string.id);
               scope.get_group();
           });
-        } else {
-            if (navigator.userAgent.match(/MSIE\s(?!9.0)/))
-            {
-              var referLink = document.createElement("a");
-              referLink.href = "index.html";
-              document.body.appendChild(referLink);
-              referLink.click();
-            }
-            else { window.location.replace("index.html");}        
-        }        
+        } 
+
+        if (query_string.type !== undefined && query_string.type !== "") {
+          scope.$apply(function() {
+            scope.setType(query_string.type);
+          });
+        }
+
+        scope.$apply(function() {
+          scope.get_profile_for_parent();
+        });  
+             
       }
     </script>
   </head>

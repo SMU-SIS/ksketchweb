@@ -26,6 +26,8 @@ from webapp2_extras.appengine.auth.models import Unique
 from sendgrid import Sendgrid
 from sendgrid import Message
 
+from datetime import date
+
 import json
 
 from google.appengine.api import urlfetch
@@ -215,11 +217,24 @@ class User(db.Model):
         user.put()
       result = {'status':'success',
                 'id': id,
+                'u_login': bool(True),
                 'u_name': user.display_name,
                 'u_realname': user.real_name,
+                'u_email': user.email,
                 'g_hash': g_hash,
+                'u_created': user.created.replace(tzinfo=utc).strftime("%d %b %Y %H:%M:%S"),
+                'u_lastlogin': "",
+                'u_logincount': user.logincount,
+                'u_version': user.assigned_version,
                 'u_isadmin': user.is_admin,
-                'u_isactive': user.is_active}
+                'u_isactive': user.is_active,
+                'is_approved': user.is_approved,
+                'birth_month': user.birth_month,
+                'birth_year': user.birth_year,
+                'parent_email': user.parent_email,
+                'contact_studies': user.contact_studies,
+                'contact_updates': user.contact_updates
+                }
     else:
       result['message'] = "Unable to retrieve selected user."
     return result
@@ -356,6 +371,7 @@ class User(db.Model):
     result = {'status':'success',
               'message': 'You have successfully deleted this profile!'}
 
+    logging.info("Delete: User data succesfully deleted")
     return result
 
   #Edits a User's data
@@ -501,6 +517,7 @@ class RPXTokenHandler(BaseHandler):
           if info['providerName'] == "Google":
             #return self.response.out.write(content)
             oid = info['identifier']
+            #return self.response.out.write(oid)
             email = info.get('email', '')
             try:
               display_name = info['displayName']
@@ -722,7 +739,7 @@ class GetUser(webapp2.RequestHandler):
         result['message'] = "Not authenticated."
       return self.respond(result)
 
-    #Handler for approving User
+    #Handler for parent to approve a User
     def edit_approval(self): #/user/edituser
       userid = self.request.get("id")
       urltype = self.request.get("type")
@@ -748,10 +765,53 @@ class GetUser(webapp2.RequestHandler):
             self.redirect(('http://ksketchweb.appspot.com/app/profile_delete.html?id=' + userid).encode('ascii'))
       else:
         self.redirect('http://ksketchweb.appspot.com/app/index.html')
-      
 
-    #Handler for a User to retrieve their own data after logging in
-    def get_approval(self, **kwargs): #/user/getuser
+    #Handler for parent to view user profile
+    def parental_view(self): #/user/monitor
+      userid = self.request.get("id")
+      urltype = self.request.get("type")
+      exist = True
+
+      result = {'status':'Error',
+                'u_login': bool(False),
+                'message':''}
+
+      if userid:
+        result = User.get_entity(int(userid), result)
+        
+        if result['status'] == 'success':
+          #check if user is under 18
+          age = 0
+
+          birth_month = result['birth_month']
+          birth_year = result['birth_year']
+          
+          date = '30/' + str(birth_month) + '/' + str(birth_year)
+          slist = date.split("/")
+          d = datetime.date(int(slist[2]),int(slist[1]),int(slist[0]))
+          born = datetime.datetime(d.year, d.month, d.day)
+          today = datetime.datetime.now()
+
+          try: 
+              birthday = born.replace(year=today.year)
+          except ValueError: # raised when birth date is February 29 and the current year is not a leap year
+              birthday = born.replace(year=today.year, day=born.day-1)
+          if birthday > today:
+              age =  today.year - born.year - 1
+          else:
+              age = today.year - born.year
+          
+          if age < 18:
+            self.redirect(('http://ksketchweb.appspot.com/app/profile.html?id=' + userid + "&type=" + urltype).encode('ascii'))
+          else:
+            self.redirect(('http://ksketchweb.appspot.com/app/index.html').encode('ascii'))
+        else:
+          self.redirect(('http://ksketchweb.appspot.com/app/index.html').encode('ascii'))
+      else:
+          self.redirect(('http://ksketchweb.appspot.com/app/index.html').encode('ascii'))
+
+    #Handler to send approval email to parent of User
+    def send_approval_email(self, **kwargs): #user/parentapproval
       utc = UTC()
       result = {'status':'Error',
                 'u_login': bool(False),
@@ -818,6 +878,57 @@ K-Sketch Team"
       #message.send()
       return self.respond(result)
 
+    #Handler to send complete registration email to parent of User
+    def send_complete_email(self, **kwargs): #/user/parentcomplete
+      jsonData = json.loads(self.request.body)
+      userid = long(jsonData['id'])
+
+      result = {'status':'Error',
+                'u_login': bool(False),
+                'message':''}
+
+      result = User.get_entity(userid, result)
+      to_addr = result['parent_email']
+
+      if not mail.is_email_valid(to_addr):
+        # Return an error message...
+        result['status'] = 'fail'
+        pass
+
+      type_1 = "parent"
+      url_monitor = self.uri_for('user_monitor', type=type_1, id=userid)
+
+      message = mail.EmailMessage()
+      message.sender = "nczakaria@gmail.com"
+      message.to = to_addr
+      message.subject = "K-Sketch: Registration Complete"
+      #message.body =  
+      strMessage = "Dear Parent, \n\
+      \n\
+Thank you for allowing your child, "+ result['u_name'] + ", to participate in using K-Sketch. \n\
+      \n\
+To view your child's sketches, click on: http://ksketchweb.appspot.com" + url_monitor + "\n\
+      \n\
+Please bookmark this link to easily access your child's profile in the future.\n\
+\n\
+\n\
+K-Sketch Team"
+      
+      # make a secure connection to SendGrid
+      s = Sendgrid('<sendgrid_username>', '<sendgrid_password>', secure=True)
+
+      # make a message object
+      msg = Message("<sender_email>", "K-Sketch: Registration Complete", strMessage, "")
+
+      # add a recipient
+      msg.add_to(to_addr)
+
+      # use the Web API to send your message
+      s.web.send(msg)
+
+      #message.send()
+      return self.respond(result)
+
 #Handler for logging out and cancelling of session
 class LogoutPage(BaseHandler):
     def get(self): #/user/logout
@@ -837,6 +948,7 @@ webapp2_config['webapp2_extras.sessions'] = {
 
 application = webapp2.WSGIApplication([
     webapp2.Route('/user/approval', handler=GetUser, name='user_approval', handler_method='edit_approval'),
+    webapp2.Route('/user/monitor', handler=GetUser, name='user_monitor', handler_method='parental_view'),
     webapp2.Route('/user/getusermobile', handler=GetUser, name='user_mobile_login', handler_method='get_user_mobile'),
     webapp2.Route('/user/getuser', handler=GetUser, handler_method='get_user'),
     webapp2.Route('/user/getuserid', handler=GetUser, handler_method='get_user_by_id'),
@@ -846,7 +958,8 @@ application = webapp2.WSGIApplication([
     webapp2.Route('/user/profileuser2', handler=GetUser, handler_method='profile_user_unauthenticated'),
     webapp2.Route('/user/edituser', handler=GetUser, handler_method='edit_user'),
     webapp2.Route('/user/deleteuser', handler=GetUser, handler_method='delete_user'),
-    webapp2.Route('/user/parentapproval', handler=GetUser, handler_method='get_approval'),
+    webapp2.Route('/user/parentapproval', handler=GetUser, handler_method='send_approval_email'),
+    webapp2.Route('/user/parentcomplete', handler=GetUser, handler_method='send_complete_email'),
     webapp2.Route('/user/logout', handler=LogoutPage),
     webapp2.Route('/user/janrain', handler=RPXTokenHandler)],
     config=webapp2_config,
