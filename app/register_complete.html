@@ -18,8 +18,7 @@
       ga('create', 'UA-40422359-1', 'k-sketch-test.appspot.com');
       ga('send', 'pageview');
 
-    </script>
-    
+    </script>    
     <!-- Le styles -->
     <link href="css/bootstrap.css" rel="stylesheet">
     <link href="css/bootstrap-responsive.css" rel="stylesheet">
@@ -47,39 +46,120 @@
     <script type="text/javascript" src="history/history.js"></script>
     <!-- END Browser History required section -->  
     
+    <script type="text/javascript" src="swf/swfobject.js"></script>
+    
     <script type="text/javascript" src="js/janrain/janrain_widget.js"></script>
-
+    <script type="text/javascript" src="js/common/notification.js"></script>
+    
+    <script type="text/javascript">
+      function QueryString() {
+        // This function is anonymous, is executed immediately and 
+        // the return value is assigned to QueryString!
+        var query_string = {};
+        var query = window.location.search.substring(1);
+        var vars = query.split("&");
+        for (var i=0;i<vars.length;i++) {
+          var pair = vars[i].split("=");
+            // If first entry with this name
+          if (typeof query_string[pair[0]] === "undefined") {
+            query_string[pair[0]] = pair[1];
+            // If second entry with this name
+          } else if (typeof query_string[pair[0]] === "string") {
+            var arr = [ query_string[pair[0]], pair[1] ];
+            query_string[pair[0]] = arr;
+            // If third or later entry with this name
+          } else {
+            query_string[pair[0]].push(pair[1]);
+          }
+        }
+        e = document.getElementById('testdiv');
+        scope = angular.element(e).scope();
+        if (query_string.id !== undefined && query_string.id !== "") {
+          scope.$apply(function() {
+              scope.setTest(query_string.id);
+          });
+        }
+        scope.$apply(function() {
+          scope.get_profile();
+        });        
+      }
+    </script>    
+    
   </head>
   
   <!-- body id="ksketchapp" ng-controller="LoginController" scrolling="no" -->
-  <body id="ksketchapp" scrolling="no">
+  <body ng-controller="RegisterCompleteController" id="ksketchapp"  scrolling="no" onload="QueryString()">
+
+    <!-- Loading -->
+    
+    <div id="LoadingDiv" ui-if="waiting!='Ready'"></div>
+    <div class="modal" id="Loading" ui-if="waiting=='Loading'">
+      <div class="modal-body">
+        <span>Loading........</span>
+      </div>
+    </div>
+    <div class="modal" id="Message" ui-if="waiting=='Error'" ng-cloak>
+      <div class="modal-body">
+        <div class="modal-header">
+          <input type="submit" class="close" value="x" data-dismiss="modal" ng-click="logout()"/>
+          <h3 id="myUploadItems">{{heading}}</h3>
+        </div>
+        <br/>
+        <div class="control-group">
+          <div class="control-label">
+            <span style="text-align:center">{{message}}</span>
+            <br/>
+            <br/>
+            <span style="text-align:center">{{submessage}}</span>
+            <br/>
+            <br/>
+          </div>
+        </div>
+      </div>
+      <div class="modal-footer">
+        <input type="submit"  ng-click="logout()" value="Ok" data-dismiss="modal"/>
+      </div>
+    </div>      
+  
     <!-- Top Bar -->
     <div id="topbar" class="navbar navbar-inverse navbar-fixed-top">
       <div class="navbar-inner">
-        <div class="container-fluid">
+        <div class="container-fluid" ng-show="waiting=='Ready'" ng-cloak>
           <!-- a class="brand" id="logo" href="#"><img style="height:36px" src="ico/KSketch-logo.png"></a -->
-          <a class="brand" id="logo" href="/user/logout">K-Sketch</a>
+          <a class="brand" id="logo" href=" index.html">K-Sketch</a>
         </div>
       </div>
     </div>
 
-    
     <!-- Main Body -->
     <div class="container-fluid" id="wrap">
-        
       <div class="row-fluid" id="mainbody">
-        
+        <span id="testdiv" ng-model="test"></span>
         <!-- Main Body -->
-        <div>      
-          <div class="hero-unit-sub">
-            <p><h1>Congratulations!</h1></p>
-            <p>K-Sketch Registration is now complete.</p><br/>
-            <p><a class="janrainEngage" href="#">Log in again to start using K-Sketch.</a></p>
+        <div class="span10">   
+          <!-- Stuff goes here. -->
+          <!-- We have to think of a better name for this! -->
+          <div class="row-fluid">
+            <!--div class="container-fluid" ng-hide="profile_user.u_login" ng-cloak id="guestSketchbook">
+              <h3>You are not logged in!</h3>
+              <h3>Please Login to K-Sketch in order to access this function!</h3>
+            </div-->
+            <div class="container-fluid" ng-show="profile_user.id" ng-cloak id="userSketchbook">
+              <div class="row-fluid">
+                <p><h1>Congratulations!</h1></p>
+                <h3 ui-if="belong">K-Sketch Registration is now complete.</h3>
+                <h3 ui-if="!belong">K-Sketch Registration for your child, {{profile_user.u_name}}, is now complete.</h3>
+                <p ui-if="belong"><a href="profile.html">Go my profile now!</a></p>
+                <p ui-if="!belong">A link to view your child's activities on K-Sketch has been sent to your email at: <b>{{profile_user.parent_email}}</b></p>
+              </div>
+            </div>
+
           </div>
         </div><!--/span-->
-        <div class="footer-table">
+
+        <div class="footer-table" ng-model="year">
           <img src="img/footer_logo_small.png"/><br/>
-                Copyright &copy; 2014 Singapore Management University. Developed under a grant from the Singapore-MIT GAMBIT Game Lab   <br/>
+                Copyright &copy; {{year}} Singapore Management University. Developed under a grant from the Singapore-MIT GAMBIT Game Lab   <br/>
                 <a href="about.html">About the Team</a> &nbsp;&nbsp;|&nbsp; &nbsp;
                 <a href="faq.html">FAQ</a> &nbsp;&nbsp;|&nbsp; &nbsp;
                 <a href="terms.html">Terms of Use</a> &nbsp;&nbsp;|&nbsp; &nbsp;
@@ -92,6 +172,13 @@
     <!-- Le javascript
 ================================================== -->
     <!-- Placed at the end of the document so the pages load faster -->
+    <script src="js/jquery/jquery.js"></script>
+    <script src="js/moment/moment.min.js"></script>
+    <script src="lib/angular/angular.min.js"></script>
+    <script src="lib/angular/angular-ui.min.js"></script>
+    <script src="lib/angular/angular-resource.min.js"></script>
+    <script src="js/angular/registercomp-controller.js"></script>
+    <script src="js/app.js"></script>
     <script src="js/bootbox/bootbox.min.js"></script>
     <script src="js/bootstrap/bootstrap-transition.js"></script>
     <script src="js/bootstrap/bootstrap-alert.js"></script>

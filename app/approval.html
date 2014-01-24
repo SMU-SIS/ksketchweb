@@ -141,6 +141,8 @@
           <span id="testdiv" ng-model="test" hidden></span>        
           <div class="hero-unit-sub">
             <p><h1>K-Sketch Agreement</h1></p>
+            <h3 ui-if="is_parent">Hello Parent, just one more step to activate your child's account</h3>
+            <h3 ui-if="!is_parent">One more step to activate your account</h3>
 
             <!-- Privacy policy -->
             <p><h4>Privacy Policy</h4></p>
