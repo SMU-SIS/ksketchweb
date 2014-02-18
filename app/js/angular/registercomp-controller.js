@@ -89,7 +89,6 @@ function RegisterCompleteController($scope,$resource,sharedProperties, sharedFun
     { 
       //this action is from a parent approving the registration
       //end it by sending complete registration email
-      alert("going to send complete email");
       $scope.sendCompleteEmail();
     }
   }
@@ -128,8 +127,6 @@ function RegisterCompleteController($scope,$resource,sharedProperties, sharedFun
 
   $scope.sendCompleteEmail = function()
   {
-    alert("userid: " + $scope.test);
-
     $scope.SendResource = $resource('http://:remote_url/user/parentcomplete',
                                    {"remote_url":$scope.remote_url}, 
                                    {'save': {method: 'POST', params:{} }});
@@ -142,12 +139,11 @@ function RegisterCompleteController($scope,$resource,sharedProperties, sharedFun
     sendmeta.$save(function(response) {
       var result = response;
       $scope.waiting = "Ready";
-      alert("Send complete email: " + result); 
     });
   }
 
   $scope.logout = function(){
-    window.location.replace("http://ksketchweb.appspot.com/user/logout");
+    window.location.replace("http://ksketch.smu.edu.sg/user/logout");
   }
 
   $scope.determineAccess = function() 

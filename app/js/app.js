@@ -5,7 +5,7 @@
     //Set variable Reference for Janrain accounr name here!
     var accountJanrain = 'ksketch';
     //Set variable Reference for Backend here!
-    var backendUrl = 'ksketchweb.appspot.com';
+    var backendUrl = 'ksketch.smu.edu.sg';
     
     return{
       getJanrainAccount: function() {

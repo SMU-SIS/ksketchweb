@@ -119,7 +119,6 @@ function ProfileController($scope,$resource,sharedProperties, sharedFunctions){
     
     if($scope.User.id > 0)
     {
-      alert("determineAccess: " + $scope.urltype);
       if(!$scope.User.is_approved){ window.location.replace("register.html"); }
     }
   }
@@ -130,7 +129,6 @@ function ProfileController($scope,$resource,sharedProperties, sharedFunctions){
 
   $scope.setType = function(type) {
     $scope.urltype = type;
-    alert("set test: " + urltype);
   }
   
   $scope.get_profile = function() {
@@ -437,7 +435,6 @@ function ProfileController($scope,$resource,sharedProperties, sharedFunctions){
   };
 
   $scope.notification = function() {
-    alert("notification");
     var redirectLink = "notifications.html";
     
     if($scope.urltype == "parent" && $scope.test != "-") {

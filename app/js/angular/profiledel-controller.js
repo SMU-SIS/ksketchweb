@@ -160,7 +160,7 @@ function ProfileDeleteController($scope,$resource,sharedProperties, sharedFuncti
   }
 
   $scope.logout = function(){
-    window.location.replace("http://ksketchweb.appspot.com/user/logout");
+    window.location.replace("http://ksketch.smu.edu.sg/user/logout");
   }
 
   $scope.determineAccess = function() 

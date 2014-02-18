@@ -90,7 +90,6 @@ function NotificationsController($scope,$resource,sharedProperties, sharedFuncti
 
   $scope.setType = function(type) {
     $scope.urltype = type;
-    alert("set test: " + urltype);
   }
 
   $scope.get_profile_for_parent = function(){

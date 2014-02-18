@@ -116,7 +116,6 @@ function ViewController($scope,$resource,sharedProperties,sharedFunctions){
   }
 
   $scope.setType = function(type,uid) {
-    alert("setType");
     $scope.urltype = type;
     $scope.urlid = uid;
   }
@@ -332,7 +331,6 @@ function ViewController($scope,$resource,sharedProperties,sharedFunctions){
   }  
 
   $scope.edit_sketch = function(sid) {
-    alert("edit_sketch");
     var redirectLink = "sketch.html?id=" + sid;
 
     if($scope.urltype == "parent") {

@@ -345,7 +345,6 @@ function SketchController($scope,$resource,sharedProperties,sharedFunctions){
   }
   
   $scope.get_sketch = function() {
-    alert("type: " + $scope.urltype + "  urlid: " + $scope.urlid);
     $scope.sketchmeta = {};
     $scope.sketchmeta.data = {"id":$scope.loaded_id, 'urltype': $scope.urltype, 'urlid': $scope.urlid, "version":$scope.version};
     $scope.SketchResource = $resource('http://:remote_url/get/sketch/edit', 

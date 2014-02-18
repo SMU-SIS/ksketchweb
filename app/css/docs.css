@@ -1047,6 +1047,8 @@ form.bs-docs-example {
     max-width: 180px;
   }
 
+  p.dashed {border-style:dashed;}
+
   /* Examples: modal */
   .modal-example .modal {
     position: relative;
