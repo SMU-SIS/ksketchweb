@@ -1,0 +1,163 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="utf-8">
+    <title>K-Sketch: The Kinetic Sketch Pad!</title>
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta name="description" content="">
+    <meta name="author" content="">
+    
+    <!-- Google Analytics Code -->
+    
+    <script>
+      (function(i,s,o,g,r,a,m){i['GoogleAnalyticsObject']=r;i[r]=i[r]||function(){
+      (i[r].q=i[r].q||[]).push(arguments)},i[r].l=1*new Date();a=s.createElement(o),
+      m=s.getElementsByTagName(o)[0];a.async=1;a.src=g;m.parentNode.insertBefore(a,m)
+      })(window,document,'script','//www.google-analytics.com/analytics.js','ga');
+
+      ga('create', 'UA-40422359-1', 'k-sketch-test.appspot.com');
+      ga('send', 'pageview');
+
+    </script>
+    
+    <!-- Le styles -->
+    <link href="css/bootstrap.css" rel="stylesheet">
+    <link href="css/bootstrap-responsive.css" rel="stylesheet">
+    
+    <!-- Additional styles for individual components -->
+    <link href="css/additional.css" rel="stylesheet">
+    
+    <!-- HTML5 shim, for IE6-8 support of HTML5 elements -->
+    <!--[if lt IE 9]>
+<script src="http://html5shim.googlecode.com/svn/trunk/html5.js"></script>
+<![endif]-->
+    
+    <!-- Fav and touch icons -->
+    <link rel="apple-touch-icon-precomposed" sizes="144x144" href="ico/apple-touch-icon-144-precomposed.png">
+    <link rel="apple-touch-icon-precomposed" sizes="114x114" href="ico/apple-touch-icon-114-precomposed.png">
+    <link rel="apple-touch-icon-precomposed" sizes="72x72" href="ico/apple-touch-icon-72-precomposed.png">
+    <link rel="apple-touch-icon-precomposed" href="ico/apple-touch-icon-57-precomposed.png">
+    <link rel="shortcut icon" href="ico/favicon.png">
+    
+    <!-- Code for K-Sketch App Plugin -->
+    <!-- Enable Browser History by replacing useBrowserHistory tokens with two hyphens -->
+    
+    <!-- BEGIN Browser History required section -->
+    <link rel="stylesheet" type="text/css" href="history/history.css" />
+    <script type="text/javascript" src="history/history.js"></script>
+    <!-- END Browser History required section -->  
+    
+    <script type="text/javascript" src="swf/swfobject.js"></script>
+    
+    <script type="text/javascript" src="js/janrain/janrain_widget.js"></script>
+    <script type="text/javascript" src="js/common/notification.js"></script>
+    
+  </head>
+  
+  <body id="ksketchapp"  scrolling="no">
+    <!-- Top Bar -->
+    <div id="topbar" class="navbar navbar-inverse navbar-fixed-top">
+      <div class="navbar-inner">
+        <div class="container-fluid">
+          <a class="brand" id="logo" href=" index.html">K-Sketch</a>
+        </div>
+      </div>
+    </div>
+    
+    <!-- Main Body -->
+    <div class="container-fluid" id="wrap">
+      <div class="row-fluid" id="mainbody">
+        <!-- Main Body -->
+        <div>     
+          <div class="hero-unit-sub">
+            <p><h1>OpenKSK</h1></p>
+            
+            <p>
+              <ol>
+                <li>Data Formats</li>
+                <li>News</li>
+                <li>Motivation</li>
+                <li>Implementation</li>
+                <li>Known Limitations & Bugs</li>
+                <li>List of Interpreters</li>
+              </ol>
+
+              <b>Data Formats</b><br/>
+
+              <p>
+              All data are stored in the (globalization format) invariant locale. This was unspecified prior to revision 683 and caused problems for users in Europe (France, Sweden). </br>
+              <a href="http://ksketch.smu.edu.sg/app/downloads/previousVersion/OpenKSK-Data-Formats.pdf">See OpenKSK Data Formats</a>
+              </p>
+
+              <b>News</b><br/>
+
+              <p>
+              As of ALPHA 2, OpenKSK is the default file format of K-Sketch. We are dropping binary serialization support going forward; however, K-Sketch will retain full backward compatibility with old files.
+              </p>
+
+              <b>Motivation</b><br/>
+
+              <p>
+              Because K-Sketch is expanding off the C# platform, we need an interchange format that is not tied to C# binary serialization.
+              </p>
+
+              <b>Implementation</b><br/>
+
+              <p>
+              All data are stored in human readable text inside of an XML document. The current version, 1.0, was created with no forward compatibility in mind. The schema is very much tied to the current way we think about the model and the abstraction in the model.</br></br>
+
+              One important aspect of the current implementation is that the connectivity data are stored in GraphML. This enables us to simply copy and paste it out into a vis program to really see the craziness of the KS1.0 model!
+              </p>
+
+              <b>Known Limitations</b><br/>
+
+              <p>
+              Session data and GUIDs are stored in binary format. They are neither human readable nor human editable.</br></br>
+
+              The connectivity section must appear last in the file. Other sections may appear in any order.</br></br>
+
+              Human editing of a file may render it unrecoverable, if any of these constraints are broken.
+              </p>
+
+              <b>List of Interpreters</b><br/>
+
+              <ul>
+                <li><a href="index.html">K-Sketch (Flex/Actionscript)</a></li>
+                <li><a href="freeks.html">codename FREEKS (Java + OpenGL)</a></li>
+              </ul>
+
+            </p>
+          </div>
+        </div><!--/span-->
+        <div class="footer-table">
+          <img src="img/footer_logo_small.png"/><br/>
+                Copyright &copy; {{year}} Singapore Management University. Developed under a grant from the Singapore-MIT GAMBIT Game Lab   <br/>
+                <a href="about.html">About the Team</a> &nbsp;&nbsp;|&nbsp; &nbsp;
+                <a href="downloads.html">Downloads</a> &nbsp;&nbsp;|&nbsp; &nbsp;
+                <a href="faq.html">FAQ</a> &nbsp;&nbsp;|&nbsp; &nbsp;
+                <a href="terms.html">Terms of Use</a> &nbsp;&nbsp;|&nbsp; &nbsp;
+                <a href="policy.html">Privacy Policy</a>
+        </div>
+      </div><!--/row-->
+    </div><!--/.fluid-container-->
+    
+    
+    <!-- Le javascript
+================================================== -->
+    <!-- Placed at the end of the document so the pages load faster -->
+    <script src="js/bootbox/bootbox.min.js"></script>
+    <script src="js/bootstrap/bootstrap-transition.js"></script>
+    <script src="js/bootstrap/bootstrap-alert.js"></script>
+    <script src="js/bootstrap/bootstrap-modal.js"></script>
+    <script src="js/bootstrap/bootstrap-dropdown.js"></script>
+    <script src="js/bootstrap/bootstrap-scrollspy.js"></script>
+    <script src="js/bootstrap/bootstrap-tab.js"></script>
+    <script src="js/bootstrap/bootstrap-tooltip.js"></script>
+    <script src="js/bootstrap/bootstrap-popover.js"></script>
+    <script src="js/bootstrap/bootstrap-button.js"></script>
+    <script src="js/bootstrap/bootstrap-collapse.js"></script>
+    <script src="js/bootstrap/bootstrap-carousel.js"></script>
+    <script src="js/bootstrap/bootstrap-typeahead.js"></script>
+    
+  </body>
+</html>
