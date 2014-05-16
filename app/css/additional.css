@@ -209,7 +209,7 @@
       width: 53.0%;
       height: 47px;
       _height: expression(document.body.offsetHeight + "px");
-      background-color: rgba(238, 238, 238, 0.8);
+      background-color: rgba(0, 0, 0, 0);
     }
     
     #ViewCoverDiv{
@@ -219,7 +219,7 @@
       width: 53.0%;
       height: 340px;
       _height: expression(document.body.offsetHeight + "px");
-      background-color: rgba(255, 255, 255, 0.01);
+      background-color: rgba(0, 0, 0, 0);
     }
     
     #visibleTextData { 
@@ -278,11 +278,11 @@
       }
       
       #ViewCoverBarDiv {
-        width: 93.3%
+        width: 0%
       }
       
       #ViewCoverDiv {
-        width: 93.3%
+        width: 0%
       }
 	  }	    
     
