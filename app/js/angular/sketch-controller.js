@@ -18,6 +18,8 @@ function SketchController($scope,$resource,sharedProperties,sharedFunctions){
     {url : sharedProperties.getBackendUrl(), urlName : 'remote backend' },       
     {url : 'localhost:8080', urlName : 'localhost' } ];
 
+  $scope.initiateSave = false;
+
   $scope.search = "";
   $scope.showdetails = false;
 
@@ -482,6 +484,16 @@ function SketchController($scope,$resource,sharedProperties,sharedFunctions){
         } else {
           return false;
         }
+  }
+
+  $scope.setInitiateSave = function(newValue)
+  {
+    $scope.initiateSave = newValue;
+  }
+
+  $scope.getInitiateSave = function()
+  {
+    return $scope.initiateSave;
   }
   
   $scope.year;

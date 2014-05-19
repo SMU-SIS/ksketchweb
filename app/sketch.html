@@ -56,14 +56,25 @@
       window.onbeforeunload = function(){
         initSave();
         var status = false;
+        var initiateSave = false;
         e = document.getElementById('testdiv');
         scope = angular.element(e).scope();
         scope.$apply(function(){
           status = scope.getStatus();
-        })
-        //if (status) {
-        //  return "Warning - Navigating away from this page will remove all your unsaved progress.";
-        //}
+        });
+
+        scope.$apply(function(){
+          initiateSave = scope.getInitiateSave();
+          
+        });
+
+        if (status && !initiateSave) {
+          return "Warning - Navigating away from this page will remove all your unsaved progress.";
+        }
+
+        scope.$apply(function(){
+          scope.setInitiateSave(false);
+        });
       };
     </script>
     
@@ -162,6 +173,13 @@
               referLink.click();
             }
             else { window.location.replace("sketch.html");}
+
+            e = document.getElementById('testdiv');
+            scope = angular.element(e).scope();
+            
+            scope.$apply(function(){
+              scope.setInitiateSave(true);
+            });
           }
         });
       }
