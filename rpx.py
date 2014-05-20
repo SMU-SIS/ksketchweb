@@ -46,7 +46,7 @@ if ON_LOCALHOST:
     else:
         BASE_URL = 'localhost:%s' % os.environ['SERVER_PORT']
 else:
-    BASE_URL = 'ksketchweb.appspot.com'  #Change this to desired URL
+    BASE_URL = 'ksketch.smu.edu.sg'  #Change this to desired URL
 LOGIN_IFRAME = '<iframe src="http://gae-sesssions-demo.rpxnow.com/openid/embed?token_url=http%3A%2F%2F' + BASE_URL + '%2Frpx_response" scrolling="no" frameBorder="no" allowtransparency="true" style="width:400px;height:240px"></iframe>'
 
 class UTC(datetime.tzinfo):
@@ -500,7 +500,7 @@ class RPXTokenHandler(BaseHandler):
         url = 'https://rpxnow.com/api/v2/auth_info'
         args = {
             'format': 'json',
-            'apiKey': 'REPLACE-JANRAIN-KEY',   #Change to api key provided in Janrain
+            'apiKey': '<REPLACE_WITH_API_KEY>',   #Change to api key provided in Janrain
             'token': token
         }
         r = urlfetch.fetch(url=url,
@@ -698,9 +698,9 @@ class GetUser(webapp2.RequestHandler):
       if auser:
         userid = auser['user_id']
         strid = str(userid)
-        self.redirect(('http://ksketchweb.appspot.com/app/login_successful.html?id=' + strid).encode('ascii'))
+        self.redirect(('http://ksketch.smu.edu.sg/app/login_successful.html?id=' + strid).encode('ascii'))
       else:
-        self.redirect('http://ksketchweb.appspot.com/app/index.html')
+        self.redirect('http://ksketch.smu.edu.sg/app/index.html')
 
     #Handler for retrieving a particular User's profile (partial) data
     def profile_user(self, **kwargs): #/user/profileuser
@@ -757,14 +757,14 @@ class GetUser(webapp2.RequestHandler):
 
         if approve_state:
           #implement backdoor for parent to view profile
-          self.redirect('http://ksketchweb.appspot.com/app/index.html')
+          self.redirect('http://ksketch.smu.edu.sg/app/index.html')
         else:
           if urltype == "approve":
-            self.redirect(('http://ksketchweb.appspot.com/app/approval.html?id=' + userid).encode('ascii'))
+            self.redirect(('http://ksketch.smu.edu.sg/app/approval.html?id=' + userid).encode('ascii'))
           else:
-            self.redirect(('http://ksketchweb.appspot.com/app/profile_delete.html?id=' + userid).encode('ascii'))
+            self.redirect(('http://ksketch.smu.edu.sg/app/profile_delete.html?id=' + userid).encode('ascii'))
       else:
-        self.redirect('http://ksketchweb.appspot.com/app/index.html')
+        self.redirect('http://ksketch.smu.edu.sg/app/index.html')
 
     #Handler for parent to view user profile
     def parental_view(self): #/user/monitor
@@ -802,13 +802,13 @@ class GetUser(webapp2.RequestHandler):
               age = today.year - born.year
           
           if age < 18:
-            self.redirect(('http://ksketchweb.appspot.com/app/profile.html?id=' + userid + "&type=" + urltype).encode('ascii'))
+            self.redirect(('http://ksketch.smu.edu.sg/app/profile.html?id=' + userid + "&type=" + urltype).encode('ascii'))
           else:
-            self.redirect(('http://ksketchweb.appspot.com/app/index.html').encode('ascii'))
+            self.redirect(('http://ksketch.smu.edu.sg/app/index.html').encode('ascii'))
         else:
-          self.redirect(('http://ksketchweb.appspot.com/app/index.html').encode('ascii'))
+          self.redirect(('http://ksketch.smu.edu.sg/app/index.html').encode('ascii'))
       else:
-          self.redirect(('http://ksketchweb.appspot.com/app/index.html').encode('ascii'))
+          self.redirect(('http://ksketch.smu.edu.sg/app/index.html').encode('ascii'))
 
     #Handler to send approval email to parent of User
     def send_approval_email(self, **kwargs): #user/parentapproval
@@ -847,27 +847,22 @@ class GetUser(webapp2.RequestHandler):
         result['status'] = 'fail'
         pass
 
-      message = mail.EmailMessage()
-      message.sender = "nczakaria@gmail.com"
-      message.to = to_addr
-      message.subject = "K-Sketch: Approval for Registration"
-      #message.body =  
       strMessage = "Dear Parent, \n\
       \n\
 K-Sketch would like to request permission for your child, "+ result['u_name'] + ", to participate in using our system. \n\
       \n\
-Please click the following link to activate your child's account: http://ksketchweb.appspot.com" + url_approve + "\n\
+Please click the following link to activate your child's account: http://ksketch.smu.edu.sg" + url_approve + "\n\
       \n\
-Please click the following link to cancel participation: http://ksketchweb.appspot.com" + url_disapprove + "\n\
+Please click the following link to cancel participation: http://ksketch.smu.edu.sg" + url_disapprove + "\n\
 \n\
 \n\
 K-Sketch Team"
       
       # make a secure connection to SendGrid
-      s = Sendgrid('<sendgrid_username>', '<sendgrid_password>', secure=True)
+      s = Sendgrid('ksketch', '<SENDGRID_ACCOUNT_PASSWORD>', secure=True)
 
       # make a message object
-      msg = Message("<sender_email>", "K-Sketch: Approval for Registration", strMessage, "")
+      msg = Message("ksketch@smu.edu.sg", "K-Sketch: Approval for Registration", strMessage, "")
 
       # add a recipient
       msg.add_to(to_addr)
@@ -898,16 +893,11 @@ K-Sketch Team"
       type_1 = "parent"
       url_monitor = self.uri_for('user_monitor', type=type_1, id=userid)
 
-      message = mail.EmailMessage()
-      message.sender = "nczakaria@gmail.com"
-      message.to = to_addr
-      message.subject = "K-Sketch: Registration Complete"
-      #message.body =  
       strMessage = "Dear Parent, \n\
       \n\
 Thank you for allowing your child, "+ result['u_name'] + ", to participate in using K-Sketch. \n\
       \n\
-To view your child's sketches, click on: http://ksketchweb.appspot.com" + url_monitor + "\n\
+To view your child's sketches, click on: http://ksketch.smu.edu.sg" + url_monitor + "\n\
       \n\
 Please bookmark this link to easily access your child's profile in the future.\n\
 \n\
@@ -915,10 +905,10 @@ Please bookmark this link to easily access your child's profile in the future.\n
 K-Sketch Team"
       
       # make a secure connection to SendGrid
-      s = Sendgrid('<sendgrid_username>', '<sendgrid_password>', secure=True)
+      s = Sendgrid('ksketch', '<SENDGRID_ACCOUNT_PASSWORD>', secure=True)
 
       # make a message object
-      msg = Message("<sender_email>", "K-Sketch: Registration Complete", strMessage, "")
+      msg = Message("ksketch@smu.edu.sg", "K-Sketch: Registration Complete", strMessage, "")
 
       # add a recipient
       msg.add_to(to_addr)
