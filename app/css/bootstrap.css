@@ -292,15 +292,15 @@ a:hover {
 }
 
 .span12 {
-  width: 940px;
+  width: 900px;
 }
 
 .span11 {
-  width: 860px;
+  width: 800px;
 }
 
 .span10 {
-  width: 780px;
+  width: 800px;
 }
 
 .span9 {
@@ -309,18 +309,22 @@ a:hover {
 
 .span8 {
   width: 620px;
+  min-width: 620px;
 }
 
 .span7 {
   width: 540px;
+  min-width: 540px;
 }
 
 .span6 {
   width: 460px;
+  min-width: 460px;
 }
 
 .span5 {
-  width: 380px;
+  width: 350px;
+  min-width: 350px;
 }
 
 .span4 {
@@ -333,6 +337,7 @@ a:hover {
 
 .span2 {
   width: 140px;
+  min-width: 140px;
 }
 
 .span1 {
@@ -464,8 +469,9 @@ a:hover {
 }
 
 .row-fluid .span4 {
-  width: 31.914893617021278%;
-  *width: 31.861702127659576%;
+  width: 20%;
+  *width: 20%;
+  min-width: 10%;
 }
 
 .row-fluid .span3 {
@@ -634,6 +640,7 @@ a:hover {
   padding-right: 20px;
   padding-left: 20px;
   *zoom: 1;
+  min-width: 1024px;
 }
 
 .container-fluid:before,

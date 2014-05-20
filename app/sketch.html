@@ -389,7 +389,7 @@
                   Untitled Sketch by {{User.u_name}}
                   </span>
                 </div>
-              </div>				
+              </div>        
               <div class="span5" ng-cloak>
                 <button class="btn btn-inverse btn-small" title="Clears editor to create new sketch" onclick="initNew()">New</button>
                 <!-- Saving new version of loaded sketch (Edit) -->
@@ -399,7 +399,7 @@
                 <!-- Saving new sketch (Save) -->
                 <button class="btn btn-inverse btn-small" title="Saves new sketch" onclick="initSave()" data-toggle="modal" ui-if="loaded_id == -1" href="#SaveAsSketch">Save</button>
               </div>
-              <div class="span2" >
+              <div>
                 <a class="btn btn-info btn-small" style="float:right" title="Back to View" href="view.html?id={{loaded_id}}" ui-if="!!((loaded_id > 0))" ng-cloak>Back to View Mode</a>
                 <button class="btn btn-info btn-small disabled" style="float:right" title="Back to View"  ui-if="!((loaded_id > 0))" ng-cloak>Back to View Mode</button>
               </div>
@@ -411,7 +411,7 @@
             
             <!-- Container for SWF Plugin - DO NOT REMOVE! -->
             
-            <div id="swfcontainer">
+            <div id="swfcontainer_editor">
               <div id="flashContent">
                 <p>
                     To view this page ensure that Adobe Flash Player version 
