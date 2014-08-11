@@ -97,77 +97,6 @@
         <div class="container-fluid" ng-show="waiting=='Ready'" ng-cloak>
           <!-- a class="brand" id="logo" href="#"><img style="height:36px" src="ico/KSketch-logo.png"></a -->
           <a class="brand" id="logo" href=" index.html">K-Sketch</a>
-          <ul class="nav" ng-cloak>
-            <li>
-              <!--Username and profile link goes here.-->
-              <a ng-show="User.u_login" ng-cloak href="profile.html?id={{User.id}}" class="navbar-link">
-                <span id="heading">
-                  Hello, {{User.u_name}}
-                  <span ui-if="User.u_isadmin"> (Admin)</span>
-                  !
-                </span>
-              </a>
-              <a ng-hide="User.u_login" ng-cloak id="heading" disabled>Hello, {{User.u_name}}!</a>
-            </li>
-            <li ng-hide="User.u_login" ng-cloak>
-              <a class="janrainEngage" href="#">Sign-In</a>
-            </li>
-            <li ng-show="User.u_login" ng-cloak>
-              <a href="/user/logout">Logout</a>
-            </li>          
-            <li class="dropdown"  ui-if="User.u_login">
-              <a href="#" class="dropdown-toggle" data-toggle="dropdown" title="{{notify}}">
-                <i ng-class="notify_icon"></i>
-<!--                 <b class="caret"></b> -->
-              </a>
-              <ul class="dropdown-menu">
-                <li>
-                  <a ui-if="!notifications.entities.length">
-                  <span>You have no new notifications.</span>
-                  </a>
-                  <table class="table table-striped" ui-if="!!notifications.entities.length">
-                    <tr ng-repeat="notification in notifications.entities |  limitTo:3">
-                      <td>
-                        <span>{{notification.n_date}}</span>
-                      </td>
-                      <td>
-                        <span>{{notification.n_message}}</span>
-                      </td>
-                      <td ui-if="notification.n_type == 'GROUPINVITE'">
-                        <ul>
-                          <a class="btn btn-small" onClick="notifyAccept({{notification.id}},{{notification.n_relevant}})">Accept</a>
-                        </ul>
-                        <ul>
-                          <a class="btn btn-small" onClick="notifyReject({{notification.id}},{{notification.n_relevant}})">Reject</a>
-                        </ul>
-                      </td>
-                    </tr>
-                  </table>
-                </li>
-                <li class="divider"></li>
-                <li>
-                  <a href="notifications.html">
-                    Show All Notifications
-                  </a>
-                </li>      
-              </ul>                            
-            </li>
-          </ul>         
-          <p class="navbar-search pull-right">
-            <input type="text" ng-model="search" onkeypress="searchKeyPress(event);" class="search-query" placeholder="Search by sketch name or owner">
-            <input type="submit" id="searchbutton" class="btn btn-inverse btn-small" ng-click="simpleSearch()" value=">>">
-            <script>
-              function searchKeyPress(e)
-              {
-                  // look for window.event in case event isn't passed in
-                  if (typeof e == 'undefined' && window.event) { e = window.event; }
-                  if (e.keyCode == 13)
-                  {
-                      document.getElementById('searchbutton').click();
-                  }
-              }
-            </script>
-          </p>
         </div>
       </div>
     </div>
@@ -182,51 +111,27 @@
           <div class="well sidebar-nav sidebar-nav-fixed">
             <ul class="nav nav-list">
               <!--This changes depending on current logged-in status.-->
-              
-              
-              <li id="sc" ng-show="User.u_login" ng-cloak><a title="View personal profile, sketches and group memberships" href="profile.html?id={{User.id}}">My Sketchbook</a></li>
-              <li id="cs"><a title="Open editor to create a new sketch" href="sketch.html">Create a Sketch</a></li>
+              <li id="cs"><a href="https://groups.google.com/forum/#!forum/k-sketch-users">User Group</a></li>
             </ul>
           </div><!--/.well -->
         </div><!--/span-->
         
         <!-- Main Body -->
         <div class="span10">
-          <span id="testdiv" ng-model="test" hidden></span>        
-          <div class="hero-unit">
+          <div class="hero-unit-sub">
+            <p><h1>Downloads</h1></p>
 
-            <div id="myCarousel" >
-              <div class="well well-small">
-                <div class="container-fluid">
-                  <h1 id="title1">Welcome to K-Sketch! </h1>
-                  <br/>
-                  <div class="row-fluid">
-                    <div class="span6">
-                      <div class="well well-small">
-                        <object width="100%" height="250" type="movie" data="http://www.youtube.com/v/K4h5lfvnVA0&list=PL3QzgKRkD6WExXWVBH_-BhhCXt3Jsz6ry?rel=0?index=1&amp;hl=en_US">
-                          <param name="movie" value="http://www.youtube.com/v/K4h5lfvnVA0&list=PL3QzgKRkD6WExXWVBH_-BhhCXt3Jsz6ry?rel=0?index=1&amp;hl=en_US"></param>
-                          <param name="allowFullScreen" value="true"></param>
-                          <param name="allowscriptaccess" value="always"></param>
-                          <embed src="http://www.youtube.com/v/K4h5lfvnVA0&list=PL3QzgKRkD6WExXWVBH_-BhhCXt3Jsz6ry?rel=0?index=1&amp;hl=en_US" type="application/x-shockwave-flash" width="100%" height="250" allowscriptaccess="always" allowfullscreen="true"></embed>
-                        </object>
-                      </div>
-                    </div>
-                    <div class="span4">
-                      <p>Animation made easy.</p>
-                      <span>
-                        <p>K-Sketch is a “kinetic” sketch pad. You can make fun animations in minutes, even if you’ve never made an animation before.</p>
-                      </span>
-                      <p><a title="Create a sketch now!" class="btn btn-primary btn-large" href="sketch.html">Start Now! &raquo;</a></p>
-                    </div>
-                  </div>
-                </div>
-              </div>           
-            </div>
-          </div>
+             <p>
+              <a href="https://itunes.apple.com/us/app/k-sketch/id808680190?ls=1&mt=8">K-Sketch on Apple App Store</a><br/>
+              <a href="https://play.google.com/store/apps/details?id=air.sg.edu.smu.sis.ksketch">K-Sketch on Google Play Store</a><br/>
+              <a href="ksketch1.0.html">Previous Version: K-Sketch Version 1.0</a><br/>
+            </p>
+            
+          </div>  
         </div><!--/span-->
         <div class="footer-table" ng-model="year">
           <img src="img/footer_logo_small.png"/><br/>
-               Copyright &copy; {{year}} Singapore Management University. Developed under a grant from the Singapore-MIT GAMBIT Game Lab   <br/>
+                Copyright &copy; {{year}} Singapore Management University. Developed under a grant from the Singapore-MIT GAMBIT Game Lab   <br/>
                 <a href="about.html">About Us</a> &nbsp;&nbsp;|&nbsp; &nbsp;
                 <a href="downloads.html">Downloads</a> &nbsp;&nbsp;|&nbsp; &nbsp;
                 <a href="help.html">Help</a> &nbsp;&nbsp;|&nbsp; &nbsp;

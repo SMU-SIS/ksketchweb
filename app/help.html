@@ -18,48 +18,6 @@
       ga('create', 'UA-47832938-1', 'ksketchweb.appspot.com');
       ga('send', 'pageview');
     </script>
-
-    <script type="text/javascript">
-      function QueryString() {
-        // This function is anonymous, is executed immediately and 
-        // the return value is assigned to QueryString!
-        var query_string = {};
-        var query = window.location.search.substring(1);
-        var vars = query.split("&");
-        for (var i=0;i<vars.length;i++) {
-          var pair = vars[i].split("=");
-            // If first entry with this name
-          if (typeof query_string[pair[0]] === "undefined") {
-            query_string[pair[0]] = pair[1];
-            // If second entry with this name
-          } else if (typeof query_string[pair[0]] === "string") {
-            var arr = [ query_string[pair[0]], pair[1] ];
-            query_string[pair[0]] = arr;
-            // If third or later entry with this name
-          } else {
-            query_string[pair[0]].push(pair[1]);
-          }
-        }
-
-        e = document.getElementById('testdiv');
-        scope = angular.element(e).scope();
-        if (query_string.id !== undefined && query_string.id !== "") {
-          scope.$apply(function() {
-            scope.setTest(query_string.id);
-          });
-        }
-
-        if (query_string.type !== undefined && query_string.type !== "") {
-          scope.$apply(function() {
-            scope.setType(query_string.type);
-          });
-        }
-
-        scope.$apply(function() {
-          scope.get_profile_for_parent();
-        });       
-      }
-    </script> 
     
     <!-- Le styles -->
     <link href="css/bootstrap.css" rel="stylesheet">
@@ -96,7 +54,7 @@
   </head>
   
   <!-- body id="ksketchapp" ng-controller="LoginController" scrolling="no" -->
-  <body ng-controller="NotificationsController" id="ksketchapp" scrolling="no" onload="QueryString()">
+  <body ng-controller="IndexController" id="ksketchapp"  scrolling="no">
     <!-- Loading -->      
     <div id="LoadingDiv" ui-if="waiting!='Ready'"></div>
     <div class="modal" id="Loading" ui-if="waiting=='Loading'">
@@ -135,8 +93,8 @@
     
     <!-- Top Bar -->
     <div id="topbar" class="navbar navbar-inverse navbar-fixed-top">
-      <div class="navbar-inner" ng-show="waiting=='Ready'">
-        <div class="container-fluid" ng-cloak>
+      <div class="navbar-inner">
+        <div class="container-fluid" ng-show="waiting=='Ready'" ng-cloak>
           <!-- a class="brand" id="logo" href="#"><img style="height:36px" src="ico/KSketch-logo.png"></a -->
           <a class="brand" id="logo" href=" index.html">K-Sketch</a>
           <ul class="nav" ng-cloak>
@@ -159,10 +117,10 @@
             </li>          
             <li class="dropdown"  ui-if="User.u_login">
               <a href="#" class="dropdown-toggle" data-toggle="dropdown" title="{{notify}}">
-<!--                 <b class="caret"></b> -->
                 <i ng-class="notify_icon"></i>
+<!--                 <b class="caret"></b> -->
               </a>
-              <ul class="dropdown-menu" >
+              <ul class="dropdown-menu">
                 <li>
                   <a ui-if="!notifications.entities.length">
                   <span>You have no new notifications.</span>
@@ -188,11 +146,11 @@
                 </li>
                 <li class="divider"></li>
                 <li>
-                  <a>
+                  <a href="notifications.html">
                     Show All Notifications
                   </a>
-                </li>                
-              </ul>              
+                </li>      
+              </ul>                            
             </li>
           </ul>         
           <p class="navbar-search pull-right">
@@ -213,6 +171,7 @@
         </div>
       </div>
     </div>
+    
     <!-- Main Body -->
     <div class="container-fluid" id="wrap">
         
@@ -225,7 +184,7 @@
               <!--This changes depending on current logged-in status.-->
               
               
-              <li id="sc" ng-show="User.u_login" ng-cloak><a title="View personal profile, sketches and group memberships" ng-click="profile()">My Sketchbook</a></li>
+              <li id="sc" ng-show="User.u_login" ng-cloak><a title="View personal profile, sketches and group memberships" href="profile.html?id={{User.id}}">My Sketchbook</a></li>
               <li id="cs"><a title="Open editor to create a new sketch" href="sketch.html">Create a Sketch</a></li>
             </ul>
           </div><!--/.well -->
@@ -233,48 +192,128 @@
         
         <!-- Main Body -->
         <div class="span10">
-          <div class="row-fluid">        
-            <span id="testdiv" ng-model="test" hidden></span>        
-            <div class="container-fluid" ng-show="User.id" ng-cloak id="userNotifications">
-              <h2>Notifications</h2>
-              <span ui-if="!notifications.entities.length">You have no notifications.</span>
-              <table class="table table-bordered table-striped" ui-if="!!notifications.entities.length"  ng-cloak>
-                <thead>
-                  <th>
-                    Date
-                  </th>
-                  <th>
-                    Message
-                  </th>
-                  <th>
-                    Action
-                  </th>
-                </thead>
-                <tbody>
-                  <tr ng-repeat="notification in notifications.entities">
-                    <td>
-                      <span>{{notification.n_date}}</span>
-                    </td>
-                    <td>
-                      <span>{{notification.n_message}}</span>
-                    </td>
-                    <td ui-if="notification.n_type == 'GROUPINVITE'">
-                      <ul>
-                        <a class="btn btn-small" onClick="notifyAccept({{notification.id}},{{notification.n_relevant}})">Accept</a>
-                      </ul>
-                      <ul>
-                        <a class="btn btn-small" onClick="notifyReject({{notification.id}},{{notification.n_relevant}})">Reject</a>
-                      </ul>
-                    </td>                  
-                  </tr>
-                </tbody>
-              </table>
-            </div>
+          <span id="testdiv" ng-model="test" hidden></span>        
+          <div class="hero-unit">
+            <p><h2>Getting Help</h2></p>
+            <p>If you need help with K-Sketch, try the following (in this order):</p>
+            <ol>
+              <li>Watch the <a href="#quickstartvideos">Quick Start Videos</a>.</li>
+              <li>Look for your question in the <a href="faq.html">Frequently Asked Questions</a>.</li>
+              <li>Ask a question in the <a href="https://groups.google.com/forum/#!forum/k-sketch-users">K-Sketch Users</a> group.</li>
+              <li>Send an e-mail to <a href="mailto:ksketch@smu.edu.sg">ksketch@smu.edu.sg</a>.</li>
+            </ol>
+            <br/>
+
+            <p><h2><a class="none" id="quickstartvideos" onclick="return false;">Quick Start Videos</a></h2></p>
+            <br/>
+            <table>
+              <tr>
+                <td align="center" width="20%">
+                  <a href="http://www.youtube.com/watch?v=5LO7hiHXy2Y&list=PL3QzgKRkD6WExXWVBH_-BhhCXt3Jsz6ry"><img src="img/help/img_quickstart_1.jpg"/></a>
+                </td>
+                <td width="5%"></td>
+                <td style="padding-top:20px" width="75%">
+                  <h4>Quick Start 1: Basic Animation</h4>
+                  • Select and move things<br/>
+                  • Perform animations<br/>
+                  • Adjust motions<br/>
+                  • Make things appear and disappear
+                </td>
+              </tr>
+
+              <tr><td height="30px"></td></tr>
+              
+              <tr>
+                <td align="center" >
+                  <a href="http://www.youtube.com/watch?v=ZUGywEUjpLk&list=PL3QzgKRkD6WExXWVBH_-BhhCXt3Jsz6ry&index=2"><img src="img/help/img_quickstart_2.jpg"/></a>
+                </td>
+                <td></td>
+                <td>
+                  <h4>Quick Start 2: Overlapping Motions</h4>
+                  • Make two things move at the same time<br/>
+                  • Move and spin at the same time<br/>
+                  • Overwrite old motions
+                </td>
+              </tr>
+
+              <tr><td height="30px"></td></tr>
+              
+              <tr>
+                <td align="center" >
+                  <a href="http://www.youtube.com/watch?v=PALkClW3Tp8&list=PL3QzgKRkD6WExXWVBH_-BhhCXt3Jsz6ry&index=3"><img src="img/help/img_quickstart_3.jpg"/></a>
+                </td>
+                <td></td>
+                <td>
+                  <h4>Quick Start 3: Using the Timeline</h4>
+                  • Move, add, and remove timeline ticks<br/>
+                  • Clear motions<br/>
+                  • Navigate quickly between ticks and frames
+                </td>
+              </tr>
+
+              <tr><td height="30px"></td></tr>
+              
+              <tr>
+                <td align="center" >
+                  <a href="http://www.youtube.com/watch?v=zp5gBtSbKns&list=PL3QzgKRkD6WExXWVBH_-BhhCXt3Jsz6ry&index=4"><img src="img/help/img_quickstart_4.jpg"/></a>
+                </td>
+                <td></td>
+                <td>
+                  <h4>Quick Start 4: Moving Parts</h4>
+                  • Combine things that move<br/>
+                  • Spin or resize part something<br/>
+                  • Move part of something (break out of group)<br/>
+                  • Change center for spin and resize
+                </td>
+              </tr>
+
+              <tr><td height="30px"></td></tr>
+              
+              <tr>
+                <td align="center" >
+                  <a href=""><img src="img/help/img_quickstart_comingsoon.jpg"/></a>
+                </td>
+                <td></td>
+                <td>
+                  <h4>Quick Start 5: Sharing Animations</h4>
+                  • Coming Soon 
+                </td>
+              </tr>
+
+              <tr><td height="30px"></td></tr>
+              
+              <tr>
+                <td align="center" >
+                  <a href="http://www.youtube.com/watch?v=-YzgHKu7WAk&list=PL3QzgKRkD6WExXWVBH_-BhhCXt3Jsz6ry&index=6"><img src="img/help/img_quickstart_6.jpg"/></a>
+                </td>
+                <td></td>
+                <td>
+                  <h4>Quick Start 6: Key Frame Animation</h4>
+                  • Pin to a position<br/>
+                  • Make smooth and precise motions
+                </td>
+              </tr>
+
+              <tr><td height="30px"></td></tr>
+              
+              <tr>
+                <td align="center" >
+                  <a href=""><img src="img/help/img_quickstart_comingsoon.jpg"/></a>
+                </td>
+                <td></td>
+                <td>
+                  <h4>Quick Start 7: Advanced Options</h4>
+                  • Coming Soon 
+                </td>
+              </tr>
+
+            </table>
+            
           </div>
         </div><!--/span-->
         <div class="footer-table" ng-model="year">
           <img src="img/footer_logo_small.png"/><br/>
-                Copyright &copy; {{year}} Singapore Management University. Developed under a grant from the Singapore-MIT GAMBIT Game Lab   <br/>
+               Copyright &copy; {{year}} Singapore Management University. Developed under a grant from the Singapore-MIT GAMBIT Game Lab   <br/>
                 <a href="about.html">About Us</a> &nbsp;&nbsp;|&nbsp; &nbsp;
                 <a href="downloads.html">Downloads</a> &nbsp;&nbsp;|&nbsp; &nbsp;
                 <a href="help.html">Help</a> &nbsp;&nbsp;|&nbsp; &nbsp;
@@ -283,17 +322,15 @@
         </div>
       </div><!--/row-->
     </div><!--/.fluid-container-->
-    
-    
     <!-- Le javascript
 ================================================== -->
     <!-- Placed at the end of the document so the pages load faster -->
     <script src="js/jquery/jquery.js"></script>
-    <script src="js/moment/moment.min.js"></script>
     <script src="lib/angular/angular.min.js"></script>
+    <script src="js/moment/moment.min.js"></script>
     <script src="lib/angular/angular-ui.min.js"></script>
     <script src="lib/angular/angular-resource.min.js"></script>
-    <script src="js/angular/notifications-controller.js"></script>
+    <script src="js/angular/index-controller.js"></script>
     <script src="js/app.js"></script>
     <script src="js/bootbox/bootbox.min.js"></script>
     <script src="js/bootstrap/bootstrap-transition.js"></script>

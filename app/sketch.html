@@ -478,7 +478,7 @@
                           </span>
                         </div>
                       </div>
-                      <label class="control-label" for="sketchDesc">Enter a description for this change (optional; max 255 characters)</label>
+                      <label class="control-label" for="sketchDesc">Enter a description for this change (optional)</label>
                       <div class="controls">
                         <textarea ng-model="changeDescription" id="sketchDescription" maxlength="255"></textarea>
                       </div>
@@ -486,7 +486,7 @@
                   </div>
                  
                   <!-- PERMISSIONS -->
-                  <div class="span6 offset1" id="permissions" ng-show="User.u_login">
+                  <div class="span4b offset1" id="permissions" ng-show="User.u_login">
                     <!-- Public -->
                     <div class="well well-small" ng-show="User.id == owner_id || User.u_isadmin == true">
                       <div id="group_permissions">
@@ -575,7 +575,7 @@
                           </span>
                         </div>
                       </div>
-                      <label class="control-label" for="sketchDesc" style="font-weight:bold">Enter a description for this change (optional; max 255 characters)</label>
+                      <label class="control-label" for="sketchDesc" style="font-weight:bold">Enter a description for this change (optional)</label>
                       <div class="controls">
                         <textarea ng-model="changeDescription" id="sketchDescription" maxlength="255"></textarea>
                       </div>
@@ -583,7 +583,7 @@
                   </div>
                   
                   <!-- PERMISSIONS -->
-                  <div class="span6 offset1" id="permissions" ng-show="User.u_login">
+                  <div class="span4b offset1" id="permissions" ng-show="User.u_login">
                     <!-- Public -->
                     <div class="well well-small">
                       <div id="group_permissions">
@@ -647,9 +647,9 @@
      <div class="footer-table" ng-model="year">
         <img src="img/footer_logo_small.png"/><br/>
                 Copyright &copy; {{year}} Singapore Management University. Developed under a grant from the Singapore-MIT GAMBIT Game Lab   <br/>
-                <a href="about.html">About the Team</a> &nbsp;&nbsp;|&nbsp; &nbsp;
+                <a href="about.html">About Us</a> &nbsp;&nbsp;|&nbsp; &nbsp;
                 <a href="downloads.html">Downloads</a> &nbsp;&nbsp;|&nbsp; &nbsp;
-                <a href="faq.html">FAQ</a> &nbsp;&nbsp;|&nbsp; &nbsp;
+                <a href="help.html">Help</a> &nbsp;&nbsp;|&nbsp; &nbsp;
                 <a href="terms.html">Terms of Use</a> &nbsp;&nbsp;|&nbsp; &nbsp;
                 <a href="policy.html">Privacy Policy</a>
       </div>

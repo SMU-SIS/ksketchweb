@@ -240,6 +240,12 @@ a:hover {
   text-decoration: underline;
 }
 
+a.none { 
+ color : #000000; 
+ text-decoration : none;
+ cursor:default;
+}
+
 .img-rounded {
   -webkit-border-radius: 6px;
      -moz-border-radius: 6px;
@@ -328,7 +334,9 @@ a:hover {
 }
 
 .span4 {
-  width: 300px;
+  width: 320px;
+  max-width: 800px;
+  min-width: 120px;
 }
 
 .span3 {
@@ -466,6 +474,12 @@ a:hover {
 .row-fluid .span5 {
   width: 40.42553191489362%;
   *width: 40.37234042553192%;
+}
+
+.row-fluid .span4b {
+  width: 39%;
+  *width: 39%;
+  min-width: 10%;
 }
 
 .row-fluid .span4 {

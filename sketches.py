@@ -890,6 +890,45 @@ class Sketch(db.Model):
               }
     return result
 
+  #Deletes a Sketch from mobile version
+  @staticmethod
+  def delete_mobile(sketch_id, userid):
+    result = {}
+
+    versionCount = VersionCount.get_and_increment_counter(sketch_id)
+    versionCount_decrement = versionCount - 1
+
+    entity = Sketch.all().filter('sketchId',sketch_id).filter('version',versionCount_decrement).get()
+    
+    if entity:
+      appver = entity.appver
+      fileName = entity.fileName
+      owner = entity.owner
+
+      check_original = False
+      
+      if entity.sketchId == entity.original_sketch:
+        if entity.version == entity.original_version:
+          check_original = True
+          
+      entity.delete()
+      ModelCount.decrement_counter('Sketch_count')
+      AppVersionCount.decrement_counter(appver, check_original)
+      Comment.delete_by_sketch(sketch_id)
+      Permissions.delete_by_sketch(sketch_id)
+      Sketch_Groups.delete_by_sketch(sketch_id)
+      Like.delete_by_sketch(sketch_id)
+
+      result = {'status':'success',
+                'message': 'Deleted user sketch'}
+
+      logging.info("Delete: Sketch " + str(sketch_id) + " has been deleted")
+
+      logging.info("Delete: Sketch " + str(sketch_id) + " has been deleted")
+
+      return result
+
+
   #Deletes a User's data
   @staticmethod
   def delete_sketch_by_user(data):

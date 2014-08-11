@@ -416,13 +416,19 @@
                         <div class="well well-small">
                           <div class="row-fluid">
                           <div class="span8">
-                            <span style="font-weight:bold">Display Name:</span> {{profile_user.u_name}}<br>
-                            <span style="font-weight:bold">Contact for Updates:</span> {{profile_user.contact_updates}}<br>
-                            <span style="font-weight:bold">Contact for Studies:</span> {{profile_user.contact_studies}}<br>
-                            <!--<span style="font-weight:bold">Full Name:</span> {{profile_user.u_realname}}<br> -->
-                          </div>
-                          <div class="span4">
-                            <button style="float:right" class="btn btn-inverse btn-small" data-toggle="modal" href="#EditProfile" ui-if="belong">Edit Profile</button> 
+                            <table width="100%">
+                              <tr>
+                                <td>
+                                  <span style="font-weight:bold">Display Name:</span> {{profile_user.u_name}}<br>
+                                  <span style="font-weight:bold">Contact for Updates:</span> {{profile_user.contact_updates}}<br>
+                                  <span style="font-weight:bold">Contact for Studies:</span> {{profile_user.contact_studies}}<br>
+                                </td>
+                                <td width="20%"></td>
+                                <td width="50%">
+                                  <button style="float:right" class="btn btn-inverse btn-small" data-toggle="modal" href="#EditProfile" ui-if="belong">Edit Profile</button> 
+                                </td>
+                              </tr>
+                            </table>
                           </div>
                           </div>
                           <hr ui-if="belong">
@@ -537,9 +543,9 @@
         <div class="footer-table" ng-model="year">
           <img src="img/footer_logo_small.png"/><br/>
                 Copyright &copy; {{year}} Singapore Management University. Developed under a grant from the Singapore-MIT GAMBIT Game Lab   <br/>
-                <a href="about.html">About the Team</a> &nbsp;&nbsp;|&nbsp; &nbsp;
+                <a href="about.html">About Us</a> &nbsp;&nbsp;|&nbsp; &nbsp;
                 <a href="downloads.html">Downloads</a> &nbsp;&nbsp;|&nbsp; &nbsp;
-                <a href="faq.html">FAQ</a> &nbsp;&nbsp;|&nbsp; &nbsp;
+                <a href="help.html">Help</a> &nbsp;&nbsp;|&nbsp; &nbsp;
                 <a href="terms.html">Terms of Use</a> &nbsp;&nbsp;|&nbsp; &nbsp;
                 <a href="policy.html">Privacy Policy</a>
         </div>

@@ -18,7 +18,7 @@
       ga('create', 'UA-47832938-1', 'ksketchweb.appspot.com');
       ga('send', 'pageview');
     </script>
-       
+    
     <!-- Le styles -->
     <link href="css/bootstrap.css" rel="stylesheet">
     <link href="css/bootstrap-responsive.css" rel="stylesheet">
@@ -51,76 +51,10 @@
     <script type="text/javascript" src="js/janrain/janrain_widget.js"></script>
     <script type="text/javascript" src="js/common/notification.js"></script>
     
-    <script type="text/javascript">
-      function QueryString() {
-        // This function is anonymous, is executed immediately and 
-        // the return value is assigned to QueryString!
-        var query_string = {};
-        var query = window.location.search.substring(1);
-        var vars = query.split("&");
-        for (var i=0;i<vars.length;i++) {
-          var pair = vars[i].split("=");
-            // If first entry with this name
-          if (typeof query_string[pair[0]] === "undefined") {
-            query_string[pair[0]] = pair[1];
-            // If second entry with this name
-          } else if (typeof query_string[pair[0]] === "string") {
-            var arr = [ query_string[pair[0]], pair[1] ];
-            query_string[pair[0]] = arr;
-            // If third or later entry with this name
-          } else {
-            query_string[pair[0]].push(pair[1]);
-          }
-        }
-        e = document.getElementById('testdiv');
-        scope = angular.element(e).scope();
-        if (query_string.id !== undefined && query_string.id !== "") {
-          scope.$apply(function() {
-              scope.setTest(query_string.id);
-          });
-        }
-        scope.$apply(function() {
-          scope.get_profile();
-        });        
-      }
-    </script>    
-    
   </head>
   
   <!-- body id="ksketchapp" ng-controller="LoginController" scrolling="no" -->
-  <body ng-controller="ProfileDeleteController" id="ksketchapp"  scrolling="no" onload="QueryString()">
-
-    <!-- Loading -->
-    
-    <div id="LoadingDiv" ui-if="waiting!='Ready'"></div>
-    <div class="modal" id="Loading" ui-if="waiting=='Loading'">
-      <div class="modal-body">
-        <span>Loading........</span>
-      </div>
-    </div>
-    <div class="modal" id="Message" ui-if="waiting=='Error'" ng-cloak>
-      <div class="modal-body">
-        <div class="modal-header">
-          <input type="submit" class="close" value="x" data-dismiss="modal" ng-click="logout()"/>
-          <h3 id="myUploadItems">{{heading}}</h3>
-        </div>
-        <br/>
-        <div class="control-group">
-          <div class="control-label">
-            <span style="text-align:center">{{message}}</span>
-            <br/>
-            <br/>
-            <span style="text-align:center">{{submessage}}</span>
-            <br/>
-            <br/>
-          </div>
-        </div>
-      </div>
-      <div class="modal-footer">
-        <input type="submit"  ng-click="logout()" value="Ok" data-dismiss="modal"/>
-      </div>
-    </div>      
-  
+  <body ng-controller="IndexController" id="ksketchapp"  scrolling="no">
     <!-- Top Bar -->
     <div id="topbar" class="navbar navbar-inverse navbar-fixed-top">
       <div class="navbar-inner">
@@ -130,62 +64,38 @@
         </div>
       </div>
     </div>
-
+    
     <!-- Main Body -->
     <div class="container-fluid" id="wrap">
+        
       <div class="row-fluid" id="mainbody">
-        <span id="testdiv" ng-model="test"></span>
         <!-- Main Body -->
-        <div class="span10">   
-          <!-- Stuff goes here. -->
-          <!-- We have to think of a better name for this! -->
-          <div class="row-fluid">
-            <!--div class="container-fluid" ng-hide="profile_user.u_login" ng-cloak id="guestSketchbook">
-              <h3>You are not logged in!</h3>
-              <h3>Please Login to K-Sketch in order to access this function!</h3>
-            </div-->
-            <div class="container-fluid" ng-show="profile_user.id" ng-cloak id="userSketchbook">
-              <div class="row-fluid">
-                <h2 ui-if="belong">Delete my account</h2>
-                <h2 ui-if="!belong">Delete {{profile_user.u_name}}'s account</h2>
-                <p>You are about to permanently delete this account. Are you sure?</p>
-                <!-- Table for buttons-->
-                <br/>
-                <table width="100%">
-                  <tr>
-                    <td width="8%"><button ng-click="delete()">Yes</button></td>
-                    <td width="8%"><button ng-click="cancel()">No</button></td>
-                    <td></td>
-                  <tr>
-                </table>
-              </div>
-            </div>
-
+        <div>      
+          <div class="hero-unit-sub">
+            <p align="center"><img src="img/underconstruction.png" width="280"/></p>
+            
           </div>
-        </div><!--/span-->
-
-        <div class="footer-table" ng-model="year">
-          <img src="img/footer_logo_small.png"/><br/>
-                Copyright &copy; {{year}} Singapore Management University. Developed under a grant from the Singapore-MIT GAMBIT Game Lab   <br/>
+         </div><!--/span-->
+         <div class="footer-table" ng-model="year">
+            <img src="img/footer_logo_small.png"/><br/>
+                  Copyright &copy; {{year}} Singapore Management University. Developed under a grant from the Singapore-MIT GAMBIT Game Lab   <br/>
                 <a href="about.html">About Us</a> &nbsp;&nbsp;|&nbsp; &nbsp;
                 <a href="downloads.html">Downloads</a> &nbsp;&nbsp;|&nbsp; &nbsp;
                 <a href="help.html">Help</a> &nbsp;&nbsp;|&nbsp; &nbsp;
                 <a href="terms.html">Terms of Use</a> &nbsp;&nbsp;|&nbsp; &nbsp;
                 <a href="policy.html">Privacy Policy</a>
-        </div>
+          </div>
       </div><!--/row-->
     </div><!--/.fluid-container-->
-    
-    
     <!-- Le javascript
 ================================================== -->
     <!-- Placed at the end of the document so the pages load faster -->
     <script src="js/jquery/jquery.js"></script>
-    <script src="js/moment/moment.min.js"></script>
     <script src="lib/angular/angular.min.js"></script>
+    <script src="js/moment/moment.min.js"></script>
     <script src="lib/angular/angular-ui.min.js"></script>
     <script src="lib/angular/angular-resource.min.js"></script>
-    <script src="js/angular/profiledel-controller.js"></script>
+    <script src="js/angular/index-controller.js"></script>
     <script src="js/app.js"></script>
     <script src="js/bootbox/bootbox.min.js"></script>
     <script src="js/bootstrap/bootstrap-transition.js"></script>

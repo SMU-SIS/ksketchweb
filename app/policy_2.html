@@ -18,7 +18,7 @@
       ga('create', 'UA-47832938-1', 'ksketchweb.appspot.com');
       ga('send', 'pageview');
     </script>
-       
+    
     <!-- Le styles -->
     <link href="css/bootstrap.css" rel="stylesheet">
     <link href="css/bootstrap-responsive.css" rel="stylesheet">
@@ -51,76 +51,10 @@
     <script type="text/javascript" src="js/janrain/janrain_widget.js"></script>
     <script type="text/javascript" src="js/common/notification.js"></script>
     
-    <script type="text/javascript">
-      function QueryString() {
-        // This function is anonymous, is executed immediately and 
-        // the return value is assigned to QueryString!
-        var query_string = {};
-        var query = window.location.search.substring(1);
-        var vars = query.split("&");
-        for (var i=0;i<vars.length;i++) {
-          var pair = vars[i].split("=");
-            // If first entry with this name
-          if (typeof query_string[pair[0]] === "undefined") {
-            query_string[pair[0]] = pair[1];
-            // If second entry with this name
-          } else if (typeof query_string[pair[0]] === "string") {
-            var arr = [ query_string[pair[0]], pair[1] ];
-            query_string[pair[0]] = arr;
-            // If third or later entry with this name
-          } else {
-            query_string[pair[0]].push(pair[1]);
-          }
-        }
-        e = document.getElementById('testdiv');
-        scope = angular.element(e).scope();
-        if (query_string.id !== undefined && query_string.id !== "") {
-          scope.$apply(function() {
-              scope.setTest(query_string.id);
-          });
-        }
-        scope.$apply(function() {
-          scope.get_profile();
-        });        
-      }
-    </script>    
-    
   </head>
   
   <!-- body id="ksketchapp" ng-controller="LoginController" scrolling="no" -->
-  <body ng-controller="ProfileDeleteController" id="ksketchapp"  scrolling="no" onload="QueryString()">
-
-    <!-- Loading -->
-    
-    <div id="LoadingDiv" ui-if="waiting!='Ready'"></div>
-    <div class="modal" id="Loading" ui-if="waiting=='Loading'">
-      <div class="modal-body">
-        <span>Loading........</span>
-      </div>
-    </div>
-    <div class="modal" id="Message" ui-if="waiting=='Error'" ng-cloak>
-      <div class="modal-body">
-        <div class="modal-header">
-          <input type="submit" class="close" value="x" data-dismiss="modal" ng-click="logout()"/>
-          <h3 id="myUploadItems">{{heading}}</h3>
-        </div>
-        <br/>
-        <div class="control-group">
-          <div class="control-label">
-            <span style="text-align:center">{{message}}</span>
-            <br/>
-            <br/>
-            <span style="text-align:center">{{submessage}}</span>
-            <br/>
-            <br/>
-          </div>
-        </div>
-      </div>
-      <div class="modal-footer">
-        <input type="submit"  ng-click="logout()" value="Ok" data-dismiss="modal"/>
-      </div>
-    </div>      
-  
+  <body ng-controller="IndexController" id="ksketchapp"  scrolling="no">
     <!-- Top Bar -->
     <div id="topbar" class="navbar navbar-inverse navbar-fixed-top">
       <div class="navbar-inner">
@@ -130,40 +64,49 @@
         </div>
       </div>
     </div>
-
+    
     <!-- Main Body -->
     <div class="container-fluid" id="wrap">
       <div class="row-fluid" id="mainbody">
-        <span id="testdiv" ng-model="test"></span>
         <!-- Main Body -->
-        <div class="span10">   
-          <!-- Stuff goes here. -->
-          <!-- We have to think of a better name for this! -->
-          <div class="row-fluid">
-            <!--div class="container-fluid" ng-hide="profile_user.u_login" ng-cloak id="guestSketchbook">
-              <h3>You are not logged in!</h3>
-              <h3>Please Login to K-Sketch in order to access this function!</h3>
-            </div-->
-            <div class="container-fluid" ng-show="profile_user.id" ng-cloak id="userSketchbook">
-              <div class="row-fluid">
-                <h2 ui-if="belong">Delete my account</h2>
-                <h2 ui-if="!belong">Delete {{profile_user.u_name}}'s account</h2>
-                <p>You are about to permanently delete this account. Are you sure?</p>
-                <!-- Table for buttons-->
-                <br/>
-                <table width="100%">
-                  <tr>
-                    <td width="8%"><button ng-click="delete()">Yes</button></td>
-                    <td width="8%"><button ng-click="cancel()">No</button></td>
-                    <td></td>
-                  <tr>
-                </table>
-              </div>
-            </div>
+        <div>     
+          <div class="hero-unit-sub">
+            <p><h1>Privacy Policy</h1></p>
+            
+            <p>
+              <b>What information do you ask for during account registration?</b><br/>
 
+              To protect the privacy of our community members, we limit what we collect and what we publish on the website. During the registration process, we ask for the following information:
+              <ul>
+                <li>display name - We ask that users avoid using their real names or other identifying information.</li>
+                <li>birth month and year - We use this to determine if you are over 18 years old.</li>
+                <li>your email address - If you are 18 years old or older and if you give us permission to contact you, we may use this address to notify you of changes to K-Sketch or to invite you to participate in a user study.</li>
+                <li>your parent's email address - If you are under 18 years old, we will use this address to contact your parent and ask permission for you to use this service. With additional permission from your parent, we may also use this address to notify them of changes to K-Sketch or to invite you to participate in a user study.</li>
+              </ul>
+              The display name of the account holder is displayed publicly on their profile page. The birth month / year and email addresses are not displayed publicly.
+            </p>
+            
+            <p>
+              <b>What data is collected from people while they use the website?</b><br/>
+
+              When you log in, the K-Sketch website asks your browser to put an http cookie on your computer in order to remember that you are logged in while you browse different pages. We may also collect some data on where your click in K-Sketch, which tools you use, and which parts of the site you visit. This "click data" helps us find ways to improve K-Sketch.
+              <br/>
+              Some of your click data and publicly accessible animations may be used in research studies intended to improve our understanding of how people use K-Sketch. The results of this research are shared with educators and researchers through conferences, journals, and other publications. 
+            </p>
+            
+            <p>
+              <b>Does the K-Sketch Team provide information about users of Scratch to anyone?</b><br/>
+
+              No. We will not disclose user information (birth month/year or e-mail address) to any third party, even for research purposes.
+            </p>
+
+            <p>
+              <b>Can the K-Sketch Team view my animations, even if I do not allow public access to them?</b><br/>
+
+              Since the K-Sketch team is responsible for maintenance and moderation of K-Sketch, we have access to all content stored on the K-Sketch website. This includes all animations, whether or not you allow public access. If you wish to use K-Sketch in complete privacy, you can use K-Sketch Mobile app without logging in to the K-Sketch web site.
+            </p>
           </div>
         </div><!--/span-->
-
         <div class="footer-table" ng-model="year">
           <img src="img/footer_logo_small.png"/><br/>
                 Copyright &copy; {{year}} Singapore Management University. Developed under a grant from the Singapore-MIT GAMBIT Game Lab   <br/>
@@ -175,17 +118,15 @@
         </div>
       </div><!--/row-->
     </div><!--/.fluid-container-->
-    
-    
     <!-- Le javascript
 ================================================== -->
     <!-- Placed at the end of the document so the pages load faster -->
     <script src="js/jquery/jquery.js"></script>
-    <script src="js/moment/moment.min.js"></script>
     <script src="lib/angular/angular.min.js"></script>
+    <script src="js/moment/moment.min.js"></script>
     <script src="lib/angular/angular-ui.min.js"></script>
     <script src="lib/angular/angular-resource.min.js"></script>
-    <script src="js/angular/profiledel-controller.js"></script>
+    <script src="js/angular/index-controller.js"></script>
     <script src="js/app.js"></script>
     <script src="js/bootbox/bootbox.min.js"></script>
     <script src="js/bootstrap/bootstrap-transition.js"></script>

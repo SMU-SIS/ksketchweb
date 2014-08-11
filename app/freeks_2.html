@@ -1,5 +1,5 @@
 <!DOCTYPE html>
-<html ng-app="myApp" lang="en">
+<html lang="en">
   <head>
     <meta charset="utf-8">
     <title>K-Sketch: The Kinetic Sketch Pad!</title>
@@ -18,7 +18,7 @@
       ga('create', 'UA-47832938-1', 'ksketchweb.appspot.com');
       ga('send', 'pageview');
     </script>
-       
+    
     <!-- Le styles -->
     <link href="css/bootstrap.css" rel="stylesheet">
     <link href="css/bootstrap-responsive.css" rel="stylesheet">
@@ -51,120 +51,110 @@
     <script type="text/javascript" src="js/janrain/janrain_widget.js"></script>
     <script type="text/javascript" src="js/common/notification.js"></script>
     
-    <script type="text/javascript">
-      function QueryString() {
-        // This function is anonymous, is executed immediately and 
-        // the return value is assigned to QueryString!
-        var query_string = {};
-        var query = window.location.search.substring(1);
-        var vars = query.split("&");
-        for (var i=0;i<vars.length;i++) {
-          var pair = vars[i].split("=");
-            // If first entry with this name
-          if (typeof query_string[pair[0]] === "undefined") {
-            query_string[pair[0]] = pair[1];
-            // If second entry with this name
-          } else if (typeof query_string[pair[0]] === "string") {
-            var arr = [ query_string[pair[0]], pair[1] ];
-            query_string[pair[0]] = arr;
-            // If third or later entry with this name
-          } else {
-            query_string[pair[0]].push(pair[1]);
-          }
-        }
-        e = document.getElementById('testdiv');
-        scope = angular.element(e).scope();
-        if (query_string.id !== undefined && query_string.id !== "") {
-          scope.$apply(function() {
-              scope.setTest(query_string.id);
-          });
-        }
-        scope.$apply(function() {
-          scope.get_profile();
-        });        
-      }
-    </script>    
-    
   </head>
   
-  <!-- body id="ksketchapp" ng-controller="LoginController" scrolling="no" -->
-  <body ng-controller="ProfileDeleteController" id="ksketchapp"  scrolling="no" onload="QueryString()">
-
-    <!-- Loading -->
-    
-    <div id="LoadingDiv" ui-if="waiting!='Ready'"></div>
-    <div class="modal" id="Loading" ui-if="waiting=='Loading'">
-      <div class="modal-body">
-        <span>Loading........</span>
-      </div>
-    </div>
-    <div class="modal" id="Message" ui-if="waiting=='Error'" ng-cloak>
-      <div class="modal-body">
-        <div class="modal-header">
-          <input type="submit" class="close" value="x" data-dismiss="modal" ng-click="logout()"/>
-          <h3 id="myUploadItems">{{heading}}</h3>
-        </div>
-        <br/>
-        <div class="control-group">
-          <div class="control-label">
-            <span style="text-align:center">{{message}}</span>
-            <br/>
-            <br/>
-            <span style="text-align:center">{{submessage}}</span>
-            <br/>
-            <br/>
-          </div>
-        </div>
-      </div>
-      <div class="modal-footer">
-        <input type="submit"  ng-click="logout()" value="Ok" data-dismiss="modal"/>
-      </div>
-    </div>      
-  
+  <body id="ksketchapp"  scrolling="no">
     <!-- Top Bar -->
     <div id="topbar" class="navbar navbar-inverse navbar-fixed-top">
       <div class="navbar-inner">
-        <div class="container-fluid" ng-show="waiting=='Ready'" ng-cloak>
-          <!-- a class="brand" id="logo" href="#"><img style="height:36px" src="ico/KSketch-logo.png"></a -->
+        <div class="container-fluid">
           <a class="brand" id="logo" href=" index.html">K-Sketch</a>
         </div>
       </div>
     </div>
-
+    
     <!-- Main Body -->
     <div class="container-fluid" id="wrap">
       <div class="row-fluid" id="mainbody">
-        <span id="testdiv" ng-model="test"></span>
         <!-- Main Body -->
-        <div class="span10">   
-          <!-- Stuff goes here. -->
-          <!-- We have to think of a better name for this! -->
-          <div class="row-fluid">
-            <!--div class="container-fluid" ng-hide="profile_user.u_login" ng-cloak id="guestSketchbook">
-              <h3>You are not logged in!</h3>
-              <h3>Please Login to K-Sketch in order to access this function!</h3>
-            </div-->
-            <div class="container-fluid" ng-show="profile_user.id" ng-cloak id="userSketchbook">
-              <div class="row-fluid">
-                <h2 ui-if="belong">Delete my account</h2>
-                <h2 ui-if="!belong">Delete {{profile_user.u_name}}'s account</h2>
-                <p>You are about to permanently delete this account. Are you sure?</p>
-                <!-- Table for buttons-->
-                <br/>
-                <table width="100%">
-                  <tr>
-                    <td width="8%"><button ng-click="delete()">Yes</button></td>
-                    <td width="8%"><button ng-click="cancel()">No</button></td>
-                    <td></td>
-                  <tr>
-                </table>
-              </div>
-            </div>
+        <div>     
+          <div class="hero-unit-sub">
+            <p><h1>Codename FREEKS: OpenGL renderer, Java implementation</h1></p>
 
+            <p>
+              <ol>
+                <li>Performance targets</li>
+                <li>Goals</li>
+                <li>Technologies</li>
+              </ol>
+            </p>
+            
+            <p>
+              <b>Performance Targets</b><br/>
+
+              <table border="1">
+                <tr>
+                  <td><b>Metric</b></td>
+                  <td><b>Target</b></td>
+                </tr>
+
+                <tr>
+                  <td>Number of strokes</td>
+                  <td>1000</td>
+                </tr>
+
+                <tr>
+                  <td>Memory footprint (PROCESSOR)</td>
+                  <td>32mb</td>
+                </tr>
+
+                <tr>
+                  <td>Memory footprint (VIDEO)</td>
+                  <td>16mb</td>
+                </tr>
+
+                <tr>
+                  <td>Disk</td>
+                  <td>«scales» «gracefully accepts user limit»</td>
+                </tr>
+
+                <tr>
+                  <td>CPU Utilization</td>
+                  <td>average 20% of a 600mhz processor</td>
+                </tr>
+              </table>
+            </p>
+            
+            <p>
+              <b>Goals</b><br/>
+
+              <p>
+                Codename FREEKS is a Java+OpenGL implementation of the essentials of K-Sketch. Its primary goal is to implement an efficient OpenGL, (ES-compatible) renderer for OpenKSK files. We must be able to port this renderer to an OpenGL ES platform, re-implemented in C (or Objective C). </br>
+
+                <a href="http://ksketch.smu.edu.sg/app/downloads/previousVersion/OpenGL-ES-1.1-notes.pdf">OpenGL ES 1.1 notes</a>
+              </p>
+
+              <p>
+                The first pass is going to be a Java implementation, to allow us to deliver K-Sketch via the web.</br>
+                Some other goals: </br>
+
+                <ul>
+                  <li>Embeddable architecture, which would allow us to embed K-Sketch in other programs</li>
+                  * A more flexible renderer and item manager, allowing graphics and strokes to be rendered and selected without any hacky crap
+                </ul>
+
+                <table style="border:1px dashed black;">
+                  <tr>
+                    <td>* Dynamic quality settings for strokes. The stroke data format needs to support variable quality. It should probably support bezier representations out of the box, as some kind of smoothing transform</td>
+                  </tr>
+                </table>
+              </p>
+
+            </p>
+
+            <p>
+              <b>Technologies</b><br/>
+
+              <ul>
+                <li><a href="http://sourceforge.net/projects/jpen/">JPen</a> </li>
+                <li><a href="http://sourceforge.net/projects/openink/">OpenInk</a> </li>
+              </ul>
+
+            </p>
+            
           </div>
         </div><!--/span-->
-
-        <div class="footer-table" ng-model="year">
+        <div class="footer-table">
           <img src="img/footer_logo_small.png"/><br/>
                 Copyright &copy; {{year}} Singapore Management University. Developed under a grant from the Singapore-MIT GAMBIT Game Lab   <br/>
                 <a href="about.html">About Us</a> &nbsp;&nbsp;|&nbsp; &nbsp;
@@ -180,13 +170,6 @@
     <!-- Le javascript
 ================================================== -->
     <!-- Placed at the end of the document so the pages load faster -->
-    <script src="js/jquery/jquery.js"></script>
-    <script src="js/moment/moment.min.js"></script>
-    <script src="lib/angular/angular.min.js"></script>
-    <script src="lib/angular/angular-ui.min.js"></script>
-    <script src="lib/angular/angular-resource.min.js"></script>
-    <script src="js/angular/profiledel-controller.js"></script>
-    <script src="js/app.js"></script>
     <script src="js/bootbox/bootbox.min.js"></script>
     <script src="js/bootstrap/bootstrap-transition.js"></script>
     <script src="js/bootstrap/bootstrap-alert.js"></script>

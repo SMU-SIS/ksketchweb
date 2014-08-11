@@ -55,24 +55,147 @@
   
   <!-- body id="ksketchapp" ng-controller="LoginController" scrolling="no" -->
   <body ng-controller="IndexController" id="ksketchapp"  scrolling="no">
+    <!-- Loading -->      
+    <div id="LoadingDiv" ui-if="waiting!='Ready'"></div>
+    <div class="modal" id="Loading" ui-if="waiting=='Loading'">
+      <div class="modal-body">
+        <span>Loading........</span>
+      </div>
+    </div>
+    <div class="modal" id="Loading" ui-if="waiting=='Saving'" ng-cloak>
+      <div class="modal-body">
+        <span>Saving........</span>
+      </div>
+    </div>
+    <div class="modal" id="Message" ui-if="waiting=='Error'" ng-cloak>
+      <div class="modal-body">
+        <div class="modal-header">
+          <input type="submit" class="close" value="x" data-dismiss="modal" ng-click="acknowledge()"/>
+          <h3 id="myUploadItems">{{heading}}</h3>
+        </div>
+        <br/>
+        <div class="control-group">
+          <div class="control-label">
+            <span style="text-align:center">{{message}}</span>
+            <br/>
+            <br/>
+            <span style="text-align:center">{{submessage}}</span>
+            <br/>
+            <br/>
+          </div>
+        </div>
+      </div>
+      <div class="modal-footer">
+        <input type="submit"  ng-click="acknowledge()" value="Ok" data-dismiss="modal"/>
+      </div>
+    </div>        
+
+    
     <!-- Top Bar -->
     <div id="topbar" class="navbar navbar-inverse navbar-fixed-top">
       <div class="navbar-inner">
         <div class="container-fluid" ng-show="waiting=='Ready'" ng-cloak>
           <!-- a class="brand" id="logo" href="#"><img style="height:36px" src="ico/KSketch-logo.png"></a -->
           <a class="brand" id="logo" href=" index.html">K-Sketch</a>
+          <ul class="nav" ng-cloak>
+            <li>
+              <!--Username and profile link goes here.-->
+              <a ng-show="User.u_login" ng-cloak href="profile.html?id={{User.id}}" class="navbar-link">
+                <span id="heading">
+                  Hello, {{User.u_name}}
+                  <span ui-if="User.u_isadmin"> (Admin)</span>
+                  !
+                </span>
+              </a>
+              <a ng-hide="User.u_login" ng-cloak id="heading" disabled>Hello, {{User.u_name}}!</a>
+            </li>
+            <li ng-hide="User.u_login" ng-cloak>
+              <a class="janrainEngage" href="#">Sign-In</a>
+            </li>
+            <li ng-show="User.u_login" ng-cloak>
+              <a href="/user/logout">Logout</a>
+            </li>          
+            <li class="dropdown"  ui-if="User.u_login">
+              <a href="#" class="dropdown-toggle" data-toggle="dropdown" title="{{notify}}">
+                <i ng-class="notify_icon"></i>
+<!--                 <b class="caret"></b> -->
+              </a>
+              <ul class="dropdown-menu">
+                <li>
+                  <a ui-if="!notifications.entities.length">
+                  <span>You have no new notifications.</span>
+                  </a>
+                  <table class="table table-striped" ui-if="!!notifications.entities.length">
+                    <tr ng-repeat="notification in notifications.entities |  limitTo:3">
+                      <td>
+                        <span>{{notification.n_date}}</span>
+                      </td>
+                      <td>
+                        <span>{{notification.n_message}}</span>
+                      </td>
+                      <td ui-if="notification.n_type == 'GROUPINVITE'">
+                        <ul>
+                          <a class="btn btn-small" onClick="notifyAccept({{notification.id}},{{notification.n_relevant}})">Accept</a>
+                        </ul>
+                        <ul>
+                          <a class="btn btn-small" onClick="notifyReject({{notification.id}},{{notification.n_relevant}})">Reject</a>
+                        </ul>
+                      </td>
+                    </tr>
+                  </table>
+                </li>
+                <li class="divider"></li>
+                <li>
+                  <a href="notifications.html">
+                    Show All Notifications
+                  </a>
+                </li>      
+              </ul>                            
+            </li>
+          </ul>         
+          <p class="navbar-search pull-right">
+            <input type="text" ng-model="search" onkeypress="searchKeyPress(event);" class="search-query" placeholder="Search by sketch name or owner">
+            <input type="submit" id="searchbutton" class="btn btn-inverse btn-small" ng-click="simpleSearch()" value=">>">
+            <script>
+              function searchKeyPress(e)
+              {
+                  // look for window.event in case event isn't passed in
+                  if (typeof e == 'undefined' && window.event) { e = window.event; }
+                  if (e.keyCode == 13)
+                  {
+                      document.getElementById('searchbutton').click();
+                  }
+              }
+            </script>
+          </p>
         </div>
       </div>
     </div>
     
     <!-- Main Body -->
     <div class="container-fluid" id="wrap">
+        
       <div class="row-fluid" id="mainbody">
+        
+        <!-- Navigation Sidebar (Access separate panes). -->
+        <div class="span2">
+          <div class="well sidebar-nav sidebar-nav-fixed">
+            <ul class="nav nav-list">
+              <!--This changes depending on current logged-in status.-->
+              
+              
+              <li id="sc" ng-show="User.u_login" ng-cloak><a title="View personal profile, sketches and group memberships" href="profile.html?id={{User.id}}">My Sketchbook</a></li>
+              <li id="cs"><a title="Open editor to create a new sketch" href="sketch.html">Create a Sketch</a></li>
+            </ul>
+          </div><!--/.well -->
+        </div><!--/span-->
+        
         <!-- Main Body -->
-        <div>     
-          <div class="hero-unit-sub">
-            <p><h1>Privacy Policy</h1></p>
-            
+        <div class="span10">
+          <span id="testdiv" ng-model="test" hidden></span>        
+          <div class="hero-unit">
+            <p><h2>Privacy Policy</h2></p>
+            <br/>
             <p>
               <b>What information do you ask for during account registration?</b><br/>
 
@@ -85,7 +208,7 @@
               </ul>
               The display name of the account holder is displayed publicly on their profile page. The birth month / year and email addresses are not displayed publicly.
             </p>
-            
+            <br/>
             <p>
               <b>What data is collected from people while they use the website?</b><br/>
 
@@ -93,13 +216,13 @@
               <br/>
               Some of your click data and publicly accessible animations may be used in research studies intended to improve our understanding of how people use K-Sketch. The results of this research are shared with educators and researchers through conferences, journals, and other publications. 
             </p>
-            
+            <br/>
             <p>
               <b>Does the K-Sketch Team provide information about users of Scratch to anyone?</b><br/>
 
               No. We will not disclose user information (birth month/year or e-mail address) to any third party, even for research purposes.
             </p>
-
+            <br/>
             <p>
               <b>Can the K-Sketch Team view my animations, even if I do not allow public access to them?</b><br/>
 
@@ -109,10 +232,10 @@
         </div><!--/span-->
         <div class="footer-table" ng-model="year">
           <img src="img/footer_logo_small.png"/><br/>
-                Copyright &copy; {{year}} Singapore Management University. Developed under a grant from the Singapore-MIT GAMBIT Game Lab   <br/>
-                <a href="about.html">About the Team</a> &nbsp;&nbsp;|&nbsp; &nbsp;
+               Copyright &copy; {{year}} Singapore Management University. Developed under a grant from the Singapore-MIT GAMBIT Game Lab   <br/>
+                <a href="about.html">About Us</a> &nbsp;&nbsp;|&nbsp; &nbsp;
                 <a href="downloads.html">Downloads</a> &nbsp;&nbsp;|&nbsp; &nbsp;
-                <a href="faq.html">FAQ</a> &nbsp;&nbsp;|&nbsp; &nbsp;
+                <a href="help.html">Help</a> &nbsp;&nbsp;|&nbsp; &nbsp;
                 <a href="terms.html">Terms of Use</a> &nbsp;&nbsp;|&nbsp; &nbsp;
                 <a href="policy.html">Privacy Policy</a>
         </div>

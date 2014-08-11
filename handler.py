@@ -97,7 +97,14 @@ class ActionHandler(webapp2.RequestHandler):
         result = Sketch.add(flexData, userid=userid)
         return self.respond(result)
 
-    #Handler for deleting a Sketch
+    def delete_sketch_mobile(self):
+        sketchid = self.request.get("sketchid")
+        userid = self.request.get("userid")
+
+        result = Sketch.delete_mobile(sketchid, userid=userid)
+        return self.respond(result)
+
+    #Handler for deleting a Sketch - NOT WORKING
     def delete_sketch(self, model_id):  #/delete/sketch/<model_id>
 
         auser = self.auth.get_user_by_session()
@@ -402,6 +409,7 @@ application = webapp2.WSGIApplication([
     
     webapp2.Route('/list/version', handler=ActionHandler, handler_method='get_versions'), # Get Versions
     webapp2.Route('/post/overwritesketchxml', handler=ActionHandler, handler_method='overwrite_post'),
+    webapp2.Route('/post/deletesketch', handler=ActionHandler, handler_method='delete_sketch_mobile'),
     webapp2.Route('/post/sketchxml', handler=ActionHandler)
     ],
     config=webapp2_config,

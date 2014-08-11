@@ -500,7 +500,7 @@ class RPXTokenHandler(BaseHandler):
         url = 'https://rpxnow.com/api/v2/auth_info'
         args = {
             'format': 'json',
-            'apiKey': '<REPLACE_WITH_API_KEY>',   #Change to api key provided in Janrain
+            'apiKey': 'dd02f635d9f47ddbb492e28fc51d182b9fb5b87e',   #Change to api key provided in Janrain
             'token': token
         }
         r = urlfetch.fetch(url=url,
@@ -859,7 +859,7 @@ Please click the following link to cancel participation: http://ksketch.smu.edu.
 K-Sketch Team"
       
       # make a secure connection to SendGrid
-      s = Sendgrid('ksketch', '<SENDGRID_ACCOUNT_PASSWORD>', secure=True)
+      s = Sendgrid('ksketch', 'ksketchSIS2014', secure=True)
 
       # make a message object
       msg = Message("ksketch@smu.edu.sg", "K-Sketch: Approval for Registration", strMessage, "")
@@ -905,7 +905,7 @@ Please bookmark this link to easily access your child's profile in the future.\n
 K-Sketch Team"
       
       # make a secure connection to SendGrid
-      s = Sendgrid('ksketch', '<SENDGRID_ACCOUNT_PASSWORD>', secure=True)
+      s = Sendgrid('ksketch', 'ksketchSIS2014', secure=True)
 
       # make a message object
       msg = Message("ksketch@smu.edu.sg", "K-Sketch: Registration Complete", strMessage, "")
@@ -933,7 +933,7 @@ class LogoutPage(BaseHandler):
 webapp2_config = {}
 
 webapp2_config['webapp2_extras.sessions'] = {
-		'secret_key': 'n\xd99\xd4\x01Y\xea5/\xd0\x8e\x1ba\\:\x91\x10\x16\xbcTA\xe0\x87lf\xfb\x0e\xd2\xc4\x15\\\xaf\xb0\x91S\x12_\x86\t\xadZ\xae]\x96\xd0\x11\x80Ds\xd5\x86.\xbb\xd5\xcbb\xac\xc3T\xaf\x9a+\xc5',
+    'secret_key': 'n\xd99\xd4\x01Y\xea5/\xd0\x8e\x1ba\\:\x91\x10\x16\xbcTA\xe0\x87lf\xfb\x0e\xd2\xc4\x15\\\xaf\xb0\x91S\x12_\x86\t\xadZ\xae]\x96\xd0\x11\x80Ds\xd5\x86.\xbb\xd5\xcbb\xac\xc3T\xaf\x9a+\xc5',
 }
 
 application = webapp2.WSGIApplication([
