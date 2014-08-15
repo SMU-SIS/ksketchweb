@@ -176,9 +176,11 @@ class ActionHandler(webapp2.RequestHandler):
           userid = auser['user_id']
         
         result = Sketch.get_entity_by_versioning(self.request.body, "View", userid=userid)
+        
+        logging.info(result)
         return self.respond(result)   
 
-    #Test method by Cam
+    #Handler for viewing a particular Sketch mobile
     def view_sketch_mobile(self, sketchId, version, userid): #/get/sketch/view/<sketchId>/<version>/<userid>
         result = Sketch.get_entity_by_versioning_mobile(sketchId, version, "View", userid=userid)
         return self.respond(result)   
