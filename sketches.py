@@ -11,7 +11,6 @@ import os
 import urllib
 import urllib2
 import logging
-
 import webapp2
 from google.appengine.api import memcache
 from google.appengine.ext import db, webapp
@@ -130,26 +129,31 @@ class Sketch(db.Model):
       check_new_version = False
       #Check if sketch was made from latest version if not original
       check_if_latest = True
-      
+      #Check if the sketch is a new sketch
+      check_new_sketch=False
       ModelCount.increment_counter('Sketch_count')
-      modelCount = ModelCount.get_counter('Sketch')
-      
       #For new sketches/sketches saved as new sketches
       if jsonData['sketchId'] == "":
         #Assigns new SketchId
+        handmade_key = db.Key.from_path('Sketch', 1)
+        #Get new ID from DB
+        new_ids = db.allocate_ids(handmade_key, 1)
+        check_new_sketch=True
+        modelCount = new_ids[0]
         ModelCount.increment_counter('Sketch')
-        jsonData['sketchId'] = str(modelCount.count)
+        logging.info("Model count : " + str(modelCount))
+        jsonData['sketchId'] = str(modelCount)
       
       #Placeholder for current version of SketchId
       versionCount = 0
-      
+      modelCount=int(jsonData['sketchId'])
       #If sketch is completely original (i.e. new sketch)
       if jsonData['originalSketch'] == -1:
         check_original = True
         #Creates new version counter for the new Sketch.
         versionCount = VersionCount.get_and_increment_counter(long(jsonData['sketchId']))
         jsonData['originalVersion'] = versionCount
-        jsonData['originalSketch'] = str(modelCount.count)
+        jsonData['originalSketch'] = str(modelCount)
         
       #If sketch is an updated version of existing sketch (i.e. edit sketch)
       elif jsonData['originalSketch'] == jsonData['sketchId']:
@@ -191,8 +195,10 @@ class Sketch(db.Model):
         thumbnail = jsonData['thumbnailData']
         change = jsonData['changeDescription']
         change = change[:255]
-          
-        entity = Sketch(sketchId=long(jsonData['sketchId']),
+        if(check_new_sketch):
+          new_key = db.Key.from_path('Sketch', modelCount)
+          entity = Sketch(key=new_key,
+                        sketchId=long(jsonData['sketchId']),
                         version=long(jsonData['version']),
                         changeDescription=change,
                         fileName=jsonData['fileName'],
@@ -202,7 +208,17 @@ class Sketch(db.Model):
                         original_sketch=long(jsonData['originalSketch']),
                         original_version=long(jsonData['originalVersion']),
                         appver=float(jsonData['appver']))
-        
+        else:
+          entity = Sketch(sketchId=long(jsonData['sketchId']),
+                        version=long(jsonData['version']),
+                        changeDescription=change,
+                        fileName=jsonData['fileName'],
+                        owner=long(jsonData['owner_id']),
+                        fileData=file,
+                        thumbnailData=thumbnail,
+                        original_sketch=long(jsonData['originalSketch']),
+                        original_version=long(jsonData['originalVersion']),
+                        appver=float(jsonData['appver']))
         verify = entity.put()
         if (allow_permissions):
           if (verify):

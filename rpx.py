@@ -500,7 +500,7 @@ class RPXTokenHandler(BaseHandler):
         url = 'https://rpxnow.com/api/v2/auth_info'
         args = {
             'format': 'json',
-            'apiKey': 'dd02f635d9f47ddbb492e28fc51d182b9fb5b87e',   #Change to api key provided in Janrain
+            'apiKey': '----Replace with Janrain token----',   #Change to api key provided in Janrain
             'token': token
         }
         r = urlfetch.fetch(url=url,
