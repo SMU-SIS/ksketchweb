@@ -193,8 +193,74 @@
         <!-- Main Body -->
         <div class="span10">
           <span id="testdiv" ng-model="test" hidden></span>        
-          <div class="hero-unit-sub">
-            <p align="center"><img src="img/underconstruction.png" width="280"/></p>
+          <div class="hero-unit">
+            <h2>K-Sketch History</h2>
+            <script>
+              if (window.XMLHttpRequest)
+              {
+                // code for IE7+, Firefox, Chrome, Opera, Safari
+                xmlhttp=new XMLHttpRequest();
+              }
+              else
+              {
+                // code for IE6, IE5
+                xmlhttp=new ActiveXObject("Microsoft.XMLHTTP");
+              }
+              xmlhttp.open("GET","timeline.xml",false);
+              xmlhttp.send();
+              xmlDoc=xmlhttp.responseXML; 
+
+              var year_entry = xmlDoc.getElementsByTagName("YearEntry");
+              var event_year = "";
+              for (i=0; i<year_entry.length; i++)
+              {
+                event_year = year_entry[i].getElementsByTagName("Year")[0].childNodes[0].nodeValue;
+                document.write("<a href='#" + event_year + "'>" + event_year + "</a>" + " | ");
+              }
+
+              year_entry = xmlDoc.getElementsByTagName("YearEntry");
+              for (i=0; i<year_entry.length; i++)
+              {
+                event_year = year_entry[i].getElementsByTagName("Year")[0].childNodes[0].nodeValue;
+                var event_list = year_entry[i].getElementsByTagName("Event");
+                var previous_month = "";
+
+                document.write("<table><a class='none' id='" + event_year + "' onclick='return false;'>");
+                document.write("<tr><th width='5%'></th><th width='2%'></th><th width='10%'></th><th width='2%'></th><th width='60%'></th></tr>");
+                document.write("<tr><td colspan='5'><img src='img/team/border.png'/></td></tr>");
+                
+                for(j=0; j<event_list.length; j++)
+                {
+                  var event_month = event_list[j].getElementsByTagName("Month")[0].childNodes[0].nodeValue;
+                  var event_desc = event_list[j].getElementsByTagName("Description")[0].childNodes[0].nodeValue;
+                  if(j == 0)
+                  {
+                    document.write("<tr><td valign='top'><b>" + event_year + "</b></td><td width='2%'></td>");
+                  }
+                  else
+                  {
+                    document.write("<tr><td></td><td width='2%'></td>");
+                  }
+
+                  if(event_month == previous_month || event_month == "0")
+                  {
+                    event_month = "";
+                  }
+                  
+                  if(j == event_list.length-1)
+                  {
+                    document.write("<td valign='top'>" + event_month + "</td><td></td><td>" + event_desc + "</td></tr>"); 
+                  }
+                  else
+                  {
+                    document.write("<td valign='top'>" + event_month + "</td><td></td><td>" + event_desc + "<br/><img src='img/team/border.png'/></td></tr>");
+                  }
+                  previous_month = event_month;
+                }
+
+                document.write("</a></table>");
+              }
+            </script>
           </div>
         </div><!--/span-->
         <div class="footer-table" ng-model="year">

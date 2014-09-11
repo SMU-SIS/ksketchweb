@@ -1,0 +1,102 @@
+<Contributors>
+	<List>
+		<Phase>Current</Phase>
+		<Person>
+			<Name>Richard C. Davis</Name>
+			<Image>img/team/RCDAVIS.jpg</Image>
+			<Designation>Assistant Professor</Designation>
+			<Department>School of Information Systems</Department>
+			<Affiliation>Singapore Management University</Affiliation>
+		</Person>
+		<Person>
+			<Name>Ram Vibhakar Suthagar</Name>
+			<Image>img/team/RAMVS.jpg</Image>
+			<Designation>Research Engineer</Designation>
+			<Department>School of Information Systems</Department>
+			<Affiliation>Singapore Management University</Affiliation>
+		</Person>
+		<Person>
+			<Name>Camellia Zakaria</Name>
+			<Image>img/team/NURCAMELLIAZ.jpg</Image>
+			<Designation>PhD Student</Designation>
+			<Department>School of Information Systems</Department>
+			<Affiliation>Singapore Management University</Affiliation>
+		</Person>
+		<Person>
+			<Name>James Landay</Name>
+			<Image>img/team/PERSON.jpg</Image>
+			<Designation>-to be updated-</Designation>
+			<Department>-to be updated-</Department>
+			<Affiliation>-to be updated-</Affiliation>
+		</Person>
+	</List>
+	<List>
+		<Phase>Past (K-Sketch 2)</Phase>
+		<Person>
+			<Name>Khoo Jing Ting</Name>
+		</Person>
+		<Person>
+			<Name>Guan Mengyuan</Name>
+		</Person>
+		<Person>
+			<Name>Ryder Ziola</Name>
+		</Person>
+		<Person>
+			<Name>Brandon Goh</Name>
+		</Person>
+		<Person>
+			<Name>Kevin Koh</Name>
+		</Person>
+		<Person>
+			<Name>Koh Quee Boon</Name>
+		</Person>
+		<Person>
+			<Name>Shannon Lim</Name>
+		</Person>
+		<Person>
+			<Name>Liu Yang</Name>
+		</Person>
+		<Person>
+			<Name>Loo Si Hong</Name>
+		</Person>
+		<Person>
+			<Name>Shu Ke</Name>
+		</Person>
+		<Person>
+			<Name>Kevin Steppe</Name>
+		</Person>
+		<Person>
+			<Name>Paul Taele</Name>
+		</Person>
+		<Person>
+			<Name>Tony Tran</Name>
+		</Person>
+		<Person>
+			<Name>Samantha Wee</Name>
+		</Person>
+		<Person>
+			<Name>Wong Sihui</Name>
+		</Person>
+		<Person>
+			<Name>Zhang Rui</Name>
+		</Person>
+		<Person>
+			<Name>Damien Zydczak</Name>
+		</Person>
+	</List>
+	<List>
+		<Phase>Past (K-Sketch 1)</Phase>
+		<Person>
+			<Name>Brien Colwell</Name>
+		</Person>
+		<Person>
+			<Name>Cy Khormaee</Name>
+		</Person>
+		<Person>
+			<Name>Matt Davis</Name>
+		</Person>
+		<Person>
+			<Name>Arpi Shaverdian</Name>
+		</Person>
+	</List>
+</Contributors>

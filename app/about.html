@@ -204,43 +204,100 @@
             <p>Email: <a href="mailto:ksketch@smu.edu.sg">ksketch@smu.edu.sg</a></p>
             <br/>
 
-            <p><h2>Team</h2></p>
+            <h2>Team</h2>
+            <script>
+              if (window.XMLHttpRequest)
+              {
+                // code for IE7+, Firefox, Chrome, Opera, Safari
+                xmlhttp=new XMLHttpRequest();
+              }
+              else
+              {
+                // code for IE6, IE5
+                xmlhttp=new ActiveXObject("Microsoft.XMLHTTP");
+              }
+              xmlhttp.open("GET","contributors.xml",false);
+              xmlhttp.send();
+              xmlDoc=xmlhttp.responseXML; 
+
+              document.write("<table><tr><th></th><th></th></tr>");
+              var x=xmlDoc.getElementsByTagName("List");
+              var person=x[0].getElementsByTagName("Person");
+              for (i=0;i<person.length;i++)
+              { 
+                var evenColumn=false;
+                if(i%2==0)
+                {
+                  evenColumn=true;
+                }
+
+                var person_image=person[i].getElementsByTagName("Image")[0].childNodes[0].nodeValue;
+                var person_name=person[i].getElementsByTagName("Name")[0].childNodes[0].nodeValue;
+                var person_designation=person[i].getElementsByTagName("Designation")[0].childNodes[0].nodeValue;
+                var person_department=person[i].getElementsByTagName("Department")[0].childNodes[0].nodeValue;
+                var person_affiliation=person[i].getElementsByTagName("Affiliation")[0].childNodes[0].nodeValue
+                
+                if(evenColumn)
+                {
+                  document.write("<tr>");
+                  document.write("<td>");
+                    document.write("<table width='100%'><tr><td align='center' width='20%'>");
+                      document.write("<img src='" + person_image + "'/>");
+                      document.write("</td><td width='5%'></td><td>");
+                      document.write("<h4>" + person_name + "</h4>" + person_designation + "<br/>" + person_department + "<br/>" + person_affiliation );
+                    document.write("</td></tr></table>");
+                  document.write("</td>");
+                }
+                
+                if(!evenColumn)
+                {
+                  document.write("<td>");
+                    document.write("<table width='100%'><tr><td align='center' width='20%'>");
+                      document.write("<img src='" + person_image + "'/>");
+                      document.write("</td><td width='5%'></td><td>");
+                      document.write("<h4>" + person_name + "</h4>" + person_designation + "<br/>" + person_department + "<br/>" + person_affiliation );
+                    document.write("</td></tr></table>");
+                  document.write("</td>");
+
+                  document.write("</tr>");
+
+                  document.write("<tr><td colspan='2' height='30px'></td></tr>");
+                }
+              }
+              document.write("</table><br/>");
+            </script>
             <br/>
-            <table>
-              <tr>
-                <td align="center" width="20%">
-                  <img src="img/team/RCDAVIS.jpg"/>
-                </td>
-                <td width="5%"></td>
-                <td style="padding-top:20px" width="75%">
-                  <h4>Richard C. Davis</h4>
-                  Assistant Professor of Information Systems<br/>
-                  Singapore Management University
-                </td>
-              </tr>
+            <h2>Past Contributors</h2>
+            <script>
+              document.write("<table><tr><th></th><th></th><th></th></tr>");
 
-              <tr><td height="30px"></td></tr>
+              x=xmlDoc.getElementsByTagName("List");
+              for (i=1;i<x.length;i++)
+              {
+                person=x[i].getElementsByTagName("Person");
+                var phase=x[i].getElementsByTagName("Phase")[0].childNodes[0].nodeValue;
+                document.write("<tr>");
+                document.write("<td><h4>" +  phase + "</h4></td><td width='5%'></td>");  
+                for(j=0;j<person.length;j++)
+                {
+                  if(j > 0)
+                  {
+                    document.write("<tr><td></td><td width='5%'></td>");
+                  }
+                  document.write("<td>")
+                  var person_name=person[j].getElementsByTagName("Name")[0].childNodes[0].nodeValue;
+                  document.write(person_name + "<br/>");
+                  document.write("<td>")
+                  document.write("</tr>");
+                }
+                
+                
+                document.write("<tr><td colspan='3' height='30px'></td></tr>");
+              }
 
-              <tr>
-                <td align="center" >
-                  <img src="img/team/NURCAMELLIAZ.jpg"/>
-                </td>
-                <td></td>
-                <td>
-                  <h4>Camellia Zakaria</h4>
-                  PhD Student, School of Information Systems<br/>
-                  Singapore Management University
-                </td>
-              </tr>
-            </table>
+              document.write("</table><br/>");
+            </script>
             <br/>
-
-            <p><h2>Past Contributors</h2></p>
-            <p>
-              Khoo Jing Ting<br/>
-              Paul Taele<br/>
-              (more coming soon)
-            </p>
           </div>
         </div><!--/span-->
         <div class="footer-table" ng-model="year">
