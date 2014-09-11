@@ -68,7 +68,7 @@ class VersionCount(db.Model):
   #Gets counter
   @staticmethod
   def get_counter(sketchId = -1):
-    return VersionCount.all().filter('sketchId', long(sketchId)).get()
+    return VersionCount.all().filter('sketchId', long(sketchId)).get(read_policy=db.STRONG_CONSISTENCY)
   
   #Increments counter before retrieving it
   @staticmethod
@@ -140,8 +140,8 @@ class AppVersionCount(db.Model):
             
       appuser_query = AppUserCount.get_counter(float(object.app_version))
       if appuser_query:
-        entity['user_count'] = int(appuser_query.user_count)
-      total_user_count += appuser_query.user_count
+        entity['user_count'] = int(appuser_query)
+      total_user_count += appuser_query
       total_sketch_count += object.sketch_count
       total_original_count += object.original_count
       entities.append(entity)    
@@ -173,7 +173,7 @@ class AppUserCount(db.Model):
           #Gets counter
   @staticmethod
   def get_counter(appver = 1.0):
-    return AppUserCount.all().filter('app_version', appver).get()
+    return AppUserCount.all().filter('app_version', appver).count()
   
   #Increments counter before retrieving it
   @staticmethod

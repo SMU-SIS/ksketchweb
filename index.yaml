@@ -1,0 +1,7 @@
+indexes:
+- kind: Sketch
+  ancestor: no
+  properties:
+  - name: sketchId
+  - name: modified
+    direction: desc

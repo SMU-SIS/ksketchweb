@@ -296,24 +296,38 @@ class Sketch(db.Model):
     if criteria:
       possible_names = Sketch.get_matching_names(criteria)
       possible_users = User.get_matching_ids(criteria)
-      
-    objects = Sketch.all().order('-modified').fetch(limit=None)
-    
+    sketch_id_users = []
+    sketch_id_query = Sketch.all().filter('owner IN',possible_users).fetch(limit=None)
+    if sketch_id_query:
+        for obj in sketch_id_query:
+            sketch_id_users.append(obj.sketchId)
+
+    in_clause = possible_names + sketch_id_users
+    count = 0
+    remaining = len(in_clause)
+    #The IN filter can have maximum of 30 entries
+    MAX_COUNT_IN_CLAUSE = 30
+    if remaining > MAX_COUNT_IN_CLAUSE:
+        objects = Sketch.all().filter('sketchId IN', in_clause[:30]).order('-modified').fetch(limit=None)
+        remaining -= MAX_COUNT_IN_CLAUSE
+        count += MAX_COUNT_IN_CLAUSE
+        while remaining > 0:
+            if remaining < MAX_COUNT_IN_CLAUSE:
+                objects = objects+Sketch.all().filter('sketchId IN', in_clause[count:count+remaining]).order('-modified').fetch(limit=None)
+                remaining = 0
+                count += remaining
+            else:
+                objects = objects+Sketch.all().filter('sketchId IN', in_clause[count:count+remaining]).order('-modified').fetch(limit=None)
+                remaining -= MAX_COUNT_IN_CLAUSE
+                count += remaining
+    else:
+        objects = Sketch.all().filter('sketchId IN', in_clause).order('-modified').fetch(limit=None)
     entities = []
     count = 0
     next_offset = 0
     
     if objects:
       for object in objects[offset:]:
-        #Criteria Filter
-        criteria_check = True
-        if criteria:
-          criteria_check = False
-          if object.fileName in possible_names:
-            criteria_check = True
-          if object.owner in possible_users:
-            criteria_check = True
-        
         #Latest Version Filter
         latest_check = True
         if show == "latest":
@@ -326,7 +340,7 @@ class Sketch(db.Model):
         user_name = User.get_name(object.owner)
         p_view = 0
         
-        if criteria_check and latest_check and bool(permissions['p_view']):
+        if latest_check and bool(permissions['p_view']):
           p_view = 1
         
           data = {'sketchId': object.sketchId,
@@ -796,7 +810,7 @@ class Sketch(db.Model):
     if criteria != "":
       for object in objects:
         if criteria.lower() in object.fileName.lower():
-          entities.append(object.fileName)
+          entities.append(object.sketchId)
           
     return entities
   
