@@ -34,14 +34,14 @@
 			<Month>Sep</Month>
 			<Day>0</Day>
 			<Description>
-				Richard presents the paper, “A Visual Language for Animating Sketches,” at the Graduate Student Consortium of the IEEE Symposium on Visual Languages and Human-Centric Computing in Rome, Italy.
+				Richard presents the paper, “&lt;a href='http://www.mysmu.edu/faculty/rcdavis/pubs/2004-vl-hcc.pdf'&gt;A Visual Language for Animating Sketches&lt;/a&gt;,” at the Graduate Student Consortium of the IEEE Symposium on Visual Languages and Human-Centric Computing in Rome, Italy.
 			</Description>
 		</Event>
 		<Event>
 			<Month>Oct</Month>
 			<Day>0</Day>
 			<Description>
-				Richard presents the paper, “Informal Animation Sketching: Requirements and Design,” at the AAAI 2004 Fall Symposium on Making Pen-Based Interaction Intelligent and Natural in Arlington, VA, USA.
+				Richard presents the paper, “&lt;a href='http://www.mysmu.edu/faculty/rcdavis/pubs/2004-aaai.pdf'&gt;Informal Animation Sketching: Requirements and Design&lt;/a&gt;,” at the AAAI 2004 Fall Symposium on Making Pen-Based Interaction Intelligent and Natural in Arlington, VA, USA.
 			</Description>
 		</Event>
 	</YearEntry>
@@ -59,7 +59,7 @@
 	    <Month>Sep</Month>
 	    <Day>0</Day>
 	    <Description>
-	    	Richard presents the paper, “Forms of Expression for Designing Visual Languages for Animation,” at the Graduate Student Consortium of the IEEE Symposium on Visual Languages and Human-Centric Computing in Dallas, TX, USA.
+	    	Richard presents the paper, “&lt;a href='http://www.mysmu.edu/faculty/rcdavis/pubs/2005-vl-hcc.pdf'&gt;Forms of Expression for Designing Visual Languages for Animation&lt;/a&gt;,” at the Graduate Student Consortium of the IEEE Symposium on Visual Languages and Human-Centric Computing in Dallas, TX, USA.
 	    </Description>
 	  </Event>
 	  <Event>
@@ -73,21 +73,21 @@
 	    <Month>Oct</Month>
 	    <Day>0</Day>
 	    <Description>
-	    	Richard presents the paper, “Informal Animation Sketching with K-Sketch,” at the UIST Doctoral Consortium in Seattle, WA, USA.
+	    	Richard presents the paper, “&lt;a href='http://www.mysmu.edu/faculty/rcdavis/pubs/2005-uist-doc-symp.pdf'&gt;Informal Animation Sketching with K-Sketch&lt;/a&gt;,” at the UIST Doctoral Consortium in Seattle, WA, USA.
 	    </Description>
 	  </Event>
 	  <Event>
 	    <Month>Nov</Month>
 	    <Day>05</Day>
 	    <Description>
-	    	New Scientist magazine publishes an article about K-Sketch: Easy animation to get novices jumping for joy, by Celeste Biever.
+	    	New Scientist magazine publishes an article about K-Sketch: &lt;a href='http://www.newscientist.com/article/dn8266-easy-animation-to-get-novices-jumping-for-joy.html#.VBKxqEtFsdt'&gt;Easy animation to get novices jumping for joyh&lt;/a&gt;, by Celeste Biever.
 	    </Description>
 	  </Event>
 	  <Event>
 	    <Month>Nov</Month>
 	    <Day>07</Day>
 	    <Description>
-	    	K-Sketch 1 code is released on SourceForge under a BSD license.
+	    	K-Sketch 1 code is released on &lt;a href='http://sourceforge.net/projects/k-sketch/'&gt;SourceForge&lt;/a&gt; under a BSD license.
 	    </Description>
 	  </Event>
 	</YearEntry>
@@ -109,28 +109,28 @@
 		  <Month>Feb</Month>
 		  <Day>18</Day>
 		  <Description>
-		    K-Sketch 1.0 alpha 1 is released. Two revisions follow in the next two months. These versions were designed for Microsoft Windows Tablet PCs and require Microsoft’s .NET framework 1.1. The exact number of downloads is unknown, but it reached at least 50,000 by 2014. (For example, see K-Sketch at Brazilian freeware site Baixaki.)
+		    K-Sketch 1.0 alpha 1 is released. Two revisions follow in the next two months. These versions were designed for Microsoft Windows Tablet PCs and require Microsoft’s .NET framework 1.1. The exact number of downloads is unknown, but it reached at least 50,000 by 2014. (For example, see K-Sketch at Brazilian freeware site &lt;a href='http://www.baixaki.com.br/download/k-sketch.htm'&gt;Baixaki&lt;/a&gt;.)
 		  </Description>
 		</Event>
 		<Event>
 		  <Month>Apr</Month>
 		  <Day>0</Day>
 		  <Description>
-		    Richard presents the paper, “K-Sketch: A ‘Kinetic’ Sketch Pad for Novice Animators,” at the CHI 2008 conference in Florence, Italy.
+		    Richard presents the paper, “&lt;a href='http://dl.acm.org/citation.cfm?doid=1357054.1357122'&gt;K-Sketch: A ‘Kinetic’ Sketch Pad for Novice Animators&lt;/a&gt;,” at the CHI 2008 conference in Florence, Italy.
 		  </Description>
 		</Event>
 		<Event>
 		  <Month>Nov</Month>
 		  <Day>0</Day>
 		  <Description>
-		    Richard moves to the Singapore Management University, School of Information Systems (SMU SIS) and begins working as an Assistant Professor of Information Systems.
+		    Richard moves to the &lt;a href='http://sis.smu.edu.sg'&gt;Singapore Management University, School of Information Systems&lt;/a&gt; (SMU SIS) and begins working as an Assistant Professor of Information Systems.
 		  </Description>
 		</Event>
 		<Event>
 		  <Month>Dec</Month>
 		  <Day>0</Day>
 		  <Description>
-		    Richard files his dissertation at U.C. Berkeley, “K-Sketch: A Kinetic Sketch Pad for Novice Animators.”
+		    Richard files his dissertation at U.C. Berkeley, “&lt;a href='http://www.eecs.berkeley.edu/Pubs/TechRpts/2008/EECS-2008-171.pdf'&gt;K-Sketch: A Kinetic Sketch Pad for Novice Animators&lt;/a&gt;.”
 		  </Description>
 		</Event>
 	</YearEntry>
@@ -255,14 +255,14 @@
 		  <Month>Aug</Month>
 		  <Day>0</Day>
 		  <Description>
-		    Phantomation, a video game based on K-Sketch where players learn to make animations, wins best of show at the 2013 International Serious Play Awards. The game was developed by students at the 2012 Singapore-MIT GAMBIT Game Lab’s summer program.
+		    &lt;a href='http://gambit.mit.edu/loadgame/phantomation.php'&gt;Phantomation&lt;/a&gt;, a video game based on K-Sketch where players learn to make animations, wins &lt;a href='http://www.gamasutra.com/view/news/199153/Winners_announced_for_2013_International_Serious_Play_Awards.php'&gt;best of show at the 2013 International Serious Play Awards&lt;/a&gt;. The game was developed by students at the 2012 Singapore-MIT GAMBIT Game Lab’s summer program.
 		  </Description>
 		</Event>
 		<Event>
 		  <Month>Sep</Month>
 		  <Day>0</Day>
 		  <Description>
-		    Richard presents the paper, “Flexible Grouping and Multiple Centers for Preserving Simplicity and Flexibility in Animation Sketches,” at the Asia Pacific Conference on Computer Human Interaction in Bangalore, India. 
+		    Richard presents the paper, “&lt;a href='http://dl.acm.org/citation.cfm?doid=2525194.2525208'&gt;Flexible Grouping and Multiple Centers for Preserving Simplicity and Flexibility in Animation Sketches&lt;/a&gt;,” at the Asia Pacific Conference on Computer Human Interaction in Bangalore, India. 
 		  </Description>
 		</Event>
 	</YearEntry>
