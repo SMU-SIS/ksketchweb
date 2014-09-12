@@ -4,6 +4,7 @@
 		<Person>
 			<Name>Richard C. Davis</Name>
 			<Image>img/team/RCDAVIS.jpg</Image>
+			<Link>http://www.mysmu.edu/faculty/rcdavis</Link>
 			<Designation>Assistant Professor</Designation>
 			<Department>School of Information Systems</Department>
 			<Affiliation>Singapore Management University</Affiliation>
@@ -11,6 +12,7 @@
 		<Person>
 			<Name>Ram Vibhakar Suthagar</Name>
 			<Image>img/team/RAMVS.jpg</Image>
+			<Link>http://sis.smu.edu.sg/about/staff/current-research-staffvisitor/ram-vibhakar-suthagar</Link>
 			<Designation>Research Engineer</Designation>
 			<Department>School of Information Systems</Department>
 			<Affiliation>Singapore Management University</Affiliation>
@@ -18,13 +20,15 @@
 		<Person>
 			<Name>Camellia Zakaria</Name>
 			<Image>img/team/NURCAMELLIAZ.jpg</Image>
+			<Link>http://sis.smu.edu.sg/about/students/phd-students/current/nur-camellia-binte-zakaria</Link>
 			<Designation>Ph.D. Student</Designation>
 			<Department>School of Information Systems</Department>
 			<Affiliation>Singapore Management University</Affiliation>
 		</Person>
 		<Person>
-			<Name>James Landay</Name>
+			<Name>James A. Landay</Name>
 			<Image>img/team/JALANDAY.jpg</Image>
+			<Link>0</Link>
 			<Designation>Professor</Designation>
 			<Department>Computer Science Department</Department>
 			<Affiliation>Stanford University</Affiliation>

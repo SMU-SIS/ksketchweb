@@ -232,17 +232,23 @@
                 }
 
                 var person_image=person[i].getElementsByTagName("Image")[0].childNodes[0].nodeValue;
+                var person_link=person[i].getElementsByTagName("Link")[0].childNodes[0].nodeValue;
                 var person_name=person[i].getElementsByTagName("Name")[0].childNodes[0].nodeValue;
                 var person_designation=person[i].getElementsByTagName("Designation")[0].childNodes[0].nodeValue;
                 var person_department=person[i].getElementsByTagName("Department")[0].childNodes[0].nodeValue;
                 var person_affiliation=person[i].getElementsByTagName("Affiliation")[0].childNodes[0].nodeValue
+                
+                if(person_link == "0")
+                {
+                  person_link = "#";
+                }
                 
                 if(evenColumn)
                 {
                   document.write("<tr>");
                   document.write("<td>");
                     document.write("<table width='100%'><tr><td align='center' width='20%'>");
-                      document.write("<img src='" + person_image + "'/>");
+                      document.write("<a href='" + person_link + "'><img src='" + person_image + "'/></a>");
                       document.write("</td><td width='5%'></td><td>");
                       document.write("<h4>" + person_name + "</h4>" + person_designation + "<br/>" + person_department + "<br/>" + person_affiliation );
                     document.write("</td></tr></table>");
@@ -253,7 +259,7 @@
                 {
                   document.write("<td>");
                     document.write("<table width='100%'><tr><td align='center' width='20%'>");
-                      document.write("<img src='" + person_image + "'/>");
+                      document.write("<a href='" + person_link + "'><img src='" + person_image + "'/></a>");
                       document.write("</td><td width='5%'></td><td>");
                       document.write("<h4>" + person_name + "</h4>" + person_designation + "<br/>" + person_department + "<br/>" + person_affiliation );
                     document.write("</td></tr></table>");
