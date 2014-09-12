@@ -225,7 +225,7 @@
                 var event_list = year_entry[i].getElementsByTagName("Event");
                 var previous_month = "";
 
-                document.write("<table style='border-color: black; border-width: 1px 0px 0px 0px; border-style: solid;'><a class='none' id='" + event_year + "' onclick='return false;'>");
+                document.write("<table style='border-color: black; border-width: 2px 0px 0px 0px; border-style: solid;'><a class='none' id='" + event_year + "' onclick='return false;'>");
                 document.write("<thead><tr><th width='10%'></th><th></th><th width='10%'></th><th></th><th width='80%'></th></tr></thead>");
                 
                 for(j=0; j<event_list.length; j++)
@@ -235,7 +235,7 @@
                   var event_desc = event_list[j].getElementsByTagName("Description")[0].childNodes[0].nodeValue;
                   if(j == 0)
                   {
-                    document.write("<tbody><tr><td valign='top' text-align='center' width='10%'><b>" + event_year + "</b></td><td></td>");
+                    document.write("<tbody><tr><td valign='top' text-align='center' width='10%' style='font-weight: bold;'><b>" + event_year + "</b></td><td></td>");
                   }
                   else
                   {
@@ -262,7 +262,7 @@
                   }
                   else
                   {
-                    document.write("<td valign='top' text-align='center' width='10%'>" + event_day + event_month + "</td><td></td><td width='80%' style='border-bottom: 0.5px solid #aaa;'>" + event_desc + "</td></tr></tbody>");
+                    document.write("<td valign='top' text-align='center' width='10%'>" + event_day + event_month + "</td><td></td><td width='80%' style='border-bottom: 1px solid #303030;'>" + event_desc + "</td></tr></tbody>");
                   }
                   previous_month = event_month;
                 }
