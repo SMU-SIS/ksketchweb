@@ -24,21 +24,21 @@
 	<YearEntry>
 		<Year>2004</Year>
 		<Event>
-			<Month>January</Month>
+			<Month>Jan</Month>
 			<Day>0</Day>
 			<Description>
 				Richard follows James to the University of Washington in Seattle, WA. For the next five years, he works with the people who eventually form the DUB Group while continuing to receive support from U.C. Berkeley, through US National Science Foundation awards 0080562 and 0205644.
 			</Description>
 		</Event>
 		<Event>
-			<Month>September</Month>
+			<Month>Sep</Month>
 			<Day>0</Day>
 			<Description>
 				Richard presents the paper, “A Visual Language for Animating Sketches,” at the Graduate Student Consortium of the IEEE Symposium on Visual Languages and Human-Centric Computing in Rome, Italy.
 			</Description>
 		</Event>
 		<Event>
-			<Month>October</Month>
+			<Month>Oct</Month>
 			<Day>0</Day>
 			<Description>
 				Richard presents the paper, “Informal Animation Sketching: Requirements and Design,” at the AAAI 2004 Fall Symposium on Making Pen-Based Interaction Intelligent and Natural in Arlington, VA, USA.
@@ -49,43 +49,43 @@
 	<YearEntry>
 	  <Year>2005</Year>
 	  <Event>
-	    <Month>January</Month>
+	    <Month>Jan</Month>
 	    <Day>0</Day>
 	    <Description>
 	    	University of Washington undergraduate, Arpi Shaverdian, joins the project. Over the next nine months, she helps with background research and a PowerPoint plug-in.
 	    </Description>
 	  </Event>
 	  <Event>
-	    <Month>September</Month>
+	    <Month>Sep</Month>
 	    <Day>0</Day>
 	    <Description>
 	    	Richard presents the paper, “Forms of Expression for Designing Visual Languages for Animation,” at the Graduate Student Consortium of the IEEE Symposium on Visual Languages and Human-Centric Computing in Dallas, TX, USA.
 	    </Description>
 	  </Event>
 	  <Event>
-	    <Month>October</Month>
+	    <Month>Oct</Month>
 	    <Day>0</Day>
 	    <Description>
 	    	University of Washington undergraduates, Cy Khormaee and Matt Davis, join the project. Cy helps with release engineering and user testing for the next year, and Matt helps with software testing and user testing over the next two years.
 	    </Description>
 	  </Event>
 	  <Event>
-	    <Month>October</Month>
+	    <Month>Oct</Month>
 	    <Day>0</Day>
 	    <Description>
 	    	Richard presents the paper, “Informal Animation Sketching with K-Sketch,” at the UIST Doctoral Consortium in Seattle, WA, USA.
 	    </Description>
 	  </Event>
 	  <Event>
-	    <Month>November</Month>
-	    <Day>5</Day>
+	    <Month>Nov</Month>
+	    <Day>05</Day>
 	    <Description>
 	    	New Scientist magazine publishes an article about K-Sketch: Easy animation to get novices jumping for joy, by Celeste Biever.
 	    </Description>
 	  </Event>
 	  <Event>
-	    <Month>November</Month>
-	    <Day>7</Day>
+	    <Month>Nov</Month>
+	    <Day>07</Day>
 	    <Description>
 	    	K-Sketch 1 code is released on SourceForge under a BSD license.
 	    </Description>
@@ -95,7 +95,7 @@
 	<YearEntry>
 		<Year>2007</Year>
 		<Event>
-		  <Month>July</Month>
+		  <Month>Jul</Month>
 		  <Day>0</Day>
 		  <Description>
 		    Brien Colwell joins the project for a year and provides invaluable help, particularly with the “Fix Last Operation” capability. Brien is supported by US National Science Foundation award 0742877.
@@ -106,28 +106,28 @@
 	<YearEntry>
 		<Year>2008</Year>
 		<Event>
-		  <Month>February</Month>
+		  <Month>Feb</Month>
 		  <Day>18</Day>
 		  <Description>
 		    K-Sketch 1.0 alpha 1 is released. Two revisions follow in the next two months. These versions were designed for Microsoft Windows Tablet PCs and require Microsoft’s .NET framework 1.1. The exact number of downloads is unknown, but it reached at least 50,000 by 2014. (For example, see K-Sketch at Brazilian freeware site Baixaki.)
 		  </Description>
 		</Event>
 		<Event>
-		  <Month>April</Month>
+		  <Month>Apr</Month>
 		  <Day>0</Day>
 		  <Description>
 		    Richard presents the paper, “K-Sketch: A ‘Kinetic’ Sketch Pad for Novice Animators,” at the CHI 2008 conference in Florence, Italy.
 		  </Description>
 		</Event>
 		<Event>
-		  <Month>November</Month>
+		  <Month>Nov</Month>
 		  <Day>0</Day>
 		  <Description>
 		    Richard moves to the Singapore Management University, School of Information Systems (SMU SIS) and begins working as an Assistant Professor of Information Systems.
 		  </Description>
 		</Event>
 		<Event>
-		  <Month>December</Month>
+		  <Month>Dec</Month>
 		  <Day>0</Day>
 		  <Description>
 		    Richard files his dissertation at U.C. Berkeley, “K-Sketch: A Kinetic Sketch Pad for Novice Animators.”
@@ -138,7 +138,7 @@
 	<YearEntry>
 		<Year>2009</Year>
 		<Event>
-		  <Month>November</Month>
+		  <Month>Nov</Month>
 		  <Day>0</Day>
 		  <Description>
 		    Zhang Rui joins the project for one year as a Research Fellow visiting from the Chinese Academy of Sciences in Beijing, China. He helps to lay the foundations for K-Sketch 2, and is supported by a grant from the SMU SIS Research Centre.
@@ -149,14 +149,14 @@
 	<YearEntry>
 		<Year>2010</Year>
 		<Event>
-		  <Month>April</Month>
+		  <Month>Apr</Month>
 		  <Day>0</Day>
 		  <Description>
 		    Guan Mengyuan joins the project for one year as a Research Fellow visiting from Nanjing University in Nanjing, China. Mengyuan develops a new data model for animations and new selection methods, and she is supported by a grant from the SMU SIS Research Centre.
 		  </Description>
 		</Event>
 		<Event>
-		  <Month>October</Month>
+		  <Month>Oct</Month>
 		  <Day>0</Day>
 		  <Description>
 		    SMU Graduate Student, Shu Ke, contributes to the project for the next year and a half. He runs several user studies and revises the K-Sketch 2 gesture system. Ke is supported by a grant from the SMU SIS Research Centre.
@@ -167,35 +167,35 @@
 	<YearEntry>
 		<Year>2011</Year>
 		<Event>
-		  <Month>February</Month>
+		  <Month>Feb</Month>
 		  <Day>0</Day>
 		  <Description>
 		    Illustrator and Graphic Designer, Shane Williams, contributes to the project over the next 15 months. He is supported by the Prototyping Video Games with Animation grant from the Singapore-MIT GAMBIT Game Lab.
 		  </Description>
 		</Event>
 		<Event>
-		  <Month>March</Month>
+		  <Month>Mar</Month>
 		  <Day>0</Day>
 		  <Description>
 		    Koh Quee Boon joins the project as a Research Engineer and keeps it running for 16 months. He is supported by a grant from the SMU SIS Research Centre.
 		  </Description>
 		</Event>
 		<Event>
-		  <Month>April</Month>
+		  <Month>Apr</Month>
 		  <Day>0</Day>
 		  <Description>
 		    SMU Lecturer and Ph.D. student, Kevin Steppe, contributes to papers about K-Sketch architecture over the next two years.
 		  </Description>
 		</Event>
 		<Event>
-		  <Month>June</Month>
+		  <Month>Jun</Month>
 		  <Day>0</Day>
 		  <Description>
 		    Khoo Jing Ting joins the project as a Research Engineer for two years. During that time he rewrites K-Sketch 2 twice from the ground up. He is supported by the Prototyping Video Games with Animation grant from the Singapore-MIT GAMBIT Game Lab in the first year, and subsequently supported by a grant from the SMU SIS Research Centre.
 		  </Description>
 		</Event>
 		<Event>
-		  <Month>June</Month>
+		  <Month>Jun</Month>
 		  <Day>0</Day>
 		  <Description>
 		    Damien Zydczak joins the project as a Research Engineer for one year, contributing primarily to the FLV export and audio recording functions. He is supported by the Prototyping Video Games with Animation grant from the Singapore-MIT GAMBIT Game Lab.
@@ -206,28 +206,28 @@
 	<YearEntry>
 		<Year>2012</Year>
 		<Event>
-		  <Month>March</Month>
+		  <Month>Mar</Month>
 		  <Day>0</Day>
 		  <Description>
 		    University of Washington Ph.D. student, Ryder Ziola, joins the project for six months as a Research Assistant and experiments with different architectures for K-Sketch. Ryder is supported by a grant from the SMU SIS Research Centre.
 		  </Description>
 		</Event>
 		<Event>
-		  <Month>July</Month>
+		  <Month>Jul</Month>
 		  <Day>0</Day>
 		  <Description>
-		    SMU undergraduates, Brandon Goh, Kevin Koh, Shannon Lim, Tony Tran, Samantha Wee, and Wong Sihui form an IS Application Project team named “The Kinnovators.” Over the next 13 months, they develop the first version of the K-Sketch web site.
+		    SMU undergraduates, Brandon Goh, Kevin Koh, Shannon Lim, Tony Tran, Samantha Wee and Wong Sihui form an IS Application Project team named “The Kinnovators.” Over the next 13 months, they develop the first version of the K-Sketch web site.
 		  </Description>
 		</Event>
 		<Event>
-		  <Month>October</Month>
+		  <Month>Oct</Month>
 		  <Day>0</Day>
 		  <Description>
 		    National University of Singapore undergraduate, Liu Yang, joins the project for six months and builds a physical simulation system for the experimental iPad version of K-Sketch.
 		  </Description>
 		</Event>
 		<Event>
-		  <Month>December</Month>
+		  <Month>Dec</Month>
 		  <Day>0</Day>
 		  <Description>
 		    National University of Singapore undergraduate, Loo Si Hong, joins the project for the next year and experiments with curve rendering and edge detection for imported images.
@@ -238,28 +238,28 @@
 	<YearEntry>
 		<Year>2013</Year>
 		<Event>
-		  <Month>June</Month>
+		  <Month>Jun</Month>
 		  <Day>0</Day>
 		  <Description>
-		    Texas A&#38;M Ph.D. student, Paul Taele, visits SMU for 9 weeks and contributes to K-Sketch documentation. He is supported by an US National Science Foundation EAPSI fellowship.
+		    Texas A&#38;M Ph.D. student, Paul Taele, visits SMU for 9 weeks and contributes to K-Sketch documentation. He is supported by the US National Science Foundation EAPSI fellowship.
 		  </Description>
 		</Event>
 		<Event>
-		  <Month>July</Month>
+		  <Month>Jul</Month>
 		  <Day>0</Day>
 		  <Description>
 		    Camellia Zakaria joins the project for one year as Research Engineer and then converts to a Ph.D. student. She brings the K-Sketch 2 mobile app and website to release condition and contributes new designs as well. She is supported by a grant from the SMU SIS Research Centre.
 		  </Description>
 		</Event>
 		<Event>
-		  <Month>August</Month>
+		  <Month>Aug</Month>
 		  <Day>0</Day>
 		  <Description>
 		    Phantomation, a video game based on K-Sketch where players learn to make animations, wins best of show at the 2013 International Serious Play Awards. The game was developed by students at the 2012 Singapore-MIT GAMBIT Game Lab’s summer program.
 		  </Description>
 		</Event>
 		<Event>
-		  <Month>September</Month>
+		  <Month>Sep</Month>
 		  <Day>0</Day>
 		  <Description>
 		    Richard presents the paper, “Flexible Grouping and Multiple Centers for Preserving Simplicity and Flexibility in Animation Sketches,” at the Asia Pacific Conference on Computer Human Interaction in Bangalore, India. 
@@ -270,7 +270,7 @@
 	<YearEntry>
 		<Year>2014</Year>
 		<Event>
-		  <Month>August</Month>
+		  <Month>Aug</Month>
 		  <Day>0</Day>
 		  <Description>
 		    Ram Vibhakar Suthagar joins the project as a Research Engineer and upgrades the K-Sketch 2 web site. He is supported by a grant from the SMU SIS Research Centre.

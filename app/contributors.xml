@@ -18,16 +18,16 @@
 		<Person>
 			<Name>Camellia Zakaria</Name>
 			<Image>img/team/NURCAMELLIAZ.jpg</Image>
-			<Designation>PhD Student</Designation>
+			<Designation>Ph.D. Student</Designation>
 			<Department>School of Information Systems</Department>
 			<Affiliation>Singapore Management University</Affiliation>
 		</Person>
 		<Person>
 			<Name>James Landay</Name>
-			<Image>img/team/PERSON.jpg</Image>
-			<Designation>-to be updated-</Designation>
-			<Department>-to be updated-</Department>
-			<Affiliation>-to be updated-</Affiliation>
+			<Image>img/team/JALANDAY.jpg</Image>
+			<Designation>Professor</Designation>
+			<Department>Computer Science Department</Department>
+			<Affiliation>Stanford University</Affiliation>
 		</Person>
 	</List>
 	<List>

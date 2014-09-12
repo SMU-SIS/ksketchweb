@@ -225,35 +225,44 @@
                 var event_list = year_entry[i].getElementsByTagName("Event");
                 var previous_month = "";
 
-                document.write("<table><a class='none' id='" + event_year + "' onclick='return false;'>");
-                document.write("<tr><th width='5%'></th><th width='2%'></th><th width='10%'></th><th width='2%'></th><th width='60%'></th></tr>");
-                document.write("<tr><td colspan='5'><img src='img/team/border.png'/></td></tr>");
+                document.write("<table style='border-color: black; border-width: 1px 0px 0px 0px; border-style: solid;'><a class='none' id='" + event_year + "' onclick='return false;'>");
+                document.write("<thead><tr><th width='10%'></th><th></th><th width='10%'></th><th></th><th width='80%'></th></tr></thead>");
                 
                 for(j=0; j<event_list.length; j++)
                 {
+                  var event_day = event_list[j].getElementsByTagName("Day")[0].childNodes[0].nodeValue;
                   var event_month = event_list[j].getElementsByTagName("Month")[0].childNodes[0].nodeValue;
                   var event_desc = event_list[j].getElementsByTagName("Description")[0].childNodes[0].nodeValue;
                   if(j == 0)
                   {
-                    document.write("<tr><td valign='top'><b>" + event_year + "</b></td><td width='2%'></td>");
+                    document.write("<tbody><tr><td valign='top' text-align='center' width='10%'><b>" + event_year + "</b></td><td></td>");
                   }
                   else
                   {
-                    document.write("<tr><td></td><td width='2%'></td>");
+                    document.write("<tr><td width='10%'></td><td></td>");
                   }
 
-                  if(event_month == previous_month || event_month == "0")
+                  if(event_day == "0")
+                  {
+                    event_day = "";
+                  }
+                  else
+                  {
+                    event_day = event_day + "-";
+                  }
+
+                  if((event_month == previous_month && event_day == "") || event_month == "0") 
                   {
                     event_month = "";
                   }
                   
                   if(j == event_list.length-1)
                   {
-                    document.write("<td valign='top'>" + event_month + "</td><td></td><td>" + event_desc + "</td></tr>"); 
+                    document.write("<td valign='top' text-align='center' width='10%'>" + event_day + event_month + "</td><td></td><td width='80%'>" + event_desc + "</td></tr></tbody>"); 
                   }
                   else
                   {
-                    document.write("<td valign='top'>" + event_month + "</td><td></td><td>" + event_desc + "<br/><img src='img/team/border.png'/></td></tr>");
+                    document.write("<td valign='top' text-align='center' width='10%'>" + event_day + event_month + "</td><td></td><td width='80%' style='border-bottom: 0.5px solid #aaa;'>" + event_desc + "</td></tr></tbody>");
                   }
                   previous_month = event_month;
                 }
