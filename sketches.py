@@ -465,8 +465,7 @@ class Sketch(db.Model):
   def get_entities_by_criteria(criteria=""):
     utc = UTC()
     #update ModelCount when adding
-    theQuery = Sketch.all()
-    objects = theQuery.run()
+    theResults = Sketch.all().filter('owner',long(criteria)).order('-created').fetch(limit=None)
 
     show = "latest"
 
@@ -476,8 +475,8 @@ class Sketch(db.Model):
 
     test = "hello " + criteria
 
-    for object in objects:
-      if userid == object.owner:
+    for object in theResults:
+      #if userid == object.owner:
         test = "works!"
         #Latest Version Filter
         latest_check = True
