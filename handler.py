@@ -138,6 +138,15 @@ class ActionHandler(webapp2.RequestHandler):
         result = Sketch.get_entities_by_criteria(criteria=criteria)
         return self.respond(result)
 
+    def user_latest_sketch(self): #/list/sketch/latest
+        auser = self.auth.get_user_by_session()
+        result = {'status':'error',
+              'message':'There was an error getting the list.',
+              'submessage':'Please try again later.'}
+        if self.request.method=="POST":
+          result = Sketch.get_latest_by_criteria(self.request.body)
+        return self.respond(result)
+
     #Handler for listing Sketches by Group          
     def group_sketch(self): #/list/sketch/group
 
@@ -387,6 +396,7 @@ application = webapp2.WSGIApplication([
     webapp2.Route('/list/sketch', handler=ActionHandler, handler_method='list_sketch'), # List/Search Sketch
     webapp2.Route('/list/sketch/user', handler=ActionHandler, handler_method='user_sketch'), # List Sketch By User
     webapp2.Route('/list/sketch/user/<criteria>', handler=ActionHandler, handler_method='user_sketch_mobile'), # List Sketch By User
+    webapp2.Route('/list/sketch/latest', handler=ActionHandler, handler_method='user_latest_sketch'),
     webapp2.Route('/list/sketch/group', handler=ActionHandler, handler_method='group_sketch'), # List Sketch By Group
     webapp2.Route('/get/sketch/view', handler=ActionHandler, handler_method='view_sketch'), # Get Sketch (View)
     webapp2.Route('/get/sketch/view/<sketchId>/<version>/<userid>', handler=ActionHandler, handler_method='view_sketch_mobile'), # Get Sketch (View)
