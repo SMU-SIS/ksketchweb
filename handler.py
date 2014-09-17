@@ -83,7 +83,7 @@ class ActionHandler(webapp2.RequestHandler):
         result = Sketch.add(self.request.body, userid=userid)
         return self.respond(result)
     
-    def overwrite_post(self):
+    def overwrite_get(self):
         flexData = self.request.get("fileData")
         userid = self.request.get("userid")
 
@@ -138,13 +138,13 @@ class ActionHandler(webapp2.RequestHandler):
         result = Sketch.get_entities_by_criteria(criteria=criteria)
         return self.respond(result)
 
-    def user_latest_sketch(self): #/list/sketch/latest
+    def user_latest_sketch(self,json="{}"): #/list/sketch/latest
         auser = self.auth.get_user_by_session()
         result = {'status':'error',
               'message':'There was an error getting the list.',
               'submessage':'Please try again later.'}
-        if self.request.method=="POST":
-          result = Sketch.get_latest_by_criteria(self.request.body)
+        if self.request.method=="GET":
+          result = Sketch.get_latest_by_criteria(json)
         return self.respond(result)
 
     #Handler for listing Sketches by Group          
@@ -396,7 +396,7 @@ application = webapp2.WSGIApplication([
     webapp2.Route('/list/sketch', handler=ActionHandler, handler_method='list_sketch'), # List/Search Sketch
     webapp2.Route('/list/sketch/user', handler=ActionHandler, handler_method='user_sketch'), # List Sketch By User
     webapp2.Route('/list/sketch/user/<criteria>', handler=ActionHandler, handler_method='user_sketch_mobile'), # List Sketch By User
-    webapp2.Route('/list/sketch/latest', handler=ActionHandler, handler_method='user_latest_sketch'),
+    webapp2.Route('/list/sketch/latest/<json>', handler=ActionHandler, handler_method='user_latest_sketch'),
     webapp2.Route('/list/sketch/group', handler=ActionHandler, handler_method='group_sketch'), # List Sketch By Group
     webapp2.Route('/get/sketch/view', handler=ActionHandler, handler_method='view_sketch'), # Get Sketch (View)
     webapp2.Route('/get/sketch/view/<sketchId>/<version>/<userid>', handler=ActionHandler, handler_method='view_sketch_mobile'), # Get Sketch (View)
@@ -420,9 +420,9 @@ application = webapp2.WSGIApplication([
     webapp2.Route('/get/like', handler=ActionHandler, handler_method='get_like'), # Get Comment For Sketch
     
     webapp2.Route('/list/version', handler=ActionHandler, handler_method='get_versions'), # Get Versions
-    webapp2.Route('/post/overwritesketchxml', handler=ActionHandler, handler_method='overwrite_post'),
-    webapp2.Route('/post/deletesketch', handler=ActionHandler, handler_method='delete_sketch_mobile'),
-    webapp2.Route('/post/sketchxml', handler=ActionHandler)
+    webapp2.Route('/get/overwritesketchxml', handler=ActionHandler, handler_method='overwrite_get'),
+    webapp2.Route('/get/deletesketch', handler=ActionHandler, handler_method='delete_sketch_mobile'),
+    webapp2.Route('/get/sketchxml', handler=ActionHandler)
     ],
     config=webapp2_config,
     debug=True)

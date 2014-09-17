@@ -997,8 +997,9 @@ class Sketch(db.Model):
   @staticmethod
   def get_latest_by_criteria(data=""):
     utc = UTC()
+    logging.info(data)
     jsonData = json.loads(data)
-    logging.info(jsonData)
+
     sketchIds = jsonData['sketchID']
     userid = jsonData['userid']
     #update ModelCount when adding
