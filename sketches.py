@@ -296,13 +296,13 @@ class Sketch(db.Model):
     if criteria:
       possible_names = Sketch.get_matching_names(criteria)
       possible_users = User.get_matching_ids(criteria)
-    sketch_id_users = []
+    sketch_id_users = set()
     sketch_id_query = Sketch.all().filter('owner IN',possible_users).fetch(limit=None)
     if sketch_id_query:
         for obj in sketch_id_query:
-            sketch_id_users.append(obj.sketchId)
-
-    in_clause = possible_names + sketch_id_users
+            sketch_id_users.add(obj.sketchId)
+    union = sketch_id_users | set(possible_names)
+    in_clause = list(union)
     count = 0
     remaining = len(in_clause)
     #The IN filter can have maximum of 30 entries
