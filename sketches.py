@@ -391,7 +391,7 @@ class Sketch(db.Model):
   def get_entities_by_id(data,userid=""):
     utc = UTC()
     #update ModelCount when adding
-    theQuery = Sketch.all()
+
     #if model:
       #theQuery = theQuery.filter('model', model)
     
@@ -400,6 +400,7 @@ class Sketch(db.Model):
     show = jsonData['show']
     limit = long(jsonData['limit'])
     offset = long(jsonData['offset'])
+    theQuery = Sketch.all().filter('owner',long(criteria)).order('-created')
     objects = theQuery.fetch(limit=None)
 
     entities = []
@@ -407,7 +408,7 @@ class Sketch(db.Model):
     next_offset = 0
     
     for object in objects[offset:]:
-      if long(criteria) == object.owner:
+      #if long(criteria) == object.owner:
         #Latest Version Filter
         latest_check = True
         if show == "latest":
@@ -416,7 +417,7 @@ class Sketch(db.Model):
             latest_check = False
         #Check Permissions
         permissions = Permissions.user_access_control(object.sketchId,userid)
-          
+
         if bool(permissions['p_view']) and latest_check:
           user_name = User.get_name(object.owner)
           data = {'sketchId': object.sketchId,
@@ -435,15 +436,15 @@ class Sketch(db.Model):
                 'p_comment': bool(permissions['p_comment']),
                 'like': Like.get_entities_by_id(object.sketchId, 0)['count'],
                 'comment': Comment.get_entities_by_id(object.sketchId)['count']}
-          
+
           entity = {'id': object.key().id(),
                 'created': object.created.replace(tzinfo=utc).strftime("%d %b %Y %H:%M:%S"),
-                'modified': object.modified.replace(tzinfo=utc).strftime("%d %b %Y %H:%M:%S"), 
+                'modified': object.modified.replace(tzinfo=utc).strftime("%d %b %Y %H:%M:%S"),
                 'data': data}
-          
+
           entities.append(entity)
           count += 1
-            
+
         if limit != 0:
           if count >= limit:
             next = objects.index(object) + 1
