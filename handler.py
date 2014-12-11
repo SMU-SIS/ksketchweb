@@ -133,8 +133,8 @@ class ActionHandler(webapp2.RequestHandler):
         result = Sketch.get_entities_by_id(self.request.body, userid=userid)
         return self.respond(result)    
 
-    #Test method by Cam  
-    def user_sketch_mobile(self, criteria): #/list/sketch/user 
+    #Test method by Cam
+    def user_sketch_mobile(self, criteria): #/list/sketch/user
         result = Sketch.get_entities_by_criteria(criteria=criteria)
         return self.respond(result)
 
@@ -381,7 +381,12 @@ class ActionHandler(webapp2.RequestHandler):
 
         result = AppVersionCount.retrieve_by_version()
         return self.respond(result)
-   
+
+    #Test method by Ram. Which loads sketches without thumbnails
+    def user_sketch_lite(self, criteria): #/list/sketch/user
+        result = Sketch.get_entities_lite(criteria=criteria)
+        return self.respond(result)
+
 #Configuration and URI mapping
 webapp2_config = {}
 webapp2_config['webapp2_extras.sessions'] = {
@@ -422,7 +427,8 @@ application = webapp2.WSGIApplication([
     webapp2.Route('/list/version', handler=ActionHandler, handler_method='get_versions'), # Get Versions
     webapp2.Route('/get/overwritesketchxml', handler=ActionHandler, handler_method='overwrite_get'),
     webapp2.Route('/get/deletesketch', handler=ActionHandler, handler_method='delete_sketch_mobile'),
-    webapp2.Route('/get/sketchxml', handler=ActionHandler)
+    webapp2.Route('/get/sketchxml', handler=ActionHandler),
+    webapp2.Route('/list/sketch/user_lite/<criteria>', handler=ActionHandler, handler_method='user_sketch_lite'), # List Sketch By User
     ],
     config=webapp2_config,
     debug=True)

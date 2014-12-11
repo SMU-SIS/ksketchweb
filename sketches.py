@@ -460,7 +460,75 @@ class Sketch(db.Model):
               'next_offset': next_offset,
               'entities': entities}
     return result
+  #Test method by Ram for loading without thumbnails
+  @staticmethod
+  def get_entities_lite(criteria=""):
+    utc = UTC()
+    #update ModelCount when adding
+    theResults = Sketch.all().filter('owner',long(criteria)).order('-created').fetch(limit=None)
 
+    show = "latest"
+
+    entities = []
+
+    userid = long(criteria)
+
+    test = "hello " + criteria
+
+    for object in theResults:
+      #if userid == object.owner:
+        test = "works!"
+        #Latest Version Filter
+        latest_check = True
+        if show == "latest":
+          versionCount = VersionCount.get_counter(long(object.sketchId))
+          if object.version < versionCount.lastVersion:
+            latest_check = False
+
+        #Check Permissions
+        permissions = Permissions.user_access_control(object.sketchId,userid)
+
+        if bool(permissions['p_view']) and latest_check:
+          test = "works too!"
+          user_name = User.get_name(object.owner)
+          data = {'sketchId': object.sketchId,
+                'version': object.version,
+                'changeDescription': object.changeDescription,
+                'fileName': object.fileName,
+                'owner': user_name,
+                'owner_id': object.owner,
+                'originalSketch': object.original_sketch,
+                'originalVersion': object.original_version,
+                'originalName': Sketch.get_sketch_name(object.original_sketch,object.original_version),
+                'appver': object.appver,
+                'p_view': 1,
+                'p_edit': bool(permissions['p_edit']),
+                'p_comment': bool(permissions['p_comment']),
+                'like': Like.get_entities_by_id(object.sketchId, 0)['count'],
+                'comment': Comment.get_entities_by_id(object.sketchId)['count']}
+
+          entity = {'id': object.key().id(),
+                'created': object.created.replace(tzinfo=utc).strftime("%d %b %Y %H:%M:%S"),
+                'modified': object.modified.replace(tzinfo=utc).strftime("%d %b %Y %H:%M:%S"),
+                'data': data}
+
+          if userid == object.owner:
+            entities.append(entity)
+          elif User.check_if_admin(userid):
+            entities.append(entity)
+          elif data['p_view'] == "Public":
+            entities.append(entity)
+
+    count = 0
+    modelCount = ModelCount.all().filter('en_type','Sketch').get()
+    if modelCount:
+      count = modelCount.count
+    result = {'method': test, #'get_entities_by_criteria_new',
+              'en_type': 'Sketch',
+              'count': count,
+              'entities': entities}
+
+    return result
   #Test method by Cam NEW
   @staticmethod
   def get_entities_by_criteria(criteria=""):
