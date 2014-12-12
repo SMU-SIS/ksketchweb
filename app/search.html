@@ -18,11 +18,10 @@
       ga('create', 'UA-47832938-1', 'ksketchweb.appspot.com');
       ga('send', 'pageview');
     </script>
-       
+
     <!-- Le styles -->
     <link href="css/bootstrap.css" rel="stylesheet">
     <link href="css/bootstrap-responsive.css" rel="stylesheet">
-    
     <!-- Additional styles for individual components -->
     <link href="css/additional.css" rel="stylesheet">
     
@@ -234,10 +233,43 @@
                 <button id="searchbutton" class="btn btn-inverse" ng-click="new_search()">Go</button>
               </div>
             </div>
-            <div class="span6">
-              <button class="btn btn-info" style="float:right" ui-if="search_pagination.next_offset != 0" ng-click="paginate_forward()" ng-cloak>More Results</button>
+            <div class="span3">
+<div class="btn-group" role="group" aria-label="...">
+
+  <button type="button" ng-click="reverse=!reverse;order('data.fileName', reverse)" class="btn btn-default">Name <span class="icon-chevron-{{icon}}" aria-hidden="true" ng-hide="sorted_by !='data.fileName'"></span></button>
+    <button type="button" ng-click="reverse=!reverse;order('modified_d', reverse)" class="btn btn-default">Last Modified <span class="icon-chevron-{{icon}}" aria-hidden="true" ng-hide="sorted_by !='modified_d'"></span></button>
+  <button type="button" ng-click="reverse=!reverse;order('created_d', reverse)" class="btn btn-default" autofocus="true">Date created <span class="icon-chevron-{{icon}}" aria-hidden="true" ng-hide="sorted_by !='created_d'"></span></button>
+   <button type="button" ng-click="reverse=!reverse;order('data.owner', reverse)" class="btn btn-default">User <span class="icon-chevron-{{icon}}" aria-hidden="true" ng-hide="sorted_by !='data.owner'"></span></button>
+</div>
+</div>
+              <div class="span3">
+                <div class="dropdown">
+  <button class="btn btn-default dropdown-toggle" type="button" id="dropdownMenu1" data-toggle="dropdown" aria-expanded="true">
+    Showing {{numPerPage}} sketches/page
+    <span class="caret"></span>
+  </button>
+  <ul class="dropdown-menu" role="menu" aria-labelledby="dropdownMenu1">
+    <li role="presentation" ng-click="numPerPage=5"><a role="menuitem" tabindex="-1" href="#">5</a></li>
+    <li role="presentation" ng-click="numPerPage=10"><a role="menuitem" tabindex="-1" href="#">10</a></li>
+    <li role="presentation" ng-click="numPerPage=25"><a role="menuitem" tabindex="-1" href="#">25</a></li>
+    <li role="presentation" ng-click="numPerPage=50"><a role="menuitem" tabindex="-1" href="#">50</a></li>
+      <li role="presentation" ng-click="numPerPage=100"><a role="menuitem" tabindex="-1" href="#">100</a></li>
+  </ul>
+</div>
+
             </div>
           </div>
+            <div class="row-fluid">
+
+                <ul class="pager">
+  <li ng-click="currentPage = currentPage -1" ng-hide="currentPage<=1" class="previous">
+    <a href="#"><b>&larr; Previous</b></a>
+  </li>
+  <li ng-click="currentPage = currentPage +1" ng-hide="currentPage >= numPages()" class="next">
+    <a href="#"><b>Next &rarr;</b></a>
+  </li>
+</ul>
+            </div>
           <span id="testdiv" ng-model="test" hidden></span>
           <script>
             function searchKeyPress(e)
@@ -261,8 +293,8 @@
               There are no animations or usernames containing "{{search_notice}}".
             </em>
           </span>
-          <ul class="unstyled" ui-if="!!searchitems.entities.length"  ng-cloak>
-            <li ng-repeat="files in searchitems.entities | orderBy:predicate_users:reverse | filter:filter">
+          <ul class="unstyled" ui-if="filteredEntities.length > 0"  ng-cloak>
+            <li ng-repeat="files in filteredEntities">
               <div class="well well-small">
                 <div class="row-fluid">
                   <div class="span3">
@@ -311,7 +343,17 @@
             </li>
           </ul>
           <hr/>
-         	 <button class="btn btn-info" style="float:right" ui-if="search_pagination.next_offset != 0" ng-click="paginate_forward()" ng-cloak>More Results</button>
+            <div class="row-fluid">
+
+                <ul class="pager">
+  <li ng-click="currentPage = currentPage -1" ng-hide="currentPage<=1" class="previous">
+    <a href="#"><b>&larr; Previous</b></a>
+  </li>
+  <li ng-click="currentPage = currentPage +1" ng-hide="currentPage >= numPages()" class="next">
+    <a href="#"><b>Next &rarr;</b></a>
+  </li>
+</ul>
+            </div>
 		    </div><!--/span-->
        <div class="footer-table" ng-model="year">
           <img src="img/footer_logo_small.png"/><br/>
@@ -350,6 +392,5 @@
     <script src="js/bootstrap/bootstrap-collapse.js"></script>
     <script src="js/bootstrap/bootstrap-carousel.js"></script>
     <script src="js/bootstrap/bootstrap-typeahead.js"></script>
-    
   </body>
 </html>

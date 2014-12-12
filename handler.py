@@ -387,6 +387,25 @@ class ActionHandler(webapp2.RequestHandler):
         result = Sketch.get_entities_lite(criteria=criteria)
         return self.respond(result)
 
+    def get_thumbnail(self, criteria): #/list/sketch/user
+        result = Sketch.get_thumbnail(criteria=criteria)
+        return self.respond_thumbnail(result)
+    #Response wrapper for handler
+    def respond_thumbnail(self,result):
+        """Returns a JSON response to the client.
+        """
+        callback = self.request.get('callback')
+        self.response.headers['Content-Type'] = 'image/png'
+        #self.response.headers['Content-Type'] = '%s; charset=%s' % (config.CONTENT_TYPE, config.CHARSET)
+        self.response.headers['Access-Control-Allow-Origin'] = '*'
+        self.response.headers['Access-Control-Allow-Methods'] = 'GET, POST, PUT, DELETE, OPTIONS, PATCH, HEAD'
+        self.response.headers['Access-Control-Allow-Headers'] = 'Origin, Content-Type, X-Requested-With'
+        self.response.headers['Access-Control-Allow-Credentials'] = 'True'
+        self.response.headers['Access-Control-Allow-Credentials'] = 'True'
+        self.response.headers['Content-Transfer-Encoding'] = 'base64'
+        #Add a handler to automatically convert datetimes to ISO 8601 strings.
+        dthandler = lambda obj: obj.isoformat() if isinstance(obj, datetime.datetime) else None
+        return self.response.out.write(result)
 #Configuration and URI mapping
 webapp2_config = {}
 webapp2_config['webapp2_extras.sessions'] = {
@@ -429,6 +448,7 @@ application = webapp2.WSGIApplication([
     webapp2.Route('/get/deletesketch', handler=ActionHandler, handler_method='delete_sketch_mobile'),
     webapp2.Route('/get/sketchxml', handler=ActionHandler),
     webapp2.Route('/list/sketch/user_lite/<criteria>', handler=ActionHandler, handler_method='user_sketch_lite'), # List Sketch By User
+     webapp2.Route('/get/thumbnail/<criteria>', handler=ActionHandler, handler_method='get_thumbnail')
     ],
     config=webapp2_config,
     debug=True)

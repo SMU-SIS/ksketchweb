@@ -368,11 +368,11 @@ class Sketch(db.Model):
           entities.append(entity)
           count += 1
           
-        if count >= limit:
-          next = objects.index(object) + 1
-          if next < len(objects):
-            next_offset = objects.index(object) + 1
-          break
+        #if count >= limit:
+        #  next = objects.index(object) + 1
+        #  if next < len(objects):
+        #    next_offset = objects.index(object) + 1
+        #  break
         
     result = {'method':'get_entities',
               'en_type': 'Sketch',
@@ -529,6 +529,14 @@ class Sketch(db.Model):
               'entities': entities}
 
     return result
+  @staticmethod
+  def get_thumbnail(criteria=""):
+    #update ModelCount when adding
+    theResults = Sketch.all().filter('sketchId',long(criteria)).fetch(limit=None)
+    data=""
+    if theResults:
+        data = theResults[0].thumbnailData
+    return data
   #Test method by Cam NEW
   @staticmethod
   def get_entities_by_criteria(criteria=""):
