@@ -11,3 +11,9 @@ indexes:
   - name: owner
   - name: created
     direction: desc
+- kind: Sketch
+  ancestor: no
+  properties:
+  - name: owner
+  - name: modified
+    direction: desc

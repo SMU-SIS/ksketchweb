@@ -91,7 +91,8 @@ BrowserHistory = (function() {
                 pl[i].browserURLChange(flexAppUrl);
             }
         } else {
-            getPlayer().browserURLChange(flexAppUrl);
+            if(getPlayer()!= undefined)
+                getPlayer().browserURLChange(flexAppUrl);
         }
     }
 

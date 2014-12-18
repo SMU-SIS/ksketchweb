@@ -15,7 +15,7 @@ import webapp2
 from google.appengine.api import memcache
 from google.appengine.ext import db, webapp
 from google.appengine.ext.webapp.util import run_wsgi_app
-
+from urlparse import parse_qsl
 import json
 
 
@@ -465,15 +465,15 @@ class Sketch(db.Model):
   def get_entities_lite(criteria=""):
     utc = UTC()
     #update ModelCount when adding
-    theResults = Sketch.all().filter('owner',long(criteria)).order('-created').fetch(limit=None)
+    param = dict(parse_qsl(criteria))
+
+    theResults = Sketch.all().filter('owner',long(param.get('user'))).order('-created').fetch(limit=None)
 
     show = "latest"
 
     entities = []
 
-    userid = long(criteria)
-
-    test = "hello " + criteria
+    userid = long(param.get('user'))
 
     for object in theResults:
       #if userid == object.owner:
@@ -495,6 +495,7 @@ class Sketch(db.Model):
                 'version': object.version,
                 'changeDescription': object.changeDescription,
                 'fileName': object.fileName,
+                'thumbnailData': object.thumbnailData,
                 'owner': user_name,
                 'owner_id': object.owner,
                 'originalSketch': object.original_sketch,
@@ -518,15 +519,19 @@ class Sketch(db.Model):
             entities.append(entity)
           elif data['p_view'] == "Public":
             entities.append(entity)
-
-    count = 0
+    data = []
+    offset = int(param.get('offset'))
+    count = int(param.get('count'))
+    if len(entities) > offset:
+        if len(entities) > offset+count:
+            data = entities[offset:offset+count]
+        else:
+            data = entities[offset:]
     modelCount = ModelCount.all().filter('en_type','Sketch').get()
     if modelCount:
       count = modelCount.count
-    result = {'method': test, #'get_entities_by_criteria_new',
-              'en_type': 'Sketch',
-              'count': count,
-              'entities': entities}
+    result = {'count': len(data),
+              'entities': data}
 
     return result
   @staticmethod
@@ -1145,7 +1150,84 @@ class Sketch(db.Model):
               'entities': entities}
 
     return result
+  #Test method by Ram
+  @staticmethod
+  def get_filenames(criteria=30):
+    utc = UTC()
+    #update ModelCount when adding
+    theResults = Sketch.all().fetch(limit=int(criteria))
+    results = []
+    for object in theResults:
+        result = {"ID":object.sketchId,"FILENAME":object.fileName,"USERID":object.owner}
+        results.append(result)
+    return results
 
+  #method for mobile v2
+  @staticmethod
+  def get_entities_v2(criteria=""):
+    utc = UTC()
+    #update ModelCount when adding
+    theResults = Sketch.all().filter('owner',long(criteria)).order('-modified').fetch(limit=None)
+
+    show = "latest"
+
+    entities = []
+
+    userid = long(criteria)
+
+    test = "hello " + criteria
+
+    for object in theResults:
+      #if userid == object.owner:
+        test = "works!"
+        #Latest Version Filter
+        latest_check = True
+        if show == "latest":
+          versionCount = VersionCount.get_counter(long(object.sketchId))
+          if object.version < versionCount.lastVersion:
+            latest_check = False
+
+        #Check Permissions
+        permissions = Permissions.user_access_control(object.sketchId,userid)
+
+        if bool(permissions['p_view']) and latest_check:
+          test = "works too!"
+          user_name = User.get_name(object.owner)
+
+          entity = {'id': object.key().id(),
+                'created': object.created.replace(tzinfo=utc).strftime("%d %b %Y %H:%M:%S"),
+                'modified': object.modified.replace(tzinfo=utc).strftime("%d %b %Y %H:%M:%S"),
+                'sketchId': object.sketchId,
+                'version': object.version,
+                'changeDescription': object.changeDescription,
+                'fileName': object.fileName,
+                'thumbnailData': object.thumbnailData,
+                'owner': user_name,
+                'owner_id': object.owner,
+                'originalSketch': object.original_sketch,
+                'originalVersion': object.original_version,
+                'originalName': Sketch.get_sketch_name(object.original_sketch,object.original_version),
+                'appver': object.appver,
+                'p_view': 1,
+                'p_edit': bool(permissions['p_edit']),
+                'p_comment': bool(permissions['p_comment']),
+                'like': Like.get_entities_by_id(object.sketchId, 0)['count'],
+                'comment': Comment.get_entities_by_id(object.sketchId)['count']}
+
+          if userid == object.owner:
+            entities.append(entity)
+          elif User.check_if_admin(userid):
+            entities.append(entity)
+          elif data['p_view'] == "Public":
+            entities.append(entity)
+
+    count = 0
+    modelCount = ModelCount.all().filter('en_type','Sketch').get()
+    if modelCount:
+      count = modelCount.count
+    result = entities
+
+    return result
 #Imports placed below to avoid circular imports
 from rpx import User, UTC
 from counters import ModelCount, VersionCount, AppVersionCount

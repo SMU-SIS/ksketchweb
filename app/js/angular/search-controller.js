@@ -192,7 +192,6 @@ function SearchController($scope,$filter,$resource,sharedProperties, sharedFunct
         }
   },true);
     $scope.$watch('searchitems.entities', function() {
-        console.log('watching');
         if($scope.dataLoaded) {
             var begin = (($scope.currentPage - 1) * $scope.numPerPage)
                 , end = begin + $scope.numPerPage;

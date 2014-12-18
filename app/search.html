@@ -249,26 +249,29 @@
     <span class="caret"></span>
   </button>
   <ul class="dropdown-menu" role="menu" aria-labelledby="dropdownMenu1">
-    <li role="presentation" ng-click="numPerPage=5"><a role="menuitem" tabindex="-1" href="#">5</a></li>
-    <li role="presentation" ng-click="numPerPage=10"><a role="menuitem" tabindex="-1" href="#">10</a></li>
-    <li role="presentation" ng-click="numPerPage=25"><a role="menuitem" tabindex="-1" href="#">25</a></li>
-    <li role="presentation" ng-click="numPerPage=50"><a role="menuitem" tabindex="-1" href="#">50</a></li>
-      <li role="presentation" ng-click="numPerPage=100"><a role="menuitem" tabindex="-1" href="#">100</a></li>
+    <li role="presentation" ng-click="numPerPage=5;currentPage=1"><a role="menuitem" tabindex="-1" href="#">5</a></li>
+    <li role="presentation" ng-click="numPerPage=10;currentPage=1"><a role="menuitem" tabindex="-1" href="#">10</a></li>
+    <li role="presentation" ng-click="numPerPage=25;currentPage=1"><a role="menuitem" tabindex="-1" href="#">25</a></li>
+    <li role="presentation" ng-click="numPerPage=50;currentPage=1"><a role="menuitem" tabindex="-1" href="#">50</a></li>
+      <li role="presentation" ng-click="numPerPage=100;currentPage=1"><a role="menuitem" tabindex="-1" href="#">100</a></li>
   </ul>
 </div>
 
             </div>
           </div>
-            <div class="row-fluid">
+            <div class="row-fluid" ng-hide="filteredEntities.length==0">
 
-                <ul class="pager">
+                <ul class="pager pull-left">
   <li ng-click="currentPage = currentPage -1" ng-hide="currentPage<=1" class="previous">
     <a href="#"><b>&larr; Previous</b></a>
   </li>
+
   <li ng-click="currentPage = currentPage +1" ng-hide="currentPage >= numPages()" class="next">
     <a href="#"><b>Next &rarr;</b></a>
   </li>
+
 </ul>
+                <div class="pull-right text-center">{{filteredEntities.length+((currentPage-1)*numPerPage)}} of {{searchitems.entities.length}}</div>
             </div>
           <span id="testdiv" ng-model="test" hidden></span>
           <script>
@@ -343,16 +346,19 @@
             </li>
           </ul>
           <hr/>
-            <div class="row-fluid">
+             <div class="row-fluid" ng-hide="filteredEntities.length==0">
 
-                <ul class="pager">
+                <ul class="pager pull-left">
   <li ng-click="currentPage = currentPage -1" ng-hide="currentPage<=1" class="previous">
     <a href="#"><b>&larr; Previous</b></a>
   </li>
+
   <li ng-click="currentPage = currentPage +1" ng-hide="currentPage >= numPages()" class="next">
     <a href="#"><b>Next &rarr;</b></a>
   </li>
+
 </ul>
+                <div class="pull-right text-center">{{filteredEntities.length+((currentPage-1)*numPerPage)}} of {{searchitems.entities.length}}</div>
             </div>
 		    </div><!--/span-->
        <div class="footer-table" ng-model="year">

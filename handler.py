@@ -386,7 +386,10 @@ class ActionHandler(webapp2.RequestHandler):
     def user_sketch_lite(self, criteria): #/list/sketch/user
         result = Sketch.get_entities_lite(criteria=criteria)
         return self.respond(result)
-
+    #Test method by Ram.
+    def get_filenames(self, criteria): #/list/sketch/user
+        result = Sketch.get_filenames(criteria=criteria)
+        return self.respond(result)
     def get_thumbnail(self, criteria): #/list/sketch/user
         result = Sketch.get_thumbnail(criteria=criteria)
         return self.respond_thumbnail(result)
@@ -406,6 +409,9 @@ class ActionHandler(webapp2.RequestHandler):
         #Add a handler to automatically convert datetimes to ISO 8601 strings.
         dthandler = lambda obj: obj.isoformat() if isinstance(obj, datetime.datetime) else None
         return self.response.out.write(result)
+    def user_sketch_mobile_v2(self, criteria): #/list/sketch/user
+        result = Sketch.get_entities_v2(criteria=criteria)
+        return self.respond(result)
 #Configuration and URI mapping
 webapp2_config = {}
 webapp2_config['webapp2_extras.sessions'] = {
@@ -448,7 +454,9 @@ application = webapp2.WSGIApplication([
     webapp2.Route('/get/deletesketch', handler=ActionHandler, handler_method='delete_sketch_mobile'),
     webapp2.Route('/get/sketchxml', handler=ActionHandler),
     webapp2.Route('/list/sketch/user_lite/<criteria>', handler=ActionHandler, handler_method='user_sketch_lite'), # List Sketch By User
-     webapp2.Route('/get/thumbnail/<criteria>', handler=ActionHandler, handler_method='get_thumbnail')
+    webapp2.Route('/get/thumbnail/<criteria>', handler=ActionHandler, handler_method='get_thumbnail'),
+    webapp2.Route('/get/filenames/<criteria>', handler=ActionHandler, handler_method='get_filenames'),
+    webapp2.Route('/list/sketch_v2/user/<criteria>', handler=ActionHandler, handler_method='user_sketch_mobile_v2'),
     ],
     config=webapp2_config,
     debug=True)
