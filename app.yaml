@@ -5,7 +5,7 @@ api_version: 1
 threadsafe: false
 
 builtins:
-#- deferred: on
+- deferred: on
 - remote_api: on
 
 handlers:

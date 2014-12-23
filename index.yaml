@@ -9,6 +9,45 @@ indexes:
   ancestor: no
   properties:
   - name: owner
+  - name: isLatest
+  - name: lowerFileName
+- kind: Sketch
+  properties:
+  - name: isLatest
+  - name: owner
+  - name: created
+    direction: desc
+- kind: Sketch
+  properties:
+  - name: isLatest
+  - name: owner
+  - name: created
+- kind: Sketch
+  properties:
+  - name: isLatest
+  - name: owner
+  - name: modified
+    direction: desc
+- kind: Sketch
+  properties:
+  - name: isLatest
+  - name: owner
+  - name: modified
+- kind: Sketch
+  properties:
+  - name: isLatest
+  - name: owner
+  - name: lowerFileName
+    direction: desc
+- kind: Sketch
+  ancestor: no
+  properties:
+  - name: owner
+  - name: lowerFileName
+- kind: Sketch
+  ancestor: no
+  properties:
+  - name: owner
   - name: created
     direction: desc
 - kind: Sketch

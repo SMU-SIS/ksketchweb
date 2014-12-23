@@ -20,7 +20,7 @@ from webapp2_extras.auth import InvalidPasswordError
 
 import webapp2
 from google.appengine.api import memcache
-from google.appengine.ext import db, webapp
+from google.appengine.ext import db, webapp,deferred
 from google.appengine.ext.webapp.util import run_wsgi_app
 
 import json
@@ -412,6 +412,14 @@ class ActionHandler(webapp2.RequestHandler):
     def user_sketch_mobile_v2(self, criteria): #/list/sketch/user
         result = Sketch.get_entities_v2(criteria=criteria)
         return self.respond(result)
+    def update_handle(self):
+        deferred.defer(sketches.UpdateSchema)
+        self.response.out.write('Schema migration successfully initiated.')
+    def update_file(self):
+        deferred.defer(sketches.UpdateLowerFilenames)
+        self.response.out.write('Schema migration successfully initiated.')
+
+
 #Configuration and URI mapping
 webapp2_config = {}
 webapp2_config['webapp2_extras.sessions'] = {
@@ -457,13 +465,15 @@ application = webapp2.WSGIApplication([
     webapp2.Route('/get/thumbnail/<criteria>', handler=ActionHandler, handler_method='get_thumbnail'),
     webapp2.Route('/get/filenames/<criteria>', handler=ActionHandler, handler_method='get_filenames'),
     webapp2.Route('/list/sketch_v2/user/<criteria>', handler=ActionHandler, handler_method='user_sketch_mobile_v2'),
-    ],
+    webapp2.Route('/updateHandler', handler=ActionHandler, handler_method='update_handle'),
+    webapp2.Route('/updateFileNames', handler=ActionHandler, handler_method='update_file')],
     config=webapp2_config,
     debug=True)
     
 
 #Imports placed below to avoid circular imports
 from rpx import User
+import sketches
 from sketches import Sketch
 from counters import AppVersionCount
 from comments_likes import Comment, Like

@@ -22,6 +22,15 @@ function ProfileController($scope,$resource,sharedProperties, sharedFunctions){
                         "birth_month": "", "birth_year": "", "parent_email": "",
                         "contact_studies": true, "contact_updates": true
                         };
+    $scope.currentPage = 1,
+        $scope.totalSketches =0
+  ,$scope.numPerPage = 5
+  ,$scope.maxSize = 5
+    ,$scope.dataLoaded=false
+    ,$scope.reverse=true
+    ,$scope.icon='down'
+    ,$scope.sorted_by='created';
+
 
   $scope.backend_locations = [
     {url : sharedProperties.getBackendUrl(), urlName : 'remote backend' },       
@@ -354,21 +363,28 @@ function ProfileController($scope,$resource,sharedProperties, sharedFunctions){
      });  
   }  
     
-  $scope.sketch_pagination = {"limit":5, "offset":0, "prev_offset":0, "next_offset":0};
-  
+  $scope.sketch_pagination = {"limit":$scope.numPerPage, "offset":0, "prev_offset":0, "next_offset":0,"sortBy":"-"+$scope.sorted_by};
+
   $scope.more_sketch = function() {
-    $scope.sketch_pagination = {"limit":5, "offset":0, "prev_offset":0, "next_offset":0};
+    $scope.sketch_pagination = {"limit":$scope.numPerPage, "offset":0, "prev_offset":0, "next_offset":0,"sortBy":$scope.sorted_by};
     $scope.list();
   }
   
   $scope.paginate_back = function() {
-    
+
+      $scope.sketch_pagination.offset = $scope.sketch_pagination.offset - $scope.numPerPage;
+      if( $scope.sketch_pagination.offset <0)
+       $scope.sketch_pagination.offset=0;
+        $scope.currentPage =$scope.currentPage - 1;
+      $scope.list();
+
   }
   
   $scope.paginate_forward = function() {
     if ($scope.sketch_pagination.next_offset > 
         $scope.sketch_pagination.offset) {
       $scope.sketch_pagination.offset = $scope.sketch_pagination.next_offset;
+        $scope.currentPage =$scope.currentPage + 1;
       $scope.list();
     }
   }
@@ -379,15 +395,18 @@ function ProfileController($scope,$resource,sharedProperties, sharedFunctions){
                             'urltype': $scope.urltype,
                             'show':"latest",
                             "limit":$scope.sketch_pagination.limit,
-                            "offset":$scope.sketch_pagination.offset};
+                            "offset":$scope.sketch_pagination.offset,
+                            "sort":$scope.sketch_pagination.sortBy};
     $scope.ListResource = $resource('http://:remote_url/list/sketch/user',
              {"remote_url":$scope.remote_url}, 
              {'save': {method: 'POST', params:{} }});
     $scope.waiting = "Loading";
     var listmeta = new $scope.ListResource($scope.listmeta.data);
     listmeta.$save(function(response) {
+        $scope.dataLoaded = true;
         $scope.items = response;
         $scope.sketch_pagination.next_offset = $scope.items.next_offset;
+        $scope.totalSketches = $scope.items.count;
         $scope.waiting = "Ready";
     });  
   };
@@ -480,6 +499,38 @@ function ProfileController($scope,$resource,sharedProperties, sharedFunctions){
 
     $scope.year = today_year;
   }
+
+    $scope.orderSketches = function(predicate, reverse) {
+         $scope.sorted_by=predicate;
+    if($scope.reverse) {
+        $scope.icon='down';
+            $scope.sketch_pagination = {"limit":$scope.numPerPage, "offset":0, "prev_offset":0, "next_offset":0,"sortBy":"-"+$scope.sorted_by};
+    }
+    else{
+         $scope.sketch_pagination = {"limit":$scope.numPerPage, "offset":0, "prev_offset":0, "next_offset":0,"sortBy":$scope.sorted_by};
+        $scope.icon='up';
+    }
+
+                   $scope.sketch_pagination.offset=0;
+        $scope.currentPage =1;
+        $scope.list();
+  };
+    $scope.numPages = function() {
+       try {
+           return Math.ceil($scope.totalSketches/ $scope.numPerPage);
+       }catch(err) {
+           return 0;
+       }
+    }
+    $scope.$watch('numPerPage', function() {
+
+        if($scope.dataLoaded) {
+             $scope.sketch_pagination = {"limit":$scope.numPerPage, "offset":0, "prev_offset":0, "next_offset":0,"sortBy":$scope.sorted_by};
+                   $scope.sketch_pagination.offset=0;
+        $scope.currentPage =1;
+        $scope.list();
+        }
+  },true);
 
   $scope.setFooterYear();
   $scope.getuser();

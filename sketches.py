@@ -17,7 +17,7 @@ from google.appengine.ext import db, webapp
 from google.appengine.ext.webapp.util import run_wsgi_app
 from urlparse import parse_qsl
 import json
-
+from google.appengine.ext import deferred
 
 """
 Attributes and functions for Sketch entity
@@ -38,9 +38,9 @@ class Sketch(db.Model):
   created = db.DateTimeProperty(auto_now_add=True) #The time that the model was created    
   modified = db.DateTimeProperty(auto_now=True)
   appver = db.FloatProperty()
-  
+  isLatest = db.BooleanProperty(default=True)
   overwrite = False
-
+  lowerFileName = db.StringProperty(default="")
   def to_dict(self):
        d = dict([(p, unicode(getattr(self, p))) for p in self.properties()])
        d["id"] = self.key().id()
@@ -74,7 +74,8 @@ class Sketch(db.Model):
                     thumbnailData=jsonData['thumbnailData'],
                     original_sketch=long(jsonData['originalSketch']),
                     original_version=long(versionCount_decrement),
-                    appver=float(jsonData['appver']))
+                    appver=float(jsonData['appver']),
+                    lowerFileName=jsonData['fileName'].lower())
      
       verify = entity.put()
       if (verify):
@@ -170,6 +171,7 @@ class Sketch(db.Model):
           check_if_latest = False
           thelatestobject = Sketch.all().filter('sketchId =', long(jsonData['sketchId'])).filter('version =', v_count.lastVersion).get()
           thelatestobject_created = thelatestobject.created
+        Sketch.update_latest_flag(jsonData['sketchId'])
       #If sketch is a new sketch created from an existing sketch (i.e. save as sketch)
       else:
         #Creates new version counter for the new Sketch.
@@ -207,7 +209,8 @@ class Sketch(db.Model):
                         thumbnailData=thumbnail,
                         original_sketch=long(jsonData['originalSketch']),
                         original_version=long(jsonData['originalVersion']),
-                        appver=float(jsonData['appver']))
+                        appver=float(jsonData['appver']),
+                        lowerFileName=jsonData['fileName'].lower())
         else:
           entity = Sketch(sketchId=long(jsonData['sketchId']),
                         version=long(jsonData['version']),
@@ -218,7 +221,8 @@ class Sketch(db.Model):
                         thumbnailData=thumbnail,
                         original_sketch=long(jsonData['originalSketch']),
                         original_version=long(jsonData['originalVersion']),
-                        appver=float(jsonData['appver']))
+                        appver=float(jsonData['appver']),
+                        lowerFileName=jsonData['fileName'].lower())
         verify = entity.put()
         if (allow_permissions):
           if (verify):
@@ -400,58 +404,38 @@ class Sketch(db.Model):
     show = jsonData['show']
     limit = long(jsonData['limit'])
     offset = long(jsonData['offset'])
-    theQuery = Sketch.all().filter('owner',long(criteria)).order('-created')
-    objects = theQuery.fetch(limit=None)
+    sortby = jsonData['sort']
+    theQuery = Sketch.all().filter('owner',long(criteria)).filter('isLatest',True).order(sortby)
+    count = theQuery.count(limit=None)
+    objects = theQuery.fetch(limit=limit, offset=offset)
 
     entities = []
-    count = 0
-    next_offset = 0
+    next_offset = offset + limit
     
-    for object in objects[offset:]:
-      #if long(criteria) == object.owner:
-        #Latest Version Filter
-        latest_check = True
-        if show == "latest":
-          versionCount = VersionCount.get_counter(long(object.sketchId))
-          if object.version < versionCount.lastVersion:
-            latest_check = False
-        #Check Permissions
-        permissions = Permissions.user_access_control(object.sketchId,userid)
+    for object in objects:
+      user_name = User.get_name(object.owner)
+      data = {'sketchId': object.sketchId,
+            'version': object.version,
+            'changeDescription': object.changeDescription,
+            'fileName': object.fileName,
+            'thumbnailData': object.thumbnailData,
+            'owner': user_name,
+            'owner_id': object.owner,
+            'originalSketch': object.original_sketch,
+            'originalVersion': object.original_version,
+            'originalName': Sketch.get_sketch_name(object.original_sketch,object.original_version),
+            'appver': object.appver,
+            'p_view': 1,
+            'p_edit': True,
+            'p_comment': True,
+            'like': Like.get_entities_by_id(object.sketchId, 0)['count'],
+            'comment': Comment.get_entities_by_id(object.sketchId)['count']}
 
-        if bool(permissions['p_view']) and latest_check:
-          user_name = User.get_name(object.owner)
-          data = {'sketchId': object.sketchId,
-                'version': object.version,
-                'changeDescription': object.changeDescription,
-                'fileName': object.fileName,
-                'thumbnailData': object.thumbnailData,
-                'owner': user_name,
-                'owner_id': object.owner,
-                'originalSketch': object.original_sketch,
-                'originalVersion': object.original_version,
-                'originalName': Sketch.get_sketch_name(object.original_sketch,object.original_version),
-                'appver': object.appver,
-                'p_view': 1,
-                'p_edit': bool(permissions['p_edit']),
-                'p_comment': bool(permissions['p_comment']),
-                'like': Like.get_entities_by_id(object.sketchId, 0)['count'],
-                'comment': Comment.get_entities_by_id(object.sketchId)['count']}
-
-          entity = {'id': object.key().id(),
-                'created': object.created.replace(tzinfo=utc).strftime("%d %b %Y %H:%M:%S"),
-                'modified': object.modified.replace(tzinfo=utc).strftime("%d %b %Y %H:%M:%S"),
-                'data': data}
-
-          entities.append(entity)
-          count += 1
-
-        if limit != 0:
-          if count >= limit:
-            next = objects.index(object) + 1
-            if next < len(objects):
-              next_offset = objects.index(object) + 1
-            break
-    
+      entity = {'id': object.key().id(),
+            'created': object.created.replace(tzinfo=utc).strftime("%d %b %Y %H:%M:%S"),
+            'modified': object.modified.replace(tzinfo=utc).strftime("%d %b %Y %H:%M:%S"),
+            'data': data}
+      entities.append(entity)
     result = {'method':'get_entities_by_id',
               'en_type': 'Sketch',
               'count': count,
@@ -547,7 +531,7 @@ class Sketch(db.Model):
   def get_entities_by_criteria(criteria=""):
     utc = UTC()
     #update ModelCount when adding
-    theResults = Sketch.all().filter('owner',long(criteria)).order('-created').fetch(limit=None)
+    theResults = Sketch.all().filter('owner',long(criteria)).order('lowerFileName').fetch(limit=None)
 
     show = "latest"
 
@@ -1166,35 +1150,11 @@ class Sketch(db.Model):
   @staticmethod
   def get_entities_v2(criteria=""):
     utc = UTC()
-    #update ModelCount when adding
-    theResults = Sketch.all().filter('owner',long(criteria)).order('-modified').fetch(limit=None)
-
-    show = "latest"
-
+    theResults = Sketch.all().filter('owner',long(criteria)).filter('isLatest',True).order('created').fetch(limit=None)
     entities = []
-
-    userid = long(criteria)
-
-    test = "hello " + criteria
-
     for object in theResults:
-      #if userid == object.owner:
-        test = "works!"
-        #Latest Version Filter
-        latest_check = True
-        if show == "latest":
-          versionCount = VersionCount.get_counter(long(object.sketchId))
-          if object.version < versionCount.lastVersion:
-            latest_check = False
-
-        #Check Permissions
-        permissions = Permissions.user_access_control(object.sketchId,userid)
-
-        if bool(permissions['p_view']) and latest_check:
-          test = "works too!"
-          user_name = User.get_name(object.owner)
-
-          entity = {'id': object.key().id(),
+        user_name = User.get_name(object.owner)
+        entity = {'id': object.key().id(),
                 'created': object.created.replace(tzinfo=utc).strftime("%d %b %Y %H:%M:%S"),
                 'modified': object.modified.replace(tzinfo=utc).strftime("%d %b %Y %H:%M:%S"),
                 'sketchId': object.sketchId,
@@ -1205,29 +1165,154 @@ class Sketch(db.Model):
                 'owner': user_name,
                 'owner_id': object.owner,
                 'originalSketch': object.original_sketch,
-                'originalVersion': object.original_version,
-                'originalName': Sketch.get_sketch_name(object.original_sketch,object.original_version),
-                'appver': object.appver,
-                'p_view': 1,
-                'p_edit': bool(permissions['p_edit']),
-                'p_comment': bool(permissions['p_comment']),
-                'like': Like.get_entities_by_id(object.sketchId, 0)['count'],
-                'comment': Comment.get_entities_by_id(object.sketchId)['count']}
+                'originalVersion': object.original_version}
+        entities.append(entity)
+    return entities
+  @staticmethod
+  def update_latest_flag(sketchId):
+        to_put = []
+        query = Sketch.all().filter('sketchId =', long(sketchId)).fetch(limit=None)
+        for p in query:
+            p.isLatest = False
+            to_put.append(p)
+        if to_put:
+            db.put(to_put)
+  @staticmethod
+  def get_entity_by_versioning_mobile_v2(sketchId="", version="", purpose="View", userid=""):
+        utc = UTC()
+        versionmatch = True
+        latestversion = True
+        result = {'method':'get_entity_by_versioning_mobile',
+                  'success':"no",
+                  'id': 0,
+                  'created': datetime.datetime.now().replace(tzinfo=utc).strftime("%d %b %Y %H:%M:%S"),
+                  'modified': datetime.datetime.now().replace(tzinfo=utc).strftime("%d %b %Y %H:%M:%S"),
+                  'data': ""
+                  }
 
-          if userid == object.owner:
-            entities.append(entity)
-          elif User.check_if_admin(userid):
-            entities.append(entity)
-          elif data['p_view'] == "Public":
-            entities.append(entity)
+        try:
+          query = Sketch.all()
+          query.filter('sketchId =', long(sketchId))
 
-    count = 0
-    modelCount = ModelCount.all().filter('en_type','Sketch').get()
-    if modelCount:
-      count = modelCount.count
-    result = entities
+          data = query.get()
 
-    return result
+          #jsonData = json.loads(data)
+          #sketchId = jsonData['id']
+          #version = data.version #jsonData['version']
+          theobject = None
+
+          versionCount = VersionCount.get_counter(long(sketchId))
+
+          #Get latest version
+          if versionCount and long(version) == -1:
+            theobject = Sketch.all().filter('sketchId =', long(sketchId)).filter('version =', versionCount.lastVersion).get()
+          #Get specific version
+          elif long(version) != -1:
+            theobject = Sketch.all().filter('sketchId =', long(sketchId)).filter('version =', long(version)).get()
+            if theobject:
+              if long(version) != versionCount.lastVersion:
+                latestversion = False
+            else:
+              theobject = Sketch.all().filter('sketchId =', long(sketchId)).filter('version =', versionCount.lastVersion).get()
+              versionmatch = False
+
+          if theobject:
+            #Check Permissions
+            permissions = Permissions.user_access_control(theobject.sketchId,userid)
+
+            #Check access type (view/edit):
+            access = False
+            if purpose == "Edit":
+              access = bool(permissions['p_edit'])
+            else:
+              access = bool(permissions['p_view'])
+
+            if access:
+              user_name = User.get_name(theobject.owner)
+              result = {'sketchId': theobject.sketchId,
+                      'version': theobject.version,
+                      'changeDescription': theobject.changeDescription,
+                      'fileName': theobject.fileName,
+                      'owner': user_name,
+                      'owner_id': theobject.owner,
+                      'fileData': theobject.fileData,
+                      'thumbnailData': theobject.thumbnailData,
+                      'originalSketch': theobject.original_sketch,
+                      'originalVersion': theobject.original_version,
+                      'originalName': Sketch.get_sketch_name(theobject.original_sketch,theobject.original_version),
+                      'appver': theobject.appver,
+                      'p_view': 1,
+                      'p_edit': bool(permissions['p_edit']),
+                      'p_comment': bool(permissions['p_comment']),
+                      'p_public': Permissions.check_permissions(theobject.sketchId),
+                      'groups': Sketch_Groups.get_groups_for_sketch(theobject.sketchId),
+                      'ismatching': versionmatch,
+                      'islatest': latestversion,
+                      'en_type': 'Sketch',
+                      'status':'success',
+                      'id': theobject.key().id(),
+                      'created': theobject.created.replace(tzinfo=utc).strftime("%d %b %Y %H:%M:%S"),
+                      'modified': theobject.modified.replace(tzinfo=utc).strftime("%d %b %Y %H:%M:%S")}
+            else:
+              result = {'method':'get_entity_by_versioning_mobile',
+                       'status':"Forbidden"}
+          else:
+            result = {'method':'get_entity_by_versioning_mobile',
+                      'status':"Error"}
+        except (RuntimeError, ValueError):
+          result['data'] = ""
+
+        return result
+def UpdateSchema(cursor=None, num_updated=0):
+    query = Sketch.all()
+    if cursor:
+        query.with_cursor(cursor)
+
+    to_put = []
+    for p in query.fetch(limit=50):
+        # In this example, the default values of 0 for num_votes and avg_rating
+        # are acceptable, so we don't need this loop.  If we wanted to manually
+        # manipulate property values, it might go something like this:
+
+        versionCount = VersionCount.get_counter(long(p.sketchId))
+        if p.version < versionCount.lastVersion:
+            p.isLatest = False
+        else:
+            p.isLatest = True
+        to_put.append(p)
+    if to_put:
+        db.put(to_put)
+        num_updated += len(to_put)
+        logging.debug(
+            'Put %d entities to Datastore for a total of %d',
+            len(to_put), num_updated)
+        deferred.defer(UpdateSchema, cursor=query.cursor(), num_updated=num_updated)
+    else:
+        logging.debug(
+            'UpdateSchema complete with %d updates!', num_updated)
+def UpdateLowerFilenames(cursor=None, num_updated=0):
+    query = Sketch.all()
+    if cursor:
+        query.with_cursor(cursor)
+
+    to_put = []
+    for p in query.fetch(limit=50):
+        # In this example, the default values of 0 for num_votes and avg_rating
+        # are acceptable, so we don't need this loop.  If we wanted to manually
+        # manipulate property values, it might go something like this:
+        p.lowerFileName = p.fileName.lower()
+        to_put.append(p)
+    if to_put:
+        db.put(to_put)
+        num_updated += len(to_put)
+        logging.info(
+            'Put %d entities to Datastore for a total of %d',
+            len(to_put), num_updated)
+        deferred.defer(UpdateLowerFilenames, cursor=query.cursor(), num_updated=num_updated)
+    else:
+        logging.info(
+            'UpdateSchema complete with %d updates!', num_updated)
+
 #Imports placed below to avoid circular imports
 from rpx import User, UTC
 from counters import ModelCount, VersionCount, AppVersionCount
