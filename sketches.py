@@ -301,7 +301,7 @@ class Sketch(db.Model):
       possible_names = Sketch.get_matching_names(criteria)
       possible_users = User.get_matching_ids(criteria)
     sketch_id_users = set()
-    sketch_id_query = Sketch.all().filter('owner IN',possible_users).fetch(limit=None)
+    sketch_id_query = Sketch.all().filter('owner IN',possible_users[:29]).fetch(limit=None)
     if sketch_id_query:
         for obj in sketch_id_query:
             sketch_id_users.add(obj.sketchId)
@@ -572,7 +572,8 @@ class Sketch(db.Model):
                 'p_edit': bool(permissions['p_edit']),
                 'p_comment': bool(permissions['p_comment']),
                 'like': Like.get_entities_by_id(object.sketchId, 0)['count'],
-                'comment': Comment.get_entities_by_id(object.sketchId)['count']}
+                'comment': Comment.get_entities_by_id(object.sketchId)['count'],
+                'lowerFileName': object.lowerFileName}
           
           entity = {'id': object.key().id(),
                 'created': object.created.replace(tzinfo=utc).strftime("%d %b %Y %H:%M:%S"),
@@ -1069,7 +1070,7 @@ class Sketch(db.Model):
     sketchIds = jsonData['sketchID']
     userid = jsonData['userid']
     #update ModelCount when adding
-    theResults = Sketch.all().filter('owner',long(userid)).order('-created').fetch(limit=None)
+    theResults = Sketch.all().filter('owner',long(userid)).order('lowerFileName').fetch(limit=None)
 
     show = "latest"
 
@@ -1110,7 +1111,8 @@ class Sketch(db.Model):
                 'p_edit': bool(permissions['p_edit']),
                 'p_comment': bool(permissions['p_comment']),
                 'like': Like.get_entities_by_id(object.sketchId, 0)['count'],
-                'comment': Comment.get_entities_by_id(object.sketchId)['count']}
+                'comment': Comment.get_entities_by_id(object.sketchId)['count'],
+                'lowerFileName': object.lowerFileName}
 
           entity = {'id': object.key().id(),
                 'created': object.created.replace(tzinfo=utc).strftime("%d %b %Y %H:%M:%S"),
