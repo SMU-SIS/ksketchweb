@@ -29,7 +29,9 @@ function ProfileController($scope,$resource,sharedProperties, sharedFunctions){
     ,$scope.dataLoaded=false
     ,$scope.reverse=true
     ,$scope.icon='down'
-    ,$scope.sorted_by='created';
+    ,$scope.sorted_by='created'
+    ,$scope.sort_description='Date Created'
+    ,$scope.direction_description='Descending';
 
 
   $scope.backend_locations = [
@@ -509,6 +511,21 @@ function ProfileController($scope,$resource,sharedProperties, sharedFunctions){
     else{
          $scope.sketch_pagination = {"limit":$scope.numPerPage, "offset":0, "prev_offset":0, "next_offset":0,"sortBy":$scope.sorted_by};
         $scope.icon='up';
+    }
+
+                   $scope.sketch_pagination.offset=0;
+        $scope.currentPage =1;
+        $scope.list();
+  };
+    $scope.reorderSketches = function() {
+
+    if($scope.reverse) {
+
+            $scope.sketch_pagination = {"limit":$scope.numPerPage, "offset":0, "prev_offset":0, "next_offset":0,"sortBy":"-"+$scope.sorted_by};
+    }
+    else{
+         $scope.sketch_pagination = {"limit":$scope.numPerPage, "offset":0, "prev_offset":0, "next_offset":0,"sortBy":$scope.sorted_by};
+
     }
 
                    $scope.sketch_pagination.offset=0;

@@ -311,7 +311,7 @@
                                       <span><em>{{profile_user.u_name}} has no sketches at present.</em></span>
                                     </div>
                                 </div>
-                                <div class="span6">
+                                <div class="pull-right">
                                      <!-- <button class="btn btn-info" style="float:right" ui-if="sketch_pagination.next_offset != 0" ng-click="paginate_forward()" ng-cloak>More Results</button>-->
                                         <ul class="pager pull-right">
                                         <li ng-click="paginate_back()" ng-hide="currentPage<=1" class="previous">
@@ -325,18 +325,40 @@
                                 </div>
                       </div>
                        <div class="row-fluid">
-                             <div class="span5">
-                                <div class="btn-group" role="group" aria-label="...">
-
-                                              <button type="button" ng-click="reverse=!reverse;orderSketches('lowerFileName', reverse)" class="btn btn-default">Name <span class="icon-chevron-{{icon}}" aria-hidden="true" ng-hide="sorted_by !='lowerFileName'"></span></button>
-                                                <button type="button" ng-click="reverse=!reverse;orderSketches('modified', reverse)" class="btn btn-default">Last Modified <span class="icon-chevron-{{icon}}" aria-hidden="true" ng-hide="sorted_by !='modified'"></span></button>
-                                              <button type="button" ng-click="reverse=!reverse;orderSketches('created', reverse)" class="btn btn-default" autofocus="true">Date created <span class="icon-chevron-{{icon}}" aria-hidden="true" ng-hide="sorted_by !='created'"></span></button>
+                             <div class="span2">
+                               Sort by:
+                                <div class="dropdown">
+                                                  <button class="btn btn-default dropdown-toggle" type="button" id="dropdownMenu2" data-toggle="dropdown" aria-expanded="true">
+                                                    {{sort_description}}
+                                                    <span class="caret"></span>
+                                                  </button>
+                                                  <ul class="dropdown-menu" role="menu" aria-labelledby="dropdownMenu2">
+                                                  <li role="presentation" ng-click="sort_description='File Name';orderSketches('lowerFileName', reverse)"><a role="menuitem" tabindex="-1" href="#">File Name</a></li>
+                                                  <li role="presentation" ng-click="sort_description='Date Modified';orderSketches('modified', reverse)"><a role="menuitem" tabindex="-1" href="#">Date Modified</a></li>
+                                                  <li role="presentation" ng-click="sort_description='Date Created';orderSketches('created', reverse)"><a role="menuitem" tabindex="-1" href="#">Date Created</a></li>
+                                                  </ul>
                                 </div>
+
                              </div>
-                             <div class="span3">
+                          <div class="span2">
+                            Direction:
+                                <div class="dropdown">
+                                                  <button class="btn btn-default dropdown-toggle" type="button" id="dropdownMenu3" data-toggle="dropdown" aria-expanded="true">
+                                                    {{direction_description}}
+                                                    <span class="caret"></span>
+                                                  </button>
+                                                  <ul class="dropdown-menu" role="menu" aria-labelledby="dropdownMenu3">
+                                                  <li role="presentation" ng-click="direction_description='Ascending';reverse=false;reorderSketches()"><a role="menuitem" tabindex="-1" href="#">Ascending</a></li>
+                                                  <li role="presentation" ng-click="direction_description='Descending';reverse=true;reorderSketches()"><a role="menuitem" tabindex="-1" href="#">Descending</a></li>
+                                                  </ul>
+                                </div>
+
+                             </div>
+                             <div class="span2">
+                               Sketches/Page:
                                                 <div class="dropdown">
                                                   <button class="btn btn-default dropdown-toggle" type="button" id="dropdownMenu1" data-toggle="dropdown" aria-expanded="true">
-                                                    Showing {{numPerPage}} sketches/page
+                                                    {{numPerPage}}
                                                     <span class="caret"></span>
                                                   </button>
                                                   <ul class="dropdown-menu" role="menu" aria-labelledby="dropdownMenu1">
@@ -348,7 +370,7 @@
                                                   </ul>
                                                 </div>
                              </div>
-                          <div class="span2 pull-right text-center">{{items.entities.length+((currentPage-1)*numPerPage)}} of {{totalSketches}}</div>
+                          <div class="pull-right text-center">{{(currentPage-1)*numPerPage}} to {{items.entities.length+((currentPage-1)*numPerPage)}} of {{totalSketches}}</div>
                        </div>
                       <div class="row-fluid">
                       <br/>

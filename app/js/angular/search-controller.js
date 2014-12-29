@@ -11,7 +11,9 @@ function SearchController($scope,$filter,$resource,sharedProperties, sharedFunct
     ,$scope.dataLoaded=false
     ,$scope.reverse=true
     ,$scope.icon='down'
-    ,$scope.sorted_by='created_d';
+    ,$scope.sorted_by='created_d'
+    ,$scope.sort_description='Date Created'
+    ,$scope.direction_description="Descending";
 	$scope.User = {
                 "id": 0, "u_name" :"Anonymous User",  "u_realname" :"Anonymous User",
                 "u_login": false, "u_email": "", "g_hash": "", "u_created": "",
@@ -235,13 +237,18 @@ function SearchController($scope,$filter,$resource,sharedProperties, sharedFunct
     $scope.year = today_year;
   }
      var orderBy = $filter('orderBy');
-$scope.order = function(predicate, reverse) {
+
+    $scope.order = function(predicate) {
     if($scope.reverse)
         $scope.icon='down';
     else
         $scope.icon='up';
     $scope.sorted_by=predicate;
-    $scope.searchitems.entities = orderBy($scope.searchitems.entities, predicate, reverse);
+    $scope.searchitems.entities = orderBy($scope.searchitems.entities, predicate, $scope.reverse);
+  };
+
+     $scope.reorder = function() {
+    $scope.searchitems.entities = orderBy($scope.searchitems.entities, $scope.sorted_by, $scope.reverse);
   };
 
   $scope.setFooterYear();
