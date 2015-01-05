@@ -262,7 +262,7 @@
                 </ul>
                      </div>
 </div>
-              <div class="span3">
+              <div class="span2">
                   Sketches/Page:
                 <div class="dropdown">
   <button class="btn btn-default dropdown-toggle" type="button" id="dropdownMenu1" data-toggle="dropdown" aria-expanded="true">
@@ -279,7 +279,7 @@
 </div>
 
             </div>
-               <div class="pull-right text-center" ng-hide="filteredEntities.length==0">{{((currentPage-1)*numPerPage)}} to {{filteredEntities.length+((currentPage-1)*numPerPage)}} of {{searchitems.entities.length}}</div>
+               <div class="pull-right text-center" ng-hide="filteredEntities.length==0">{{((currentPage-1)*numPerPage)+1}} to {{filteredEntities.length+((currentPage-1)*numPerPage)}} of {{searchitems.entities.length}}</div>
           </div>
             <div class="row-fluid" ng-hide="filteredEntities.length==0">
 
@@ -370,7 +370,7 @@
           <hr/>
              <div class="row-fluid" ng-hide="filteredEntities.length==0">
 
-                <ul class="pager pull-left">
+                <ul class="pager pull-right">
   <li ng-click="currentPage = currentPage -1" ng-hide="currentPage<=1" class="previous">
     <a href="#"><b>&larr; Previous</b></a>
   </li>
@@ -380,8 +380,9 @@
   </li>
 
 </ul>
-                <div class="pull-right text-center">{{filteredEntities.length+((currentPage-1)*numPerPage)}} of {{searchitems.entities.length}}</div>
+
             </div>
+            <div class="pull-right text-center">{{((currentPage-1)*numPerPage)+1}} to {{filteredEntities.length+((currentPage-1)*numPerPage)}} of {{searchitems.entities.length}}</div>
 		    </div><!--/span-->
        <div class="footer-table" ng-model="year">
           <img src="img/footer_logo_small.png"/><br/>
