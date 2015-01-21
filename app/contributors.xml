@@ -25,14 +25,6 @@
 			<Department>School of Information Systems</Department>
 			<Affiliation>Singapore Management University</Affiliation>
 		</Person>
-		<Person>
-			<Name>James A. Landay</Name>
-			<Image>img/team/JALANDAY.jpg</Image>
-			<Link>0</Link>
-			<Designation>Professor</Designation>
-			<Department>Computer Science Department</Department>
-			<Affiliation>Stanford University</Affiliation>
-		</Person>
 	</List>
 	<List>
 		<Phase>K-Sketch 2</Phase>

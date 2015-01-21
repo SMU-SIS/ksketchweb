@@ -47,8 +47,7 @@
     <!-- END Browser History required section -->  
     
     <script type="text/javascript" src="swf/swfobject.js"></script>
-    
-    <script type="text/javascript" src="js/janrain/janrain_widget.js"></script>
+
     <script type="text/javascript" src="js/common/notification.js"></script>
     
   </head>
@@ -110,7 +109,7 @@
               <a ng-hide="User.u_login" ng-cloak id="heading" disabled>Hello, {{User.u_name}}!</a>
             </li>
             <li ng-hide="User.u_login" ng-cloak>
-              <a class="janrainEngage" href="#">Sign-In</a>
+              <a href="/user/login">Sign-In with Google</a>
             </li>
             <li ng-show="User.u_login" ng-cloak>
               <a href="/user/logout">Logout</a>

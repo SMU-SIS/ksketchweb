@@ -420,6 +420,10 @@ class ActionHandler(webapp2.RequestHandler):
         self.response.out.write('Schema migration successfully initiated.')
 
 
+    def modify_fileData(self): #/add/sketch
+      result = Sketch.modify_sketch_data(self.request.body)
+      return self.respond(result)
+
 #Configuration and URI mapping
 webapp2_config = {}
 webapp2_config['webapp2_extras.sessions'] = {
@@ -466,7 +470,8 @@ application = webapp2.WSGIApplication([
     webapp2.Route('/get/filenames/<criteria>', handler=ActionHandler, handler_method='get_filenames'),
     webapp2.Route('/list/sketch_v2/user/<criteria>', handler=ActionHandler, handler_method='user_sketch_mobile_v2'),
     webapp2.Route('/updateHandler', handler=ActionHandler, handler_method='update_handle'),
-    webapp2.Route('/updateFileNames', handler=ActionHandler, handler_method='update_file')],
+    webapp2.Route('/updateFileNames', handler=ActionHandler, handler_method='update_file'),
+    webapp2.Route('/modify/fileData', handler=ActionHandler, handler_method='modify_fileData')],
     config=webapp2_config,
     debug=True)
     

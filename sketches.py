@@ -7,6 +7,7 @@
 Note to self: json.loads = json string to objects. json.dumps is object to json string.
 """     
 import datetime
+import urllib
 import os
 import urllib
 import urllib2
@@ -1265,6 +1266,18 @@ class Sketch(db.Model):
           result['data'] = ""
 
         return result
+
+  #Creates a new Sketch entity from solving discrepancy
+  @staticmethod
+  def modify_sketch_data(data, ):
+    result = {}
+    jsonData = json.loads(data)
+
+    my_object = Sketch.all().filter("sketchId =",long(jsonData["id"])).filter("version =",long(jsonData["version"])).get()
+    my_object.fileData = jsonData["fileData"]
+    db.put(my_object)
+
+    return result
 def UpdateSchema(cursor=None, num_updated=0):
     query = Sketch.all()
     if cursor:
@@ -1314,7 +1327,6 @@ def UpdateLowerFilenames(cursor=None, num_updated=0):
     else:
         logging.info(
             'UpdateSchema complete with %d updates!', num_updated)
-
 #Imports placed below to avoid circular imports
 from rpx import User, UTC
 from counters import ModelCount, VersionCount, AppVersionCount
