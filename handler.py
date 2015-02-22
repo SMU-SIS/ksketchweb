@@ -424,6 +424,16 @@ class ActionHandler(webapp2.RequestHandler):
       result = Sketch.modify_sketch_data(self.request.body)
       return self.respond(result)
 
+    def send_svg(self,sketchId, version, userid): # /get/svg/view/<sketchId>
+        result = Sketch.get_file_data(sketchId, version, "View", userid=userid)
+        result = ksketchsvg.get_svg(result.decode("string-escape"))
+        return self.respond({"data":'<svg id= "mySVG" height="1000" version="1.1" width="100%" xmlns="http://www.w3.org/2000/svg" style="overflow: hidden; position: absolute; left: 0px; top: 0px;">' +result + '</svg>'})
+
+    def send_script(self,sketchId, version, userid): # /get/svg/view/<sketchId>
+        result = Sketch.get_file_data(sketchId, version, "View", userid=userid)
+        result = ksketchsvg.get_transformations(result.decode("string-escape"))
+        return self.respond(result)
+
 #Configuration and URI mapping
 webapp2_config = {}
 webapp2_config['webapp2_extras.sessions'] = {
@@ -471,7 +481,9 @@ application = webapp2.WSGIApplication([
     webapp2.Route('/list/sketch_v2/user/<criteria>', handler=ActionHandler, handler_method='user_sketch_mobile_v2'),
     webapp2.Route('/updateHandler', handler=ActionHandler, handler_method='update_handle'),
     webapp2.Route('/updateFileNames', handler=ActionHandler, handler_method='update_file'),
-    webapp2.Route('/modify/fileData', handler=ActionHandler, handler_method='modify_fileData')],
+    webapp2.Route('/modify/fileData', handler=ActionHandler, handler_method='modify_fileData'),
+    webapp2.Route('/get/svg/view/<sketchId>/<version>/<userid>', handler=ActionHandler, handler_method='send_svg'),
+    webapp2.Route('/get/svg/script/<sketchId>/<version>/<userid>', handler=ActionHandler, handler_method='send_script')],
     config=webapp2_config,
     debug=True)
     
@@ -483,4 +495,5 @@ from sketches import Sketch
 from counters import AppVersionCount
 from comments_likes import Comment, Like
 from permissions_groups import Sketch_Groups, Group, UserGroupMgmt
-from notifications import Notification    
+from notifications import Notification
+from ksketchsvg import ksketchsvg

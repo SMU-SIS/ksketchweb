@@ -1266,7 +1266,69 @@ class Sketch(db.Model):
           result['data'] = ""
 
         return result
+  @staticmethod
+  def get_file_data(sketchId="", version="", purpose="View", userid=""):
+    utc = UTC()
+    versionmatch = True
+    latestversion = True
+    result = {'method':'get_entity_by_versioning_mobile',
+              'success':"no",
+              'id': 0,
+              'created': datetime.datetime.now().replace(tzinfo=utc).strftime("%d %b %Y %H:%M:%S"),
+              'modified': datetime.datetime.now().replace(tzinfo=utc).strftime("%d %b %Y %H:%M:%S"),
+              'data': ""
+              }
 
+    try:
+      query = Sketch.all()
+      query.filter('sketchId =', long(sketchId))
+
+      data = query.get()
+
+      #jsonData = json.loads(data)
+      #sketchId = jsonData['id']
+      #version = data.version #jsonData['version']
+      theobject = None
+
+      versionCount = VersionCount.get_counter(long(sketchId))
+
+      #Get latest version
+      if versionCount and long(version) == -1:
+        theobject = Sketch.all().filter('sketchId =', long(sketchId)).filter('version =', versionCount.lastVersion).get()
+      #Get specific version
+      elif long(version) != -1:
+        theobject = Sketch.all().filter('sketchId =', long(sketchId)).filter('version =', long(version)).get()
+        if theobject:
+          if long(version) != versionCount.lastVersion:
+            latestversion = False
+        else:
+          theobject = Sketch.all().filter('sketchId =', long(sketchId)).filter('version =', versionCount.lastVersion).get()
+          versionmatch = False
+
+      if theobject:
+        #Check Permissions
+        permissions = Permissions.user_access_control(theobject.sketchId,userid)
+
+        #Check access type (view/edit):
+        access = False
+        if purpose == "Edit":
+          access = bool(permissions['p_edit'])
+        else:
+          access = bool(permissions['p_view'])
+
+        #if access:
+        result = theobject.fileData
+
+        #else:
+        #  result = {'method':'get_entity_by_versioning_mobile',
+        #           'status':"Forbidden"}
+      else:
+        result = {'method':'get_entity_by_versioning_mobile',
+                  'status':"Error"}
+    except (RuntimeError, ValueError):
+      result['data'] = ""
+
+    return result
   #Creates a new Sketch entity from solving discrepancy
   @staticmethod
   def modify_sketch_data(data, ):
@@ -1327,6 +1389,8 @@ def UpdateLowerFilenames(cursor=None, num_updated=0):
     else:
         logging.info(
             'UpdateSchema complete with %d updates!', num_updated)
+
+
 #Imports placed below to avoid circular imports
 from rpx import User, UTC
 from counters import ModelCount, VersionCount, AppVersionCount
