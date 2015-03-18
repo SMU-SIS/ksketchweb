@@ -127,7 +127,10 @@ function ViewSVGController($scope, $resource,sharedProperties,sharedFunctions){
                   events = $scope.trans_json[i];
                   time = events.t;
                   for(j=0;j < events.e.length;j++) {
-                      setTimeout( $scope.transform_svg, time,events.e[j].obj,events.e[j].trans);
+                      if(events.e[j].hasOwnProperty("trans"))
+                        setTimeout( $scope.transform_svg, time,events.e[j].obj,events.e[j].trans);
+                      else
+                        setTimeout( $scope.set_visibility, time,events.e[j].obj,events.e[j].v);
                   }
               }
           }
@@ -137,6 +140,11 @@ function ViewSVGController($scope, $resource,sharedProperties,sharedFunctions){
      //if(trans == "(0.999860268768,-0.0167165468423,0.0167165468423,0.999860268768,-5.78599721214,4.62546567632)")
       //  console.log("here");
         document.getElementById(obj).setAttribute("transform","matrix"+trans);
+    }
+    $scope.set_visibility = function (obj, val) {
+     //if(trans == "(0.999860268768,-0.0167165468423,0.0167165468423,0.999860268768,-5.78599721214,4.62546567632)")
+      //  console.log("here");
+        document.getElementById(obj).style.opacity =val;
     }
     $scope.item = {};
         $scope.item.data = {"sketchId":"", "version":"", "originalSketch":"","originalVersion":"", "owner":"", "owner_id":"", "fileName":"", "fileData":"", "changeDescription":"", "appver":"", "p_view": true, "p_edit": true, "p_comment": true};

@@ -427,7 +427,7 @@ class ActionHandler(webapp2.RequestHandler):
     def send_svg(self,sketchId, version, userid): # /get/svg/view/<sketchId>
         result = Sketch.get_file_data(sketchId, version, "View", userid=userid)
         result = ksketchsvg.get_svg(result.decode("string-escape"))
-        return self.respond({"data":'<svg id= "mySVG" height="1000" version="1.1" width="100%" xmlns="http://www.w3.org/2000/svg" style="overflow: hidden; position: absolute; left: 0px; top: 0px;">' +result + '</svg>'})
+        return self.respond({"data":'<svg id="mySVG" xmlns="http://www.w3.org/2000/svg"  version="1.1" width="100%" style="overflow: visible; left: 0px; top: 0px;" viewBox="0 0 1500 800" preserveAspectRatio="xMinYMax meet">' +result + '</svg>'})
 
     def send_script(self,sketchId, version, userid): # /get/svg/view/<sketchId>
         result = Sketch.get_file_data(sketchId, version, "View", userid=userid)
