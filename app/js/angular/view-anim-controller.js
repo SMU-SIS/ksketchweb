@@ -91,7 +91,10 @@ function ViewSVGController($scope, $resource, sharedProperties, sharedFunctions)
                         return 'Current value: ' + value;
                     }
                 });
+                // Remove the following when compute_abs_spatial_values is complete
                 $scope.mySlider.on("slideStop",$scope.sliderstop);
+                // Comment in when compute_abs_spatial_values is complete
+                //$scope.mySlider.on("slide",$scope.onslide);
                 $scope.waiting = "Ready";
             }
         });
@@ -99,6 +102,12 @@ function ViewSVGController($scope, $resource, sharedProperties, sharedFunctions)
         $scope.initScene();
     };
     $scope.sliderstop = function() {
+        scope.$apply(function () {
+            $scope.current_time = $scope.mySlider.slider('getValue');
+        });
+    };
+
+    $scope.onslide = function() {
         scope.$apply(function () {
             $scope.current_time = $scope.mySlider.slider('getValue');
         });
@@ -122,11 +131,14 @@ function ViewSVGController($scope, $resource, sharedProperties, sharedFunctions)
         }
     };
     $scope.transform_svg = function (obj, trans) {
+        // Remove the following when compute_abs_spatial_values is complete
         if ( document.getElementById(obj).getAttribute("transform") != null) {
             document.getElementById(obj).setAttribute("transform", document.getElementById(obj).getAttribute("transform") + " matrix" + trans);
         } else {
             document.getElementById(obj).setAttribute("transform", "matrix" + trans);
         }
+        // Comment in when compute_abs_spatial_values is complete
+        //document.getElementById(obj).setAttribute("transform", "matrix" + trans);
     };
     $scope.set_visibility = function (obj, val) {
         document.getElementById(obj).style.opacity = val;
@@ -227,7 +239,6 @@ function ViewSVGController($scope, $resource, sharedProperties, sharedFunctions)
             time = events.t;
             for (j = 0; j < events.e.length; j++) {
                 if (events.e[j].hasOwnProperty("trans")) {
-                    //document.getElementById(events.e[j].obj).setAttribute("transform",null);
                     $scope.transform_svg(events.e[j].obj, events.e[j].trans);
                 }
                 else {

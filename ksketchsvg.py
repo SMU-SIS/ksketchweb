@@ -35,7 +35,7 @@ class ksketchsvg:
         blue = rgbint & 255
         green = (rgbint >> 8) & 255
         red = (rgbint >> 16) & 255
-        return "rgb(" + str(red) + "," + str(blue) + "," + str(green) + ")"
+        return "rgb(" + str(red) + "," + str(green) + "," + str(blue) + ")"
 
     @staticmethod
     def createTag(objectID, path, color, width, centroid):
@@ -148,13 +148,17 @@ class ksketchsvg:
         return [float(i) for i in arr]
 
     @staticmethod
+    def compute_abs_spatial_values(kobject):
+
+
+        return collections.OrderedDict()
+    @staticmethod
     def get_transformations(xml):
 
         root = ET.fromstring(xml)
         object_timeframes = dict()
         visibility_frames = dict()
         for kobject in root.findall('.//KObject'):
-            time_frame = collections.OrderedDict()
             visibility_frame = collections.OrderedDict()
             objectID = kobject.attrib['id']
             prev_key = 0
@@ -165,6 +169,9 @@ class ksketchsvg:
                     visibility = "0"
                 visibility_frame[time_v] = visibility
             visibility_frames[objectID] = dict(visibility_frame)
+
+            # Remove this when compute_abs_spatial_values os complete
+            time_frame = collections.OrderedDict()
             for spatialKey in kobject.findall('.//spatialkey'):
                 currentKey = float(spatialKey.attrib['time'])
                 ncx, ncy = ksketchsvg.point_from_str(spatialKey.attrib['center'])
@@ -218,13 +225,14 @@ class ksketchsvg:
                                     arr[2] = [x, c_off_x, c_off_y]
                                     time_frame[time] = arr
                 prev_key = currentKey
+            # Comment in when compute_abs_spatial_values is complete.
+            #time_frame = ksketchsvg.compute_abs_spatial_values(kobject)
+
             if len(time_frame) != 0:
                 object_timeframes[objectID] = dict(time_frame)
         time_line = dict()
         for key in object_timeframes:
             for time in object_timeframes[key]:
-                if time == 1062.5:
-                    print "here"
                 trans_arr, rotate_arr, scale_arr = object_timeframes[key][time]
                 c_off_x = 0
                 c_off_y = 0
