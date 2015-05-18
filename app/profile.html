@@ -185,6 +185,9 @@
             <li ng-hide="User.u_login" ng-cloak>
               <a href="/user/login">Sign-In with Google</a>
             </li>
+            <li ng-show="User.u_isadmin" ng-cloak>
+              <a href="/app/editkmv.html">Edit KMV</a>
+            </li>
             <li ng-show="User.u_login" ng-cloak>
               <a href="/user/logout">Logout</a>
             </li>           

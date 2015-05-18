@@ -1331,13 +1331,88 @@ class Sketch(db.Model):
     return result
   #Creates a new Sketch entity from solving discrepancy
   @staticmethod
-  def modify_sketch_data(data, ):
-    result = {}
+  def modify_sketch_data(data):
+    result = {"success":'false'}
     jsonData = json.loads(data)
+    versionCount = VersionCount.get_counter(long(jsonData['id']))
+    logging.info(versionCount.lastVersion)
+    is_admin = User.check_if_admin(long(jsonData['user_id']))
+    if is_admin:
+        my_object = Sketch.all().filter("sketchId =",long(jsonData['id'])).filter('version =',versionCount.lastVersion).get()
+        my_object.fileData = jsonData['fileData']
+        db.put(my_object)
+        result['success']='true'
+    return result
 
-    my_object = Sketch.all().filter("sketchId =",long(jsonData["id"])).filter("version =",long(jsonData["version"])).get()
-    my_object.fileData = jsonData["fileData"]
-    db.put(my_object)
+  @staticmethod
+  def get_xml_by_versioning_mobile(sketchId="", version="", purpose="View", userid=""):
+    utc = UTC()
+    versionmatch = True
+    latestversion = True
+    result = {'method':'get_xml_by_versioning_mobile',
+              'status':"Error",
+              'id': 0,
+              'created': datetime.datetime.now().replace(tzinfo=utc).strftime("%d %b %Y %H:%M:%S"),
+              'modified': datetime.datetime.now().replace(tzinfo=utc).strftime("%d %b %Y %H:%M:%S"),
+              'data': ""
+              }
+
+    try:
+      query = Sketch.all()
+      query.filter('sketchId =', long(sketchId))
+
+      data = query.get()
+
+      #jsonData = json.loads(data)
+      #sketchId = jsonData['id']
+      #version = data.version #jsonData['version']
+      theobject = None
+
+      versionCount = VersionCount.get_counter(long(sketchId))
+
+      #Get latest version
+      if versionCount and long(version) == -1:
+        theobject = Sketch.all().filter('sketchId =', long(sketchId)).filter('version =', versionCount.lastVersion).get()
+      #Get specific version
+      elif long(version) != -1:
+        theobject = Sketch.all().filter('sketchId =', long(sketchId)).filter('version =', long(version)).get()
+        if theobject:
+          if long(version) != versionCount.lastVersion:
+            latestversion = False
+        else:
+          theobject = Sketch.all().filter('sketchId =', long(sketchId)).filter('version =', versionCount.lastVersion).get()
+          versionmatch = False
+
+      if theobject:
+        #Check Permissions
+        is_admin = User.check_if_admin(userid)
+        if is_admin:
+          user_name = User.get_name(theobject.owner)
+          data = {'sketchId': theobject.sketchId,
+                  'version': theobject.version,
+                  'changeDescription': theobject.changeDescription,
+                  'fileName': theobject.fileName,
+                  'owner': user_name,
+                  'owner_id': theobject.owner,
+                  'fileData': theobject.fileData}
+
+          result = {'method':'get_entity_by_versioning_mobile',
+                    'en_type': 'Sketch',
+                    'status':'success',
+                    'id': theobject.key().id(),
+                    'created': theobject.created.replace(tzinfo=utc).strftime("%d %b %Y %H:%M:%S"),
+                    'modified': theobject.modified.replace(tzinfo=utc).strftime("%d %b %Y %H:%M:%S"),
+                    'data': data
+                    }
+
+        else:
+          result = {'method':'get_xml_by_versioning_mobile',
+                   'status':"Forbidden"}
+      else:
+        result = {'method':'get_xml_by_versioning_mobile',
+                  'status':"Error"}
+    except (RuntimeError, ValueError):
+      result['data'] = ""
 
     return result
 def UpdateSchema(cursor=None, num_updated=0):
@@ -1367,6 +1442,7 @@ def UpdateSchema(cursor=None, num_updated=0):
     else:
         logging.debug(
             'UpdateSchema complete with %d updates!', num_updated)
+
 def UpdateLowerFilenames(cursor=None, num_updated=0):
     query = Sketch.all()
     if cursor:
@@ -1389,7 +1465,6 @@ def UpdateLowerFilenames(cursor=None, num_updated=0):
     else:
         logging.info(
             'UpdateSchema complete with %d updates!', num_updated)
-
 
 #Imports placed below to avoid circular imports
 from rpx import User, UTC
