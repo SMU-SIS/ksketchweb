@@ -424,6 +424,11 @@ class ActionHandler(webapp2.RequestHandler):
       result = Sketch.modify_sketch_data(self.request.body)
       return self.respond(result)
 
+    #Handler for viewing a particular Sketch mobile
+    def view_sketch_xml(self, sketchId, version, userid): #/get/sketch/view/<sketchId>/<version>/<userid>
+        result = Sketch.get_xml_by_versioning_mobile(sketchId, version, "View", userid=userid)
+        return self.respond(result)
+
 #Configuration and URI mapping
 webapp2_config = {}
 webapp2_config['webapp2_extras.sessions'] = {
@@ -471,7 +476,8 @@ application = webapp2.WSGIApplication([
     webapp2.Route('/list/sketch_v2/user/<criteria>', handler=ActionHandler, handler_method='user_sketch_mobile_v2'),
     webapp2.Route('/updateHandler', handler=ActionHandler, handler_method='update_handle'),
     webapp2.Route('/updateFileNames', handler=ActionHandler, handler_method='update_file'),
-    webapp2.Route('/modify/fileData', handler=ActionHandler, handler_method='modify_fileData')],
+    webapp2.Route('/modify/fileData', handler=ActionHandler, handler_method='modify_fileData'),
+    webapp2.Route('/get/sketch/view_xml/<sketchId>/<version>/<userid>', handler=ActionHandler, handler_method='view_sketch_xml')], # Get Sketch (View)],
     config=webapp2_config,
     debug=True)
     
