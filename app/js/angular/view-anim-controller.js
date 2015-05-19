@@ -83,7 +83,7 @@ function ViewSVGController($scope, $resource, sharedProperties, sharedFunctions)
                 $scope.submessage = "Perhaps the URL that you entered was broken?";
                 $scope.leave = true;
             } else {
-                $scope.trans_json = JSON.parse(response.timeline);
+                $scope.trans_json = response.timeline;
                 $scope.max_time = $scope.trans_json[$scope.trans_json.length -1].t;
                 $("#slider").attr("data-slider-max",$scope.max_time);
                 $scope.mySlider = $("#slider").slider({

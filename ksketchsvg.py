@@ -269,7 +269,7 @@ class ksketchsvg:
         events = []
         for time,values in sort_time:
             events.append({"t": time, "e": values})
-        json_obj = {"timeline": json.dumps(events)}
+        json_obj = {"timeline": events}
         return json_obj
 
 import xml.etree.ElementTree as ET
