@@ -180,7 +180,7 @@ function SketchController($scope,$resource,sharedProperties,sharedFunctions){
     $scope.waiting = "Ready";
 	}
 
-  $scope.permissions = {"p_view": 0, "p_edit": false, "p_comment": false, "group_permissions": []};
+  $scope.permissions = {"p_view": 1, "p_edit": true, "p_comment": true, "group_permissions": []};
   $scope.group_data = {"edit": false, "comment": false};
   //$scope.group_data.data = undefined;
   
