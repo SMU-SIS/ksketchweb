@@ -209,10 +209,11 @@ function ViewSVGController($scope, $resource, sharedProperties, sharedFunctions)
                 //$scope.mySlider.on("slideStop",$scope.sliderstop);
                 $scope.mySlider.on("slide",$scope.onslide);
                 $scope.waiting = "Ready";
+                $scope.init_page();
+                $scope.initScene();
             }
         });
-        $scope.init_page();
-        $scope.initScene();
+
     };
     $scope.sliderstop = function() {
         scope.$apply(function () {
@@ -292,6 +293,7 @@ function ViewSVGController($scope, $resource, sharedProperties, sharedFunctions)
         //var d = new Date();
         //$scope.last_update_time = d.getTime() + $scope.time_step;
         $scope.timer = setInterval($scope.mainLoop, $scope.time_step);
+        $scope.play_svg();
     };
     $scope.KeyPress = function (key) {
         if (key.keyCode == 32 )
@@ -366,9 +368,9 @@ function ViewSVGController($scope, $resource, sharedProperties, sharedFunctions)
         if($scope.mySlider != null) {
              $scope.mySlider.slider('setValue', $scope.current_time);
         }
-
-        $scope.play_svg();
-
+        if(newValue != oldValue) {
+            $scope.play_svg();
+        }
         //if(newValue > oldValue) {
         //    $scope.play_svg();
         //    $scope.last_update_time = $scope.time_now;
