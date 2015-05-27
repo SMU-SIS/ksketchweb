@@ -164,7 +164,7 @@ class ksketchsvg:
         return g_tag
 
     @staticmethod
-    def get_svg(xml):
+    def get_svg(xml,sketchID,version):
 
         root = ET.fromstring(xml)
         result_soup = BeautifulSoup()
@@ -196,42 +196,7 @@ class ksketchsvg:
         g_tag = Tag(soup, name='g')
         g_tag['id'] = "0"
         g_tag.insert(0, result_soup)
-        return g_tag.prettify()
-
-    @staticmethod
-    def get_svg(xml):
-
-        root = ET.fromstring(xml)
-        result_soup = BeautifulSoup()
-        for kobject in root.findall('.//KObject'):
-            objectID = kobject.attrib['id']
-            parent = kobject.find('parent')
-            parentID = parent.attrib['id']
-            stroke = kobject.find('strokeData')
-            if stroke is not None:
-                path = ksketchsvg.get_polyline(stroke)
-                color = ksketchsvg.convert_color(stroke.attrib['color'])
-                thickness = stroke.attrib['thickness']
-                tag = ksketchsvg.createTag(objectID, path, color, thickness, kobject.attrib['centroid'])
-                if parentID == "0":
-                    result_soup.insert(len(result_soup.find_all('g', recursive=False)), tag)
-                else:
-                    grp = result_soup.find('g', {'id': parentID})
-                    if grp:
-                        grp.insert(len(grp.find_all('g', recursive=False)), tag)
-            else:
-                tag = ksketchsvg.createGroup(objectID)
-                if parentID == "0":
-                    result_soup.insert(len(result_soup.find_all('g', recursive=False)), tag)
-                else:
-                    grp = result_soup.find('g', {'id': parentID})
-                    if grp:
-                        grp.insert(len(grp.find_all('g', recursive=False)), tag)
-        soup = BeautifulSoup()
-        g_tag = Tag(soup, name='g')
-        g_tag['id'] = "0"
-
-        g_tag.insert(0, result_soup)
+        SVGCache.addSVGData(sketchID,version,g_tag.prettify())
         return g_tag.prettify()
 
     @staticmethod
@@ -667,7 +632,7 @@ class ksketchsvg:
     #          key: float                  # time in milliseconds
     #          val: Array of TimelineFrame
     @staticmethod
-    def get_transformations(xml):
+    def get_transformations(xml,sketchId,version):
         root = ET.fromstring(xml)
         max_time = 0
         timelines = {}
@@ -699,11 +664,12 @@ class ksketchsvg:
         output['default_frame'] = ksketchsvg.default_frame
         output['centers'] = centers
         output['timeline'] = timeline
+        SVGCache.addAnimationData(sketchId,version,output)
         return output
 
 import xml.etree.ElementTree as ET
 from bs4 import BeautifulSoup, Tag
-
+from svgcache import SVGCache
 
 # Test area
 testxml = ""

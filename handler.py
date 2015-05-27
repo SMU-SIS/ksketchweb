@@ -425,14 +425,22 @@ class ActionHandler(webapp2.RequestHandler):
       return self.respond(result)
 
     def send_svg(self,sketchId, version, userid): # /get/svg/view/<sketchId>
-        result = Sketch.get_file_data(sketchId, version, "View", userid=userid)
-        result = ksketchsvg.get_svg(result.decode("string-escape"))
-        return self.respond({"data":'<svg id="mySVG" xmlns="http://www.w3.org/2000/svg"  version="1.1" width="100%" style="overflow: hidden; left: 0px; top: 0px;" viewBox="0 0 1280 710" preserveAspectRatio="xMaxYMax meet">' +result + '</svg>'})
+        cache = SVGCache.getSVGCache(sketchId, version)
+        if cache and cache.svgData:
+            return self.respond({"data":'<svg id="mySVG" viewport-fill="white" xmlns="http://www.w3.org/2000/svg"  version="1.1" width="100%" style="overflow: hidden; left: 0px; top: 0px;stroke-width: 0px; background-color: white;" viewBox="0 0 1280 710" preserveAspectRatio="xMaxYMax meet">' +cache.svgData + '</svg>'})
+        else:
+            result = Sketch.get_file_data(sketchId, version, "View", userid=userid)
+            result = ksketchsvg.get_svg(result.decode("string-escape"),sketchId,version)
+        return self.respond({"data":'<svg id="mySVG" viewport-fill="white" xmlns="http://www.w3.org/2000/svg"  version="1.1" width="100%" style="overflow: hidden; left: 0px; top: 0px;stroke-width: 0px; background-color: white;" viewBox="0 0 1280 710" preserveAspectRatio="xMaxYMax meet">' +result + '</svg>'})
 
     def send_script(self,sketchId, version, userid): # /get/svg/view/<sketchId>
-        result = Sketch.get_file_data(sketchId, version, "View", userid=userid)
-        result = ksketchsvg.get_transformations(result.decode("string-escape"))
-        return self.respond(result)
+        cache = SVGCache.getSVGCache(sketchId, version)
+        if cache and cache.animationData:
+            return self.respond(json.loads(cache.animationData))
+        else:
+            result = Sketch.get_file_data(sketchId, version, "View", userid=userid)
+            result = ksketchsvg.get_transformations(result.decode("string-escape"),sketchId,version)
+            return self.respond(result)
     #Handler for viewing a particular Sketch mobile
     def view_sketch_xml(self, sketchId, version, userid): #/get/sketch/view/<sketchId>/<version>/<userid>
         result = Sketch.get_xml_by_versioning_mobile(sketchId, version, "View", userid=userid)
@@ -502,3 +510,4 @@ from comments_likes import Comment, Like
 from permissions_groups import Sketch_Groups, Group, UserGroupMgmt
 from notifications import Notification
 from ksketchsvg import ksketchsvg
+from svgcache import SVGCache

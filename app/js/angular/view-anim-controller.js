@@ -59,7 +59,7 @@ function ViewSVGController($scope, $resource, sharedProperties, sharedFunctions)
                 parser = new DOMParser();
                 $scope.svg_data = response.data;
                 doc = parser.parseFromString(response.data, "text/xml");
-                document.getElementById("mainbody").appendChild(doc.firstChild);
+                $("#mySVG").replaceWith(doc.firstChild);
                 $scope.get_timeline();
             }
         });
@@ -322,7 +322,7 @@ function ViewSVGController($scope, $resource, sharedProperties, sharedFunctions)
 	    }
         key.preventDefault();
     };
-    $scope.pauseOrPlay = function () {
+    $scope.pauseOrPlay = function (event) {
         if(!$scope.scene_complete) {
             $scope.paused = !$scope.paused;
             if ($scope.paused) {
@@ -337,10 +337,8 @@ function ViewSVGController($scope, $resource, sharedProperties, sharedFunctions)
             //    mySVG.removeChild(mySVG.firstChild);
             //}
             //mySVG.appendChild(doc.firstChild.firstChild);
-            $scope.$apply(function () {
-                $scope.paused = false;
-                $scope.scene_complete = false;
-            });
+            $scope.paused = false;
+            $scope.scene_complete = false;
             $scope.initScene();
             document.getElementById("button-icon").className = "icon-pause";
         }
