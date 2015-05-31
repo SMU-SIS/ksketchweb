@@ -431,7 +431,7 @@ class ActionHandler(webapp2.RequestHandler):
         else:
             result = Sketch.get_file_data(sketchId, version, "View", userid=userid)
             result = ksketchsvg.get_svg(result.decode("string-escape"),sketchId,version)
-        return self.respond({"data":'<svg id="mySVG" viewport-fill="white" xmlns="http://www.w3.org/2000/svg"  version="1.1" width="100%" style="overflow: hidden; left: 0px; top: 0px;stroke-width: 0px; background-color: white;" viewBox="0 0 1280 710" preserveAspectRatio="xMaxYMax meet">' +result + '</svg>'})
+        return self.respond({"data":'<svg id="mySVG" viewport-fill="white" xmlns="http://www.w3.org/2000/svg" ng-click="pauseOrPlay($event)" version="1.1" width="100%" style="overflow: hidden; left: 0px; top: 0px;stroke-width: 0px; background-color: white;" viewBox="0 0 1280 710" preserveAspectRatio="xMaxYMax meet">' +result + '</svg>'})
 
     def send_script(self,sketchId, version, userid): # /get/svg/view/<sketchId>
         cache = SVGCache.getSVGCache(sketchId, version)

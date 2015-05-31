@@ -323,6 +323,9 @@ function ViewSVGController($scope, $resource, sharedProperties, sharedFunctions)
         key.preventDefault();
     };
     $scope.pauseOrPlay = function (event) {
+        if( /Android|webOS|iPhone|iPad|iPod|BlackBerry|IEMobile|Opera Mini/i.test(navigator.userAgent) ) {
+            event.preventDefault();
+        }
         if(!$scope.scene_complete) {
             $scope.paused = !$scope.paused;
             if ($scope.paused) {

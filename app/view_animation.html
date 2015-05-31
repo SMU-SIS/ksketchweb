@@ -201,9 +201,10 @@
     <!-- Begin page content -->
     <div class="hero-unit" id="mainbody" style="padding-left: 20px; padding-right: 20px">
         <div class="container">
-
-        <svg id="mySVG" xmlns="http://www.w3.org/2000/svg"  version="1.1" width="80%" style="overflow: hidden; left: 0px; top: 0px;" viewBox="0 0 1280 710" preserveAspectRatio="xMaxYMax meet"></svg>
-        <div class="row" style="padding-left: 20px; padding-right: 20px">
+        <div ng-click="pauseOrPlay($event)">
+        <svg id="mySVG" viewport-fill="white" xmlns="http://www.w3.org/2000/svg" ng-click="pauseOrPlay($event)" version="1.1" width="100%" style="overflow: hidden; left: 0px; top: 0px;stroke-width: 0px; background-color: white;" viewBox="0 0 1280 710" preserveAspectRatio="xMaxYMax meet"></svg>
+        </div>
+            <div class="row" style="padding-left: 20px; padding-right: 20px">
             <a class="btn btn-flat btn-large" href="#" id="button" ng-click="pauseOrPlay($event)" style="margin-left: 20px; margin-right: 20px">
                 <i class="icon-play" id="button-icon"></i>
             </a>

@@ -1294,7 +1294,9 @@ class Sketch(db.Model):
 
       #Get latest version
       if versionCount and long(version) == -1:
-        theobject = Sketch.all().filter('sketchId =', long(sketchId)).filter('version =', versionCount.lastVersion).get()
+        theobject = Sketch.all().filter('sketchId =', long(sketchId)).filter('isLatest =', True).get()
+        if theobject == None:
+            theobject = Sketch.all().filter('sketchId =', long(sketchId)).get()
       #Get specific version
       elif long(version) != -1:
         theobject = Sketch.all().filter('sketchId =', long(sketchId)).filter('version =', long(version)).get()
