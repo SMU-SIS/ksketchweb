@@ -2,15 +2,10 @@
 
   var myApp = angular.module('myApp', ['ui.directives', 'ngResource']);
   myApp.service('sharedProperties', function() {
-    //Set variable Reference for Janrain accounr name here!
-    var accountJanrain = 'ksketch';
     //Set variable Reference for Backend here!
     var backendUrl = 'ksketch.smu.edu.sg';
     
     return{
-      getJanrainAccount: function() {
-        return accountJanrain;
-      },
       getBackendUrl: function() {
         return backendUrl;
       }

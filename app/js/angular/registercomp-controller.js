@@ -1,5 +1,14 @@
 'use strict';
 
+/*
+Copyright 2015 Singapore Management University
+
+This Source Code Form is subject to the terms of the
+Mozilla Public License, v. 2.0. If a copy of the MPL was
+not distributed with this file, You can obtain one at
+http://mozilla.org/MPL/2.0/.
+*/
+
 /* Controller for profile.html */
 
 //angular.module('app', ['ngResource']);
@@ -49,7 +58,6 @@ function RegisterCompleteController($scope,$resource,sharedProperties, sharedFun
   //Replace this url with your final URL from the SingPath API path. 
   //$scope.remote_url = "localhost:8080";
   $scope.remote_url = sharedProperties.getBackendUrl();
-  $scope.janrain_ref = sharedProperties.getJanrainAccount();
   $scope.waiting = "Ready";
   
   //resource calls are defined here
@@ -143,7 +151,7 @@ function RegisterCompleteController($scope,$resource,sharedProperties, sharedFun
   }
 
   $scope.logout = function(){
-    window.location.replace("http://ksketch.smu.edu.sg/user/logout");
+    window.location.replace("http://"+$scope.remote_url+"/user/logout");
   }
 
   $scope.determineAccess = function() 

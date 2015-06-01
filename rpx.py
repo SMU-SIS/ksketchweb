@@ -1,3 +1,12 @@
+'''
+Copyright 2015 Singapore Management University
+
+This Source Code Form is subject to the terms of the
+Mozilla Public License, v. 2.0. If a copy of the MPL was
+not distributed with this file, You can obtain one at
+http://mozilla.org/MPL/2.0/.
+'''
+
 """Users and Janrain Login Handler (RPX) Module
 
 @created: Goh Kian Wei (Brandon), Kevin Koh, Shannon Lim, Tony Tran, Samantha Wee, Wong Si Hui
@@ -48,7 +57,7 @@ if ON_LOCALHOST:
     else:
         BASE_URL = 'localhost:%s' % os.environ['SERVER_PORT']
 else:
-    BASE_URL = 'ksketch.smu.edu.sg'  #Change this to desired URL
+    BASE_URL = _ConfigDefaults.ksketch_HOSTNAME
 LOGIN_IFRAME = '<iframe src="http://gae-sesssions-demo.rpxnow.com/openid/embed?token_url=http%3A%2F%2F' + BASE_URL + '%2Frpx_response" scrolling="no" frameBorder="no" allowtransparency="true" style="width:400px;height:240px"></iframe>'
 
 class UTC(datetime.tzinfo):
@@ -493,89 +502,6 @@ class BaseHandler(webapp2.RequestHandler):
           'login_url': '/index.html',
           'logout_url': '/index.html'
       }    
-    
-#Class and handler for Janrain Authentication    
-class RPXTokenHandler(BaseHandler):
-    """Receive the POST from RPX with our user's login information."""
-    def post(self): #/user/janrain
-        token = self.request.get('token')
-        url = 'https://rpxnow.com/api/v2/auth_info'
-        args = {
-            'format': 'json',
-            'apiKey': 'dd02f635d9f47ddbb492e28fc51d182b9fb5b87e',   #Change to api key provided in Janrain
-            'token': token
-        }
-        r = urlfetch.fetch(url=url,
-                           payload=urllib.urlencode(args),
-                           method=urlfetch.POST,
-                           headers={'Content-Type':'application/x-www-form-urlencoded'})
-        json_data = json.loads(r.content)
-
-        if json_data['stat'] == 'ok':
-          # extract some useful fields
-          info = json_data['profile']
-
-            # check provider "Google"
-          if info['providerName'] == "Google":
-            #return self.response.out.write(content)
-            oid = info['identifier']
-            #return self.response.out.write(oid)
-            email = info.get('email', '')
-            try:
-              display_name = info['displayName']
-            except KeyError:
-              display_name = email.partition('@')[0]
-
-            # check if there is a user present with that auth_id
-            exist = True
-            user = self.auth.store.user_model.get_by_auth_id(oid)
-            if not user:
-              #Starting appver is always 1.0.
-              appver = 1.0
-              
-              success, user = self.auth.store.user_model.create_user(oid, email=email, display_name=display_name, real_name=display_name, logincount=0, 
-                                                                          assigned_version=appver, is_admin=False, is_active=True, is_approved=False,
-                                                                          birth_month=0, birth_year=0, parent_email="", contact_studies=True, 
-                                                                          contact_updates=True)
-              logging.info('New user created in the DS')
-              
-              #update AppUserCount when adding
-              AppUserCount.get_and_increment_counter(appver)
-
-              exist = False
-            
-            userid = user.get_id()
-            if not user.logincount:
-              user.logincount = 1
-            else:
-              user.logincount += 1 
-            user.lastlogin = datetime.datetime.now()
-            user.put()
-                   
-            token = self.auth.store.user_model.create_auth_token(userid)
-            self.auth.get_user_by_token(userid, token)
-            logging.info('The user is already present in the DS')
-            
-            
-            db.delete(Unique.all())
-
-            # assign a session
-            self.session.add_flash('You have successfully logged in', 'success')
-
-            if exist:
-              if user.is_approved:
-                self.redirect('/app/profile.html')
-              else:
-                self.redirect('/app/register.html')
-            else:
-              self.redirect('/app/register.html')
-
-          else:
-            self.session.add_flash('There was an error while processing the login', 'error')
-            self.redirect('/')
-        else:
-          self.session.add_flash('There was an error while processing the login', 'error')
-          self.redirect('/')
 
 #Class for all User URI handlers
 class GetUser(webapp2.RequestHandler):
@@ -700,9 +626,9 @@ class GetUser(webapp2.RequestHandler):
       if auser:
         userid = auser['user_id']
         strid = str(userid)
-        self.redirect(('http://ksketch.smu.edu.sg/app/login_successful.html?id=' + strid).encode('ascii'))
+        self.redirect((_ConfigDefaults.ksketch_FULL_HOSTNAME+'/app/login_successful.html?id=' + strid).encode('ascii'))
       else:
-        self.redirect('http://ksketch.smu.edu.sg/app/index.html')
+        self.redirect(_ConfigDefaults.ksketch_FULL_HOSTNAME+'/app/index.html')
 
     #Handler for retrieving a particular User's profile (partial) data
     def profile_user(self, **kwargs): #/user/profileuser
@@ -759,14 +685,14 @@ class GetUser(webapp2.RequestHandler):
 
         if approve_state:
           #implement backdoor for parent to view profile
-          self.redirect('http://ksketch.smu.edu.sg/app/index.html')
+          self.redirect(_ConfigDefaults.ksketch_FULL_HOSTNAME+'/app/index.html')
         else:
           if urltype == "approve":
-            self.redirect(('http://ksketch.smu.edu.sg/app/approval.html?id=' + userid).encode('ascii'))
+            self.redirect((_ConfigDefaults.ksketch_FULL_HOSTNAME+'/app/approval.html?id=' + userid).encode('ascii'))
           else:
-            self.redirect(('http://ksketch.smu.edu.sg/app/profile_delete.html?id=' + userid).encode('ascii'))
+            self.redirect((_ConfigDefaults.ksketch_FULL_HOSTNAME+'/app/profile_delete.html?id=' + userid).encode('ascii'))
       else:
-        self.redirect('http://ksketch.smu.edu.sg/app/index.html')
+        self.redirect(_ConfigDefaults.ksketch_FULL_HOSTNAME+'/app/index.html')
 
     #Handler for parent to view user profile
     def parental_view(self): #/user/monitor
@@ -804,13 +730,13 @@ class GetUser(webapp2.RequestHandler):
               age = today.year - born.year
           
           if age < 18:
-            self.redirect(('http://ksketch.smu.edu.sg/app/profile.html?id=' + userid + "&type=" + urltype).encode('ascii'))
+            self.redirect((_ConfigDefaults.ksketch_FULL_HOSTNAME+'/app/profile.html?id=' + userid + "&type=" + urltype).encode('ascii'))
           else:
-            self.redirect(('http://ksketch.smu.edu.sg/app/index.html').encode('ascii'))
+            self.redirect((_ConfigDefaults.ksketch_FULL_HOSTNAME+'/app/index.html').encode('ascii'))
         else:
-          self.redirect(('http://ksketch.smu.edu.sg/app/index.html').encode('ascii'))
+          self.redirect((_ConfigDefaults.ksketch_FULL_HOSTNAME+'/app/index.html').encode('ascii'))
       else:
-          self.redirect(('http://ksketch.smu.edu.sg/app/index.html').encode('ascii'))
+          self.redirect((_ConfigDefaults.ksketch_FULL_HOSTNAME+'/app/index.html').encode('ascii'))
 
     #Handler to send approval email to parent of User
     def send_approval_email(self, **kwargs): #user/parentapproval
@@ -853,18 +779,18 @@ class GetUser(webapp2.RequestHandler):
       \n\
 K-Sketch would like to request permission for your child, "+ result['u_name'] + ", to participate in using our system. \n\
       \n\
-Please click the following link to activate your child's account: http://ksketch.smu.edu.sg" + url_approve + "\n\
+Please click the following link to activate your child's account: " +_ConfigDefaults.ksketch_FULL_HOSTNAME + url_approve + "\n\
       \n\
-Please click the following link to cancel participation: http://ksketch.smu.edu.sg" + url_disapprove + "\n\
+Please click the following link to cancel participation: " + _ConfigDefaults.ksketch_FULL_HOSTNAME + url_disapprove + "\n\
 \n\
 \n\
 K-Sketch Team"
       
       # make a secure connection to SendGrid
-      s = Sendgrid('ksketch', 'ksketchSIS2014', secure=True)
+      s = Sendgrid(_ConfigDefaults.ksketch_SENDGRID_username, _ConfigDefaults.ksketch_SENDGRID_password, secure=True)
 
       # make a message object
-      msg = Message("ksketch@smu.edu.sg", "K-Sketch: Approval for Registration", strMessage, "")
+      msg = Message(_ConfigDefaults.ksketch_EMAIL, "K-Sketch: Approval for Registration", strMessage, "")
 
       # add a recipient
       msg.add_to(to_addr)
@@ -899,7 +825,7 @@ K-Sketch Team"
       \n\
 Thank you for allowing your child, "+ result['u_name'] + ", to participate in using K-Sketch. \n\
       \n\
-To view your child's sketches, click on: http://ksketch.smu.edu.sg" + url_monitor + "\n\
+To view your child's sketches, click on: "+ _ConfigDefaults.ksketch_FULL_HOSTNAME + url_monitor + "\n\
       \n\
 Please bookmark this link to easily access your child's profile in the future.\n\
 \n\
@@ -907,10 +833,10 @@ Please bookmark this link to easily access your child's profile in the future.\n
 K-Sketch Team"
       
       # make a secure connection to SendGrid
-      s = Sendgrid('ksketch', 'ksketchSIS2014', secure=True)
+      s = Sendgrid(_ConfigDefaults.ksketch_SENDGRID_username, _ConfigDefaults.ksketch_SENDGRID_password, secure=True)
 
       # make a message object
-      msg = Message("ksketch@smu.edu.sg", "K-Sketch: Registration Complete", strMessage, "")
+      msg = Message(_ConfigDefaults.ksketch_EMAIL, "K-Sketch: Registration Complete", strMessage, "")
 
       # add a recipient
       msg.add_to(to_addr)
@@ -951,15 +877,15 @@ class OAuthTokenHandler(BaseHandler):
     def login(self):
         flow = flow_from_clientsecrets('client_secrets.json',
                                scope=['https://www.googleapis.com/auth/userinfo.email','https://www.googleapis.com/auth/userinfo.profile'],
-                               redirect_uri='http://ksketch.smu.edu.sg/user/oauth2callback')
+                               redirect_uri=_ConfigDefaults.ksketch_FULL_HOSTNAME +'/user/oauth2callback')
         auth_uri = flow.step1_get_authorize_url()
         #auth_uri ="https://accounts.google.com/o/oauth2/auth?client_id=" + flow.client_id + "&scope=https://www.googleapis.com/auth/userinfo.profile https://www.googleapis.com/auth/userinfo.email" + "&immediate=false&response_type=token&redirect_uri=http://localhost:8080/oauth2callback"
         self.redirect(str(auth_uri))
     """Receive the POST from RPX with our user's login information."""
-    def oauth2callback(self): #/user/janrain
+    def oauth2callback(self):
         flow = flow_from_clientsecrets('client_secrets.json',
                                scope=['https://www.googleapis.com/auth/userinfo.email','https://www.googleapis.com/auth/userinfo.profile'],
-                               redirect_uri='http://ksketch.smu.edu.sg/user/oauth2callback')
+                               redirect_uri=_ConfigDefaults.ksketch_FULL_HOSTNAME + '/user/oauth2callback')
         code = self.request.get('code')
         credentials = flow.step2_exchange(code)
         user_info = get_user_info(credentials)
@@ -1038,7 +964,6 @@ application = webapp2.WSGIApplication([
     webapp2.Route('/user/parentapproval', handler=GetUser, handler_method='send_approval_email'),
     webapp2.Route('/user/parentcomplete', handler=GetUser, handler_method='send_complete_email'),
     webapp2.Route('/user/logout', handler=LogoutPage),
-    webapp2.Route('/user/janrain', handler=RPXTokenHandler),
     webapp2.Route('/user/login', handler=OAuthTokenHandler,handler_method='login'),
      webapp2.Route('/user/oauth2callback', handler=OAuthTokenHandler,handler_method='oauth2callback')],
     config=webapp2_config,
@@ -1047,3 +972,4 @@ application = webapp2.WSGIApplication([
 #Imports placed below to avoid circular imports
 from counters import AppUserCount
 from sketches import Sketch
+from appengine_config import _ConfigDefaults

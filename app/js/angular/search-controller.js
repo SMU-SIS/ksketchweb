@@ -1,5 +1,14 @@
 'use strict';
 
+/*
+Copyright 2015 Singapore Management University
+
+This Source Code Form is subject to the terms of the
+Mozilla Public License, v. 2.0. If a copy of the MPL was
+not distributed with this file, You can obtain one at
+http://mozilla.org/MPL/2.0/.
+*/
+
 /* Controller for search.html */
 
 //angular.module('app', ['ngResource']);
@@ -40,7 +49,6 @@ function SearchController($scope,$filter,$resource,sharedProperties, sharedFunct
   $scope.search_notice = "";
   $scope.predicate_users = '-created';
   $scope.remote_url = sharedProperties.getBackendUrl();
-  $scope.janrain_ref = sharedProperties.getJanrainAccount();
   $scope.waiting = "Ready";
   $scope.test = "-";
   $scope.notify = "You have no new notification(s).";

@@ -1,5 +1,14 @@
 'use strict';
 
+/*
+Copyright 2015 Singapore Management University
+
+This Source Code Form is subject to the terms of the
+Mozilla Public License, v. 2.0. If a copy of the MPL was
+not distributed with this file, You can obtain one at
+http://mozilla.org/MPL/2.0/.
+*/
+
 /* Controller for index.html */
 
 //angular.module('app', ['ngResource']);
@@ -45,7 +54,6 @@ function NotificationsController($scope,$resource,sharedProperties, sharedFuncti
   //Replace this url with your final URL from the SingPath API path. 
   //$scope.remote_url = "localhost:8080";
   $scope.remote_url = sharedProperties.getBackendUrl();
-  $scope.janrain_ref = sharedProperties.getJanrainAccount();
   $scope.waiting = "Ready";
   
   //resource calls are defined here

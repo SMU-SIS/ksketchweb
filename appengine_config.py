@@ -10,3 +10,10 @@ def webapp_add_wsgi_middleware(app):
   from google.appengine.ext.appstats import recording
   app = recording.appstats_wsgi_middleware(app)
   return app
+
+class _ConfigDefaults(object):
+  ksketch_SENDGRID_username = 'ksketch'
+  ksketch_SENDGRID_password = 'ksketchSIS2014'
+  ksketch_EMAIL = 'ksketch@smu.edu.sg'
+  ksketch_HOSTNAME = 'ksketch.smu.edu.sg'
+  ksketch_FULL_HOSTNAME ='http://ksketch.smu.edu.sg'
