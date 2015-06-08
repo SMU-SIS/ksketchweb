@@ -346,9 +346,19 @@ class ksketchsvg:
         scaled_time_diff = actual_time_diff * ( (p_this_last[2] - p_this_first[2]) /
                                                 float(cur_key['time'] - prev_key['time']) )
 
-        return (p_this_first[0] - (p_prev_last[0] - p_prev_penultimate[0]),
-                p_this_first[1] - (p_prev_last[1] - p_prev_penultimate[1]),
-                p_this_first[2] - scaled_time_diff)
+        previous_point = None
+        if type != 'scale2':
+            # Translates and Rotates are additive.
+            previous_point = (p_this_first[0] - (p_prev_last[0] - p_prev_penultimate[0]),
+                              p_this_first[1] - (p_prev_last[1] - p_prev_penultimate[1]),
+                              p_this_first[2] - scaled_time_diff)
+        else:
+            # Scales are multiplicative
+            previous_point = (p_this_first[0] * (p_prev_penultimate[0] / p_prev_last[0]), #i.e. p_this_first[0] / (p_prev_last[0] / p_prev_penultimate[0])
+                              0,                                                          # Must do this. Otherwise divide by 0.
+                              p_this_first[2] - scaled_time_diff)
+
+        return previous_point
 
     # Gets the second point from the next key frame, if any.
     # The point is adjusted so that it
@@ -380,9 +390,19 @@ class ksketchsvg:
         scaled_time_diff = actual_time_diff * ( (p_this_last[2] - p_this_first[2]) /
                                                 float(cur_key['time'] - prev_key['time']) )
 
-        return (p_this_last[0] + (p_next_second[0] - p_next_first[0]),
-                p_this_last[1] + (p_next_second[1] - p_next_first[1]),
-                p_this_last[2] + scaled_time_diff)
+        next_point = None
+        if type != 'scale2':
+            # Translates and Rotates are additive.
+            next_point = (p_this_last[0] + (p_next_second[0] - p_next_first[0]),
+                          p_this_last[1] + (p_next_second[1] - p_next_first[1]),
+                          p_this_last[2] + scaled_time_diff)
+        else:
+            # Scales are multiplicative
+            next_point = (p_this_last[0] * (p_next_second[0] / p_next_first[0]),
+                          0, # Must do this. Otherwise divide by 0.
+                          p_this_last[2] + scaled_time_diff)
+
+        return next_point
 
     # Returns the point on the path list at the given fraction.
     # If fraction < 0, returns the first point.
