@@ -162,6 +162,19 @@ http://mozilla.org/MPL/2.0/.
                 scope.$apply(function () {
                     scope.get_sketch();
                 });
+
+                var appID = scope.facebookAppId;
+                var share = new Share(".share-button", {
+                    ui: {
+                        flyout: "botton left",
+                        button_text: "Share"
+                    },
+                    networks: {
+                        facebook: {
+                            app_id: appID
+                        }
+                    }
+                });
             } else {
                 if (navigator.userAgent.match(/MSIE\s(?!9.0)/)) {
                     var referLink = document.createElement("a");
@@ -270,20 +283,5 @@ http://mozilla.org/MPL/2.0/.
 <script src="js/bootstrap-slider.min.js"></script>
 <script src="js/app.js"></script>
 <script src="js/angular/view-anim-controller.js"></script>
-<script>
-    var share = new Share(".share-button", {
-        ui: {
-            flyout: "botton left",
-            button_text: "Share"
-        },
-        networks: {
-            facebook: {
-                app_id: "602752456409826"
-            }
-        }
-    });
-
-
-</script>
 </body>
 </html>

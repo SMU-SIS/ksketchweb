@@ -5,13 +5,16 @@
     //Set variable Reference for Backend here!
     var backendUrl = 'localhost:8080';
     var ksketch_email = 'ksketch@smu.edu.sg';
-
+    var facebookAppId = '602752456409826';
     return{
       getBackendUrl: function() {
         return backendUrl;
       },
        getKSketchEmail: function() {
         return ksketch_email;
+      },
+      getFacebookAppId: function() {
+        return facebookAppId;
       }
     };
 

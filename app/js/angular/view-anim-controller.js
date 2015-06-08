@@ -405,6 +405,7 @@ function ViewSVGController($scope, $resource, sharedProperties, sharedFunctions)
     },true);
 
     $scope.year;
+    $scope.facebookAppId = sharedProperties.getFacebookAppId();
     $scope.setFooterYear = function () {
         var today = new Date(), today_year = today.getFullYear();
         $scope.year = today_year;
