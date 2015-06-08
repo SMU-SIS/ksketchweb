@@ -4,8 +4,8 @@
   myApp.service('sharedProperties', function() {
     //Set variable Reference for Backend here!
     var backendUrl = 'localhost:8080';
-    var ksketch_email = 'ksketch@smu.edu.sg';
-    var facebookAppId = '602752456409826';
+    var ksketch_email = 'email@yourdomain.com';
+    var facebookAppId = '*** Enter your Facebook appid from developer.facebook.com ****';
     return{
       getBackendUrl: function() {
         return backendUrl;

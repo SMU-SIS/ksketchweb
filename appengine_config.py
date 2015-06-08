@@ -12,8 +12,7 @@ def webapp_add_wsgi_middleware(app):
   return app
 
 class _ConfigDefaults(object):
-  ksketch_SENDGRID_username = 'ksketch'
-  ksketch_SENDGRID_password = 'ksketchSIS2014'
-  ksketch_EMAIL = 'ksketch@smu.edu.sg'
-  ksketch_HOSTNAME = 'ksketch.smu.edu.sg'
-  ksketch_FULL_HOSTNAME ='http://ksketch.smu.edu.sg'
+  ksketch_SENDGRID_username = ''            # Enter your sendgrid.com username here
+  ksketch_SENDGRID_password = ''            # Enter your sendgrid.com password here
+  ksketch_EMAIL = 'user@yourdomain.com'     # Enter your email id here
+  ksketch_HOSTNAME = 'localhost:8080'       # Enter your hostname here
