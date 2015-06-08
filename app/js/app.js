@@ -3,13 +3,18 @@
   var myApp = angular.module('myApp', ['ui.directives', 'ngResource']);
   myApp.service('sharedProperties', function() {
     //Set variable Reference for Backend here!
-    var backendUrl = 'ksketch.smu.edu.sg';
-    
+    var backendUrl = 'localhost:8080';
+    var ksketch_email = 'ksketch@smu.edu.sg';
+
     return{
       getBackendUrl: function() {
         return backendUrl;
+      },
+       getKSketchEmail: function() {
+        return ksketch_email;
       }
     };
+
   });
   myApp.factory('sharedFunctions', function($window) {
     return{

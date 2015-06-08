@@ -28,7 +28,7 @@ function IndexController($scope,$resource,sharedProperties, sharedFunctions){
     {url : 'localhost:8080', urlName : 'localhost' } ];
 
   $scope.showdetails = false;
-  
+  $scope.email = sharedProperties.getKSketchEmail();
   //Date (Time Zone) Format
   $scope.tzformat = function(utc_date) {
   
