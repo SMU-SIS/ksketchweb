@@ -7,7 +7,7 @@ not distributed with this file, You can obtain one at
 http://mozilla.org/MPL/2.0/.
 '''
 
-"""Users and Janrain Login Handler (RPX) Module
+"""Users and OAuth2 Login Handler.
 
 @created: Goh Kian Wei (Brandon), Kevin Koh, Shannon Lim, Tony Tran, Samantha Wee, Wong Si Hui
 @code_adapted_from: Chris Boesch, Daniel Tsou
@@ -18,47 +18,22 @@ Note to self: json.loads = json string to objects. json.dumps is object to json 
 
 import datetime
 import hashlib
-import os
-import urllib
-import urllib2
 import webapp2
-import logging
-import string
 import random
 import httplib2
+import logging
 from apiclient import errors
-from urlparse import urlparse
 from webapp2_extras import auth
 from webapp2_extras import sessions
-from webapp2_extras.auth import InvalidAuthIdError
-from webapp2_extras.auth import InvalidPasswordError
 from apiclient.discovery import build
 from webapp2_extras.appengine.auth.models import Unique
 from oauth2client.client import flow_from_clientsecrets
 from sendgrid import Sendgrid
 from sendgrid import Message
-
-from datetime import date
-
+from appengine_config import _ConfigDefaults
 import json
-from google.appengine.api import urlfetch
 from google.appengine.api import mail
-from google.appengine.ext import db, webapp
-from google.appengine.ext.webapp import template
-from google.appengine.ext.webapp.util import run_wsgi_app
-
-
-# configure the RPX iframe to work with the server were on (dev or real)
-ON_LOCALHOST = ('Development' == os.environ['SERVER_SOFTWARE'][:11])
-if ON_LOCALHOST:
-    import logging
-    if os.environ['SERVER_PORT'] == '80':
-        BASE_URL = 'localhost'
-    else:
-        BASE_URL = 'localhost:%s' % os.environ['SERVER_PORT']
-else:
-    BASE_URL = _ConfigDefaults.ksketch_HOSTNAME
-LOGIN_IFRAME = '<iframe src="http://gae-sesssions-demo.rpxnow.com/openid/embed?token_url=http%3A%2F%2F' + BASE_URL + '%2Frpx_response" scrolling="no" frameBorder="no" allowtransparency="true" style="width:400px;height:240px"></iframe>'
+from google.appengine.ext import db
 
 class UTC(datetime.tzinfo):
   def utcoffset(self, dt):
@@ -626,9 +601,9 @@ class GetUser(webapp2.RequestHandler):
       if auser:
         userid = auser['user_id']
         strid = str(userid)
-        self.redirect((_ConfigDefaults.ksketch_FULL_HOSTNAME+'/app/login_successful.html?id=' + strid).encode('ascii'))
+        self.redirect(('/app/login_successful.html?id=' + strid).encode('ascii'))
       else:
-        self.redirect(_ConfigDefaults.ksketch_FULL_HOSTNAME+'/app/index.html')
+        self.redirect('/app/index.html')
 
     #Handler for retrieving a particular User's profile (partial) data
     def profile_user(self, **kwargs): #/user/profileuser
@@ -685,14 +660,14 @@ class GetUser(webapp2.RequestHandler):
 
         if approve_state:
           #implement backdoor for parent to view profile
-          self.redirect(_ConfigDefaults.ksketch_FULL_HOSTNAME+'/app/index.html')
+          self.redirect('/app/index.html')
         else:
           if urltype == "approve":
-            self.redirect((_ConfigDefaults.ksketch_FULL_HOSTNAME+'/app/approval.html?id=' + userid).encode('ascii'))
+            self.redirect(('/app/approval.html?id=' + userid).encode('ascii'))
           else:
-            self.redirect((_ConfigDefaults.ksketch_FULL_HOSTNAME+'/app/profile_delete.html?id=' + userid).encode('ascii'))
+            self.redirect(('/app/profile_delete.html?id=' + userid).encode('ascii'))
       else:
-        self.redirect(_ConfigDefaults.ksketch_FULL_HOSTNAME+'/app/index.html')
+        self.redirect('/app/index.html')
 
     #Handler for parent to view user profile
     def parental_view(self): #/user/monitor
@@ -730,13 +705,13 @@ class GetUser(webapp2.RequestHandler):
               age = today.year - born.year
           
           if age < 18:
-            self.redirect((_ConfigDefaults.ksketch_FULL_HOSTNAME+'/app/profile.html?id=' + userid + "&type=" + urltype).encode('ascii'))
+            self.redirect(('/app/profile.html?id=' + userid + "&type=" + urltype).encode('ascii'))
           else:
-            self.redirect((_ConfigDefaults.ksketch_FULL_HOSTNAME+'/app/index.html').encode('ascii'))
+            self.redirect(('/app/index.html').encode('ascii'))
         else:
-          self.redirect((_ConfigDefaults.ksketch_FULL_HOSTNAME+'/app/index.html').encode('ascii'))
+          self.redirect(('/app/index.html').encode('ascii'))
       else:
-          self.redirect((_ConfigDefaults.ksketch_FULL_HOSTNAME+'/app/index.html').encode('ascii'))
+          self.redirect(('/app/index.html').encode('ascii'))
 
     #Handler to send approval email to parent of User
     def send_approval_email(self, **kwargs): #user/parentapproval
@@ -779,9 +754,9 @@ class GetUser(webapp2.RequestHandler):
       \n\
 K-Sketch would like to request permission for your child, "+ result['u_name'] + ", to participate in using our system. \n\
       \n\
-Please click the following link to activate your child's account: " +_ConfigDefaults.ksketch_FULL_HOSTNAME + url_approve + "\n\
+Please click the following link to activate your child's account: " +_ConfigDefaults.ksketch_HOSTNAME + url_approve + "\n\
       \n\
-Please click the following link to cancel participation: " + _ConfigDefaults.ksketch_FULL_HOSTNAME + url_disapprove + "\n\
+Please click the following link to cancel participation: " + _ConfigDefaults.ksketch_HOSTNAME + url_disapprove + "\n\
 \n\
 \n\
 K-Sketch Team"
@@ -825,7 +800,7 @@ K-Sketch Team"
       \n\
 Thank you for allowing your child, "+ result['u_name'] + ", to participate in using K-Sketch. \n\
       \n\
-To view your child's sketches, click on: "+ _ConfigDefaults.ksketch_FULL_HOSTNAME + url_monitor + "\n\
+To view your child's sketches, click on: "+ _ConfigDefaults.ksketch_HOSTNAME + url_monitor + "\n\
       \n\
 Please bookmark this link to easily access your child's profile in the future.\n\
 \n\
@@ -877,7 +852,7 @@ class OAuthTokenHandler(BaseHandler):
     def login(self):
         flow = flow_from_clientsecrets('client_secrets.json',
                                scope=['https://www.googleapis.com/auth/userinfo.email','https://www.googleapis.com/auth/userinfo.profile'],
-                               redirect_uri=_ConfigDefaults.ksketch_FULL_HOSTNAME +'/user/oauth2callback')
+                               redirect_uri='http://'+_ConfigDefaults.ksketch_HOSTNAME +'/user/oauth2callback')
         auth_uri = flow.step1_get_authorize_url()
         #auth_uri ="https://accounts.google.com/o/oauth2/auth?client_id=" + flow.client_id + "&scope=https://www.googleapis.com/auth/userinfo.profile https://www.googleapis.com/auth/userinfo.email" + "&immediate=false&response_type=token&redirect_uri=http://localhost:8080/oauth2callback"
         self.redirect(str(auth_uri))
@@ -885,7 +860,7 @@ class OAuthTokenHandler(BaseHandler):
     def oauth2callback(self):
         flow = flow_from_clientsecrets('client_secrets.json',
                                scope=['https://www.googleapis.com/auth/userinfo.email','https://www.googleapis.com/auth/userinfo.profile'],
-                               redirect_uri=_ConfigDefaults.ksketch_FULL_HOSTNAME + '/user/oauth2callback')
+                               redirect_uri='http://'+_ConfigDefaults.ksketch_HOSTNAME + '/user/oauth2callback')
         code = self.request.get('code')
         credentials = flow.step2_exchange(code)
         user_info = get_user_info(credentials)
@@ -972,4 +947,3 @@ application = webapp2.WSGIApplication([
 #Imports placed below to avoid circular imports
 from counters import AppUserCount
 from sketches import Sketch
-from appengine_config import _ConfigDefaults
