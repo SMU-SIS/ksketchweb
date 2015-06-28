@@ -106,7 +106,9 @@ function ProfileController($scope,$resource,sharedProperties, sharedFunctions){
     $scope.UserResource = $resource('http://:remote_url/user/getuser',
                         {'remote_url':$scope.remote_url},
                         {'get': {method: 'JSONP', isArray: false, params:{callback: 'JSON_CALLBACK'}}
-                           });  
+                           });
+
+
     $scope.waiting = "Loading";       
     $scope.UserResource.get(function(response) {
           var result = response;
@@ -418,7 +420,17 @@ function ProfileController($scope,$resource,sharedProperties, sharedFunctions){
         $scope.sketch_pagination.next_offset = $scope.items.next_offset;
         $scope.totalSketches = $scope.items.count;
         $scope.waiting = "Ready";
-    });  
+    });
+      $scope.TrashResource = $resource('http://:remote_url/get/trash/user',
+             {"remote_url":$scope.remote_url},
+             {'save': {method: 'POST', params:{} }});
+    $scope.waiting = "Loading";
+    var trashmeta = new $scope.TrashResource($scope.listmeta.data);
+    trashmeta.$save(function(response) {
+        $scope.dataLoaded = true;
+        $scope.trashitems = response;
+        $scope.waiting = "Ready";
+    });
   };
   
   $scope.accept = {};
@@ -546,7 +558,7 @@ function ProfileController($scope,$resource,sharedProperties, sharedFunctions){
        }catch(err) {
            return 0;
        }
-    }
+    };
     $scope.$watch('numPerPage', function() {
 
         if($scope.dataLoaded) {
@@ -557,6 +569,77 @@ function ProfileController($scope,$resource,sharedProperties, sharedFunctions){
         }
   },true);
 
+    $scope.delete_sketch= function(index,sketchId) {
+        bootbox.confirm("Are you sure?", function(result) {
+              if(result == true){
+                   scope.$apply(function() {
+                       $scope.DeleteResource = $resource('http://:remote_url/get/deletesketch',
+                        {'remote_url':$scope.remote_url},
+                        {'get': {method: 'GET', isArray: false, params:{'userid': $scope.User.id,'sketchid':sketchId}}
+                           });
+
+                        $scope.DeleteResource.get(function(response) {
+                            var result = response;
+                            console.log(result);
+                            if(result.status == "success") {
+                                $scope.trashitems.entities.push($scope.items.entities[index]);
+                                $scope.items.entities.splice(index, 1);
+                            } else {
+                                bootbox.alert(result.message);
+                            }
+                        });
+
+                   });
+              }
+          });
+    };
+
+    $scope.delete_permenently= function(index,sketchId) {
+        bootbox.confirm("Are you sure you want to delete sketch permenantly?", function(result) {
+              if(result == true){
+                   scope.$apply(function() {
+                       $scope.DeleteResource = $resource('http://:remote_url/get/deletepermenently',
+                        {'remote_url':$scope.remote_url},
+                        {'get': {method: 'GET', isArray: false, params:{'userid': $scope.User.id,'sketchid':sketchId}}
+                           });
+
+                        $scope.DeleteResource.get(function(response) {
+                            var result = response;
+                            console.log(result);
+                            if(result.status == "success") {
+                                $scope.trashitems.entities.splice(index, 1);
+                            } else {
+                                bootbox.alert(result.message);
+                            }
+                        });
+
+                   });
+              }
+          });
+    };
+
+    $scope.restore_sketch= function(index,sketchId) {
+          if(result == true){
+               scope.$apply(function() {
+                   $scope.DeleteResource = $resource('http://:remote_url/get/restoresketch',
+                    {'remote_url':$scope.remote_url},
+                    {'get': {method: 'GET', isArray: false, params:{'userid': $scope.User.id,'sketchid':sketchId}}
+                       });
+
+                    $scope.DeleteResource.get(function(response) {
+                        var result = response;
+                        console.log(result);
+                        if(result.status == "success") {
+                            $scope.items.entities.push($scope.trashitems.entities[index]);
+                            $scope.trashitems.entities.splice(index, 1);
+                        } else {
+                            bootbox.alert(result.message);
+                        }
+                    });
+
+               });
+          }
+    };
   $scope.setFooterYear();
   $scope.getuser();
 }

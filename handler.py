@@ -111,6 +111,20 @@ class ActionHandler(webapp2.RequestHandler):
         result = Sketch.delete_mobile(sketchid, userid=userid)
         return self.respond(result)
 
+    def delete_sketch_permenently(self):
+        sketchid = self.request.get("sketchid")
+        userid = self.request.get("userid")
+
+        result = Sketch.delete_sketch_permenently(sketchid, userid=userid)
+        return self.respond(result)
+
+    def restore_sketch(self):
+        sketchid = self.request.get("sketchid")
+        userid = self.request.get("userid")
+
+        result = Sketch.restore_sketch(sketchid, userid=userid)
+        return self.respond(result)
+
     #Handler for deleting a Sketch - NOT WORKING
     def delete_sketch(self, model_id):  #/delete/sketch/<model_id>
 
@@ -139,6 +153,25 @@ class ActionHandler(webapp2.RequestHandler):
         
         result = Sketch.get_entities_by_id(self.request.body, userid=userid)
         return self.respond(result)    
+
+
+    def view_trash_sketches(self): #/get/trash/user
+
+        userid = 0
+
+        jsonData = json.loads(self.request.body)
+        parentalview = jsonData['urltype']
+        if parentalview == "parent":
+          userid = jsonData['id']
+
+        auser = self.auth.get_user_by_session()
+
+        if auser:
+          userid = auser['user_id']
+
+        result = Trash.get_entities_by_id(self.request.body, userid=userid)
+        return self.respond(result)
+
 
     #Test method by Cam
     def user_sketch_mobile(self, criteria): #/list/sketch/user
@@ -493,6 +526,8 @@ application = webapp2.WSGIApplication([
     webapp2.Route('/list/version', handler=ActionHandler, handler_method='get_versions'), # Get Versions
     webapp2.Route('/get/overwritesketchxml', handler=ActionHandler, handler_method='overwrite_get'),
     webapp2.Route('/get/deletesketch', handler=ActionHandler, handler_method='delete_sketch_mobile'),
+    webapp2.Route('/get/deletepermenently', handler=ActionHandler, handler_method='delete_sketch_permenently'),
+     webapp2.Route('/get/restoresketch', handler=ActionHandler, handler_method='restore_sketch'),
     webapp2.Route('/get/sketchxml', handler=ActionHandler),
     webapp2.Route('/list/sketch/user_lite/<criteria>', handler=ActionHandler, handler_method='user_sketch_lite'), # List Sketch By User
     webapp2.Route('/get/thumbnail/<criteria>', handler=ActionHandler, handler_method='get_thumbnail'),
@@ -503,7 +538,8 @@ application = webapp2.WSGIApplication([
     webapp2.Route('/modify/fileData', handler=ActionHandler, handler_method='modify_fileData'),
     webapp2.Route('/get/svg/view/<sketchId>/<version>/<userid>', handler=ActionHandler, handler_method='send_svg'),
     webapp2.Route('/get/svg/script/<sketchId>/<version>/<userid>', handler=ActionHandler, handler_method='send_script'),
-    webapp2.Route('/get/sketch/view_xml/<sketchId>/<version>/<userid>', handler=ActionHandler, handler_method='view_sketch_xml')], # Get Sketch (View)],
+    webapp2.Route('/get/sketch/view_xml/<sketchId>/<version>/<userid>', handler=ActionHandler, handler_method='view_sketch_xml'),
+    webapp2.Route('/get/trash/user',handler=ActionHandler, handler_method='view_trash_sketches')], # Get Sketch (View)],
     config=webapp2_config,
     debug=True)
     
@@ -518,3 +554,4 @@ from permissions_groups import Sketch_Groups, Group, UserGroupMgmt
 from notifications import Notification
 from ksketchsvg import ksketchsvg
 from svgcache import SVGCache
+from trash import Trash

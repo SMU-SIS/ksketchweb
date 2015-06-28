@@ -45,7 +45,7 @@ class Sketch(db.Model):
   thumbnailData = db.TextProperty() #Encoded thumbnail data of Sketch
   original_sketch = db.IntegerProperty(required=True) #SketchID of Sketch that this Sketch was created from (if applicable)
   original_version = db.IntegerProperty(required=True) #Version of Sketch that this Sketch was created from (if applicable)
-  created = db.DateTimeProperty(auto_now_add=True) #The time that the model was created    
+  created = db.DateTimeProperty(auto_now_add=True) #The time that the model was created
   modified = db.DateTimeProperty(auto_now=True)
   appver = db.FloatProperty()
   isLatest = db.BooleanProperty(default=True)
@@ -942,6 +942,7 @@ class Sketch(db.Model):
         Permissions.delete_by_sketch(long(sketch_id))
         Sketch_Groups.delete_by_sketch(long(sketch_id))
         Like.delete_by_sketch(long(sketch_id))
+
         
         if is_admin and not is_owner:
           
@@ -999,41 +1000,91 @@ class Sketch(db.Model):
   #Deletes a Sketch from mobile version
   @staticmethod
   def delete_mobile(sketch_id, userid):
-    result = {}
+    can_delete = False
+    is_admin = User.check_if_admin(userid)
+    is_owner = Sketch.check_if_owner(long(sketch_id), userid)
+    is_deleted = True
 
-    versionCount = VersionCount.get_and_increment_counter(sketch_id)
-    versionCount_decrement = versionCount - 1
+    if is_owner:
+      can_delete = True
+    elif is_admin:
+      can_delete = True
+    if can_delete:
+        entities = Sketch.all().filter('sketchId',int(sketch_id)).fetch(limit=None)
+        for entity in entities:
+          is_deleted = Trash.move_to_trash(entity)
+          logging.info("Delete: Sketch " + str(sketch_id) + " has been deleted")
+          if is_deleted:
+              break
+        if is_deleted:
+            result = {'status':'success',
+            'message': 'Deleted user sketch'}
+        else:
+            result = {'status':'failure',
+            'message': 'Cannot move the sketch to Trash'}
+    else:
+        result  = {'status':'failure',
+            'message': 'You don\'t have permissions to delete the sketch'}
+    return result
 
-    entity = Sketch.all().filter('sketchId',sketch_id).filter('version',versionCount_decrement).get()
-    
-    if entity:
-      appver = entity.appver
-      fileName = entity.fileName
-      owner = entity.owner
+    #Deletes a Sketch from mobile version
+  @staticmethod
+  def delete_sketch_permenently(sketch_id, userid):
+    can_delete = False
+    is_admin = User.check_if_admin(userid)
+    is_owner = Trash.check_if_owner(long(sketch_id), userid)
+    is_deleted = True
 
-      check_original = False
-      
-      if entity.sketchId == entity.original_sketch:
-        if entity.version == entity.original_version:
-          check_original = True
-          
-      entity.delete()
-      ModelCount.decrement_counter('Sketch_count')
-      AppVersionCount.decrement_counter(appver, check_original)
-      Comment.delete_by_sketch(sketch_id)
-      Permissions.delete_by_sketch(sketch_id)
-      Sketch_Groups.delete_by_sketch(sketch_id)
-      Like.delete_by_sketch(sketch_id)
+    if is_owner:
+      can_delete = True
+    elif is_admin:
+      can_delete = True
+    if can_delete:
+        entities = Trash.all().filter('sketchId',int(sketch_id)).fetch(limit=None)
+        for entity in entities:
+          is_deleted = Trash.delete_permenantly(entity)
+          logging.info("Delete: Sketch " + str(sketch_id) + " has been deleted")
+          if is_deleted:
+              break
+        if is_deleted:
+            result = {'status':'success',
+            'message': 'Deleted user sketch'}
+        else:
+            result = {'status':'failure',
+            'message': 'Cannot move the sketch to Trash'}
+    else:
+        result  = {'status':'failure',
+            'message': 'You don\'t have permissions to delete the sketch'}
+    return result
 
-      result = {'status':'success',
-                'message': 'Deleted user sketch'}
+  @staticmethod
+  def restore_sketch(sketch_id, userid):
+    can_delete = False
+    is_admin = User.check_if_admin(userid)
+    is_owner = Trash.check_if_owner(long(sketch_id), userid)
+    is_deleted = True
 
-      logging.info("Delete: Sketch " + str(sketch_id) + " has been deleted")
-
-      logging.info("Delete: Sketch " + str(sketch_id) + " has been deleted")
-
-      return result
-
+    if is_owner:
+      can_delete = True
+    elif is_admin:
+      can_delete = True
+    if can_delete:
+        entities = Trash.all().filter('sketchId',int(sketch_id)).fetch(limit=None)
+        for entity in entities:
+          is_deleted = Trash.restore_sketch(entity)
+          logging.info("Moved: Sketch " + str(sketch_id) + " has been restored")
+          if is_deleted:
+              break
+        if is_deleted:
+            result = {'status':'success',
+            'message': 'Restored user sketch'}
+        else:
+            result = {'status':'failure',
+            'message': 'Cannot restore the sketch'}
+    else:
+        result  = {'status':'failure',
+            'message': 'You don\'t have permissions to restore the sketch'}
+    return result
 
   #Deletes a User's data
   @staticmethod
@@ -1483,3 +1534,4 @@ from counters import ModelCount, VersionCount, AppVersionCount
 from comments_likes import Comment, Like
 from permissions_groups import Permissions, Sketch_Groups
 from notifications import Notification    
+from trash import Trash
