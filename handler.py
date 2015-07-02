@@ -107,7 +107,11 @@ class ActionHandler(webapp2.RequestHandler):
     def delete_sketch_mobile(self):
         sketchid = self.request.get("sketchid")
         userid = self.request.get("userid")
-
+        token = self.request.get("token")
+        user = self.auth.store.get_user_by_auth_token(long(userid),token)
+        userid = 0
+        if user and user[0]:
+          userid = user[0]['user_id']
         result = Sketch.delete_mobile(sketchid, userid=userid)
         return self.respond(result)
 
@@ -178,13 +182,22 @@ class ActionHandler(webapp2.RequestHandler):
         result = Sketch.get_entities_by_criteria(criteria=criteria)
         return self.respond(result)
 
-    def user_latest_sketch(self,json="{}"): #/list/sketch/latest
+    def user_latest_sketch(self,data="{}"): #/list/sketch/latest
         auser = self.auth.get_user_by_session()
+        jsonData = json.loads(data)
         result = {'status':'error',
               'message':'There was an error getting the list.',
               'submessage':'Please try again later.'}
-        if self.request.method=="GET":
-          result = Sketch.get_latest_by_criteria(json)
+        userid = jsonData['userid']
+        token = jsonData['token']
+        user = self.auth.store.get_user_by_auth_token(long(userid),token)
+
+        if user and user[0] and self.request.method=="GET":
+          result = Sketch.get_latest_by_criteria(jsonData)
+        else:
+            result = {'status':'session_expired',
+              'message':'Please login again',
+              'submessage':'Please try again later.'}
         return self.respond(result)
 
     #Handler for listing Sketches by Group          
@@ -500,7 +513,7 @@ application = webapp2.WSGIApplication([
     webapp2.Route('/list/sketch', handler=ActionHandler, handler_method='list_sketch'), # List/Search Sketch
     webapp2.Route('/list/sketch/user', handler=ActionHandler, handler_method='user_sketch'), # List Sketch By User
     webapp2.Route('/list/sketch/user/<criteria>', handler=ActionHandler, handler_method='user_sketch_mobile'), # List Sketch By User
-    webapp2.Route('/list/sketch/latest/<json>', handler=ActionHandler, handler_method='user_latest_sketch'),
+    webapp2.Route('/list/sketch/latest/<data>', handler=ActionHandler, handler_method='user_latest_sketch'),
     webapp2.Route('/list/sketch/group', handler=ActionHandler, handler_method='group_sketch'), # List Sketch By Group
     webapp2.Route('/get/sketch/view', handler=ActionHandler, handler_method='view_sketch'), # Get Sketch (View)
     webapp2.Route('/get/sketch/view/<sketchId>/<version>/<userid>', handler=ActionHandler, handler_method='view_sketch_mobile'), # Get Sketch (View)

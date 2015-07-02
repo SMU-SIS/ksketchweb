@@ -1123,10 +1123,9 @@ class Sketch(db.Model):
     return result
 
   @staticmethod
-  def get_latest_by_criteria(data=""):
+  def get_latest_by_criteria(jsonData=""):
     utc = UTC()
-    logging.info(data)
-    jsonData = json.loads(data)
+    logging.info(jsonData)
 
     sketchIds = jsonData['sketchID']
     userid = jsonData['userid']

@@ -544,6 +544,7 @@ class GetUser(webapp2.RequestHandler):
 
     #Handler for a User to retrieve their own data after logging in
     def get_user(self, **kwargs): #/user/getuser
+
       utc = UTC()
       result = {'status':'Error',
                 'u_login': bool(False),
@@ -602,6 +603,17 @@ class GetUser(webapp2.RequestHandler):
         userid = auser['user_id']
         strid = str(userid)
         self.redirect(('/app/login_successful.html?id=' + strid).encode('ascii'))
+      else:
+        self.redirect('/app/index.html')
+
+    #Handler for redirecting page with a user's id for mobile implementation
+    def url_user_v2(self): #/user/urlUser
+      auser = self.auth.get_user_by_session()
+      if auser:
+        userid = auser['user_id']
+        strid = str(userid)
+        token = auser['token']
+        self.redirect(('/app/login_successful.html?id=' + strid+'&token='+token).encode('ascii'))
       else:
         self.redirect('/app/index.html')
 
@@ -931,6 +943,7 @@ application = webapp2.WSGIApplication([
     webapp2.Route('/user/getuser', handler=GetUser, handler_method='get_user'),
     webapp2.Route('/user/getuserid', handler=GetUser, handler_method='get_user_by_id'),
     webapp2.Route('/user/urlUser', handler=GetUser, handler_method='url_user'),
+    webapp2.Route('/user/urlUserV2', handler=GetUser, handler_method='url_user_v2'),
     webapp2.Route('/user/listuser', handler=GetUser, handler_method='list_user'),
     webapp2.Route('/user/profileuser', handler=GetUser, handler_method='profile_user'),
     webapp2.Route('/user/profileuser2', handler=GetUser, handler_method='profile_user_unauthenticated'),
