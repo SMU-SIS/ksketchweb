@@ -570,10 +570,10 @@ function ProfileController($scope,$resource,sharedProperties, sharedFunctions){
   },true);
 
     $scope.delete_sketch= function(index,sketchId) {
-        bootbox.confirm("Are you sure?", function(result) {
+        bootbox.confirm("Are you sure you want to delete the sketch?", function(result) {
               if(result == true){
                    scope.$apply(function() {
-                       $scope.DeleteResource = $resource('http://:remote_url/get/deletesketch',
+                       $scope.DeleteResource = $resource('http://:remote_url/delete/sketch',
                         {'remote_url':$scope.remote_url},
                         {'get': {method: 'GET', isArray: false, params:{'userid': $scope.User.id,'sketchid':sketchId}}
                            });

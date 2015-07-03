@@ -129,15 +129,14 @@ class ActionHandler(webapp2.RequestHandler):
         result = Sketch.restore_sketch(sketchid, userid=userid)
         return self.respond(result)
 
-    #Handler for deleting a Sketch - NOT WORKING
-    def delete_sketch(self, model_id):  #/delete/sketch/<model_id>
+    def delete_sketch(self):
 
         auser = self.auth.get_user_by_session()
         userid = 0
         if auser:
           userid = auser['user_id']
-        result = Sketch.remove(model_id, userid)
-        
+        sketchid = self.request.get("sketchid")
+        result = Sketch.delete_mobile(sketchid, userid=userid)
         return self.respond(result)
     
     #Handler for listing Sketches by User   
@@ -507,7 +506,7 @@ webapp2_config['webapp2_extras.sessions'] = {
 
 application = webapp2.WSGIApplication([
     webapp2.Route('/metadata', handler=ActionHandler, handler_method='metadata'),
-    webapp2.Route('/delete/sketch/<model_id>', handler=ActionHandler, handler_method='delete_sketch'), 
+    webapp2.Route('/delete/sketch', handler=ActionHandler, handler_method='delete_sketch'),
     webapp2.Route('/add/sketch', handler=ActionHandler, handler_method='add_sketch'), # Add Sketch
     webapp2.Route('/add/sketchDiscrepancy', handler=ActionHandler, handler_method='add_sketch_discrepancy'), # Add Sketch with discrepancy
     webapp2.Route('/list/sketch', handler=ActionHandler, handler_method='list_sketch'), # List/Search Sketch
