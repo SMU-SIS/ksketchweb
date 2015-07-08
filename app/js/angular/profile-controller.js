@@ -619,8 +619,6 @@ function ProfileController($scope,$resource,sharedProperties, sharedFunctions){
     };
 
     $scope.restore_sketch= function(index,sketchId) {
-          if(result == true){
-               scope.$apply(function() {
                    $scope.DeleteResource = $resource('http://:remote_url/get/restoresketch',
                     {'remote_url':$scope.remote_url},
                     {'get': {method: 'GET', isArray: false, params:{'userid': $scope.User.id,'sketchid':sketchId}}
@@ -636,9 +634,6 @@ function ProfileController($scope,$resource,sharedProperties, sharedFunctions){
                             bootbox.alert(result.message);
                         }
                     });
-
-               });
-          }
     };
   $scope.setFooterYear();
   $scope.getuser();
