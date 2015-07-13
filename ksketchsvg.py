@@ -676,10 +676,15 @@ class ksketchsvg:
         SVGCache.addAnimationData(sketchId,version,output)
         return output
 
+    @staticmethod
+    def check_permission(sketchId, userID):
+        perm = Permissions.user_access_control(sketchId,userID)
+        return perm['p_view']
+
 import xml.etree.ElementTree as ET
 from bs4 import BeautifulSoup, Tag
 from svgcache import SVGCache
-
+from permissions_groups import Permissions
 # Test area
 testxml = ""
 #print ksketchsvg.get_svg(testxml)

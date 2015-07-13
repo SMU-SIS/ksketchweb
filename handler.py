@@ -477,22 +477,36 @@ class ActionHandler(webapp2.RequestHandler):
       return self.respond(result)
 
     def send_svg(self,sketchId, version, userid): # /get/svg/view/<sketchId>
-        cache = SVGCache.getSVGCache(sketchId, version)
-        if cache and cache.svgData:
-            return self.respond({"data":'<svg id="mySVG" viewport-fill="white" xmlns="http://www.w3.org/2000/svg"  version="1.1" width="100%" style="overflow: hidden; left: 0px; top: 0px;stroke-width: 0px; background-color: white;" viewBox="0 0 1280 710" preserveAspectRatio="xMaxYMax meet">' +cache.svgData + '</svg>'})
+        auser = self.auth.get_user_by_session()
+        userid = 0
+        if auser:
+          userid = auser['user_id']
+        if (ksketchsvg.check_permission(long(sketchId),userid) == True):
+            cache = SVGCache.getSVGCache(sketchId, version)
+            if cache and cache.svgData:
+                return self.respond({"data":'<svg id="mySVG" viewport-fill="white" xmlns="http://www.w3.org/2000/svg"  version="1.1" width="100%" style="overflow: hidden; left: 0px; top: 0px;stroke-width: 0px; background-color: white;" viewBox="0 0 1280 710" preserveAspectRatio="xMaxYMax meet">' +cache.svgData + '</svg>',"success":True})
+            else:
+                result = Sketch.get_file_data(sketchId, version, "View", userid=userid)
+                result = ksketchsvg.get_svg(result.decode("string-escape"),sketchId,version)
+            return self.respond({"data":'<svg id="mySVG" viewport-fill="white" xmlns="http://www.w3.org/2000/svg" ng-click="pauseOrPlay($event)" version="1.1" width="100%" style="overflow: hidden; left: 0px; top: 0px;stroke-width: 0px; background-color: white;" viewBox="0 0 1280 710" preserveAspectRatio="xMaxYMax meet">' +result + '</svg>', "success":True})
         else:
-            result = Sketch.get_file_data(sketchId, version, "View", userid=userid)
-            result = ksketchsvg.get_svg(result.decode("string-escape"),sketchId,version)
-        return self.respond({"data":'<svg id="mySVG" viewport-fill="white" xmlns="http://www.w3.org/2000/svg" ng-click="pauseOrPlay($event)" version="1.1" width="100%" style="overflow: hidden; left: 0px; top: 0px;stroke-width: 0px; background-color: white;" viewBox="0 0 1280 710" preserveAspectRatio="xMaxYMax meet">' +result + '</svg>'})
+            return self.respond({"status":"Forbidden", "message":"You don't have permission to view the sketch"})
 
     def send_script(self,sketchId, version, userid): # /get/svg/view/<sketchId>
-        cache = SVGCache.getSVGCache(sketchId, version)
-        if cache and cache.animationData:
-            return self.respond(json.loads(cache.animationData))
+        auser = self.auth.get_user_by_session()
+        userid = 0
+        if auser:
+          userid = auser['user_id']
+        if (ksketchsvg.check_permission(long(sketchId),userid) == True):
+            cache = SVGCache.getSVGCache(sketchId, version)
+            if cache and cache.animationData:
+                return self.respond(json.loads(cache.animationData))
+            else:
+                result = Sketch.get_file_data(sketchId, version, "View", userid=userid)
+                result = ksketchsvg.get_transformations(result.decode("string-escape"),sketchId,version)
+                return self.respond(result)
         else:
-            result = Sketch.get_file_data(sketchId, version, "View", userid=userid)
-            result = ksketchsvg.get_transformations(result.decode("string-escape"),sketchId,version)
-            return self.respond(result)
+            return self.respond({"success":False, "message":"You don't have permission to view the sketch"})
     #Handler for viewing a particular Sketch mobile
     def view_sketch_xml(self, sketchId, version, userid): #/get/sketch/view/<sketchId>/<version>/<userid>
         result = Sketch.get_xml_by_versioning_mobile(sketchId, version, "View", userid=userid)

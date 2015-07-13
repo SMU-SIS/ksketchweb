@@ -1190,7 +1190,7 @@ class Sketch(db.Model):
     modelCount = ModelCount.all().filter('en_type','Sketch').get()
     if modelCount:
       count = modelCount.count
-    result = {'method': test, #'get_entities_by_criteria_new',
+    result = {'method': 'get_entities_by_criteria_new',
               'en_type': 'Sketch',
               'count': count,
               'entities': entities}
@@ -1209,6 +1209,7 @@ class Sketch(db.Model):
     return results
 
   #method for mobile v2
+  #Test method not used now
   @staticmethod
   def get_entities_v2(criteria=""):
     utc = UTC()

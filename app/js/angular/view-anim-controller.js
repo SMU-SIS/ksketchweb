@@ -55,6 +55,7 @@ function ViewSVGController($scope, $resource, sharedProperties, sharedFunctions)
                 $scope.heading = "Access Denied";
                 $scope.message = "You have not been granted permission to view this sketch.";
                 $scope.leave = true;
+                bootbox.alert(response.message);
             } else if (check === "Error") {
                 $scope.waiting = "Error";
                 $scope.heading = "Oops...!";
@@ -208,7 +209,7 @@ function ViewSVGController($scope, $resource, sharedProperties, sharedFunctions)
                 $("#slider").attr("data-slider-step",$scope.time_step);
                 $scope.mySlider = $("#slider").slider({
                     formatter: function (value) {
-                        return 'Current value: ' + value;
+                        return (value/1000).toFixed(1)+" s";
                     }
                 });
 
@@ -335,9 +336,9 @@ function ViewSVGController($scope, $resource, sharedProperties, sharedFunctions)
         if(!$scope.scene_complete) {
             $scope.paused = !$scope.paused;
             if ($scope.paused) {
-                document.getElementById("button-icon").className = "icon-play";
+                document.getElementById("button-icon").className = "glyphicon glyphicon-play";
             } else {
-                document.getElementById("button-icon").className = "icon-pause";
+                document.getElementById("button-icon").className = "glyphicon glyphicon-pause";
             }
         } else {
             //doc = parser.parseFromString($scope.svg_data, "text/xml");
@@ -349,12 +350,12 @@ function ViewSVGController($scope, $resource, sharedProperties, sharedFunctions)
             $scope.paused = false;
             $scope.scene_complete = false;
             $scope.initScene();
-            document.getElementById("button-icon").className = "icon-pause";
+            document.getElementById("button-icon").className = "glyphicon glyphicon-pause";
         }
     };
     $scope.mainLoop = function () {
         if($scope.waiting == "Ready" && $scope.current_time >= $scope.max_time) {
-            document.getElementById("button-icon").className = "icon-repeat";
+            document.getElementById("button-icon").className = "glyphicon glyphicon-repeat";
             $scope.scene_complete = true;
             clearInterval($scope.timer);
         } else {
