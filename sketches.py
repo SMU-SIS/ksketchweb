@@ -1123,74 +1123,65 @@ class Sketch(db.Model):
     return result
 
   @staticmethod
-  def get_latest_by_criteria(jsonData=""):
+  def get_latest_by_criteria(data=""):
     utc = UTC()
-    logging.info(jsonData)
+    logging.info(data)
+    jsonData = json.loads(data)
 
-    sketchIds = jsonData['sketchID']
     userid = jsonData['userid']
-    #update ModelCount when adding
-    theResults = Sketch.all().filter('owner',long(userid)).order('lowerFileName').fetch(limit=None)
-
-    show = "latest"
-
+    theResults = Sketch.all().filter('owner',long(userid)).filter('isLatest',True).order('lowerFileName').fetch(limit=None)
     entities = []
 
-    userid = long(userid)
-
     for object in theResults:
-      #if userid == object.owner:
-        test = "works!"
-        #Latest Version Filter
-        if object.sketchId in sketchIds:
-            continue
-        latest_check = True
-        if show == "latest":
-          versionCount = VersionCount.get_counter(long(object.sketchId))
-          if object.version < versionCount.lastVersion:
-            latest_check = False
-
-        #Check Permissions
-        permissions = Permissions.user_access_control(object.sketchId,userid)
-
-        if bool(permissions['p_view']) and latest_check:
-          test = "works too!"
           user_name = User.get_name(object.owner)
-          data = {'sketchId': object.sketchId,
-                'version': object.version,
-                'changeDescription': object.changeDescription,
-                'fileName': object.fileName,
-                'thumbnailData': object.thumbnailData,
-                'owner': user_name,
-                'owner_id': object.owner,
-                'originalSketch': object.original_sketch,
-                'originalVersion': object.original_version,
-                'originalName': Sketch.get_sketch_name(object.original_sketch,object.original_version),
-                'appver': object.appver,
-                'p_view': 1,
-                'p_edit': bool(permissions['p_edit']),
-                'p_comment': bool(permissions['p_comment']),
-                'like': Like.get_entities_by_id(object.sketchId, 0)['count'],
-                'comment': Comment.get_entities_by_id(object.sketchId)['count'],
-                'lowerFileName': object.lowerFileName}
+          if object.sketchId == object.original_sketch:
+              data = {'sketchId': object.sketchId,
+                    'version': object.version,
+                    'changeDescription': object.changeDescription,
+                    'fileName': object.fileName,
+                    'thumbnailData': object.thumbnailData,
+                    'owner': user_name,
+                    'owner_id': object.owner,
+                    'originalSketch': object.original_sketch,
+                    'originalVersion': object.original_version,
+                    'originalName': object.fileName,
+                    'appver': object.appver,
+                    'p_view': 1,
+                    'p_edit': True,
+                    'p_comment': True,
+                    'like': 0,
+                    'comment': 0,
+                    'lowerFileName': object.lowerFileName}
+          else:
+              data = {'sketchId': object.sketchId,
+                    'version': object.version,
+                    'changeDescription': object.changeDescription,
+                    'fileName': object.fileName,
+                    'thumbnailData': object.thumbnailData,
+                    'owner': user_name,
+                    'owner_id': object.owner,
+                    'originalSketch': object.original_sketch,
+                    'originalVersion': object.original_version,
+                    'originalName': Sketch.get_sketch_name(object.original_sketch,object.original_version),
+                    'appver': object.appver,
+                    'p_view': 1,
+                    'p_edit': True,
+                    'p_comment': True,
+                    'like': 0,
+                    'comment': 0,
+                    'lowerFileName': object.lowerFileName}
 
           entity = {'id': object.key().id(),
                 'created': object.created.replace(tzinfo=utc).strftime("%d %b %Y %H:%M:%S"),
                 'modified': object.modified.replace(tzinfo=utc).strftime("%d %b %Y %H:%M:%S"),
                 'data': data}
 
-          if userid == object.owner:
-            entities.append(entity)
-          elif User.check_if_admin(userid):
-            entities.append(entity)
-          elif data['p_view'] == "Public":
-            entities.append(entity)
-
+          entities.append(entity)
     count = 0
     modelCount = ModelCount.all().filter('en_type','Sketch').get()
     if modelCount:
       count = modelCount.count
-    result = {'method': 'get_entities_by_criteria_new',
+    result = {'method': 'get_entities_by_criteria',
               'en_type': 'Sketch',
               'count': count,
               'entities': entities}
