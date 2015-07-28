@@ -253,11 +253,20 @@ class Sketch(db.Model):
              # group_count = 0
           
             if (permissions_key != -1):
-              result = {'id': entity.key().id(), 
-                        'status': "success",
-                        'method': "add",
-                        'en_type': "Sketch",
-                        'data': jsonData} #this would also check if the json submitted was valid
+                if 'uniqueId' in jsonData:
+                  result = {'id': entity.key().id(),
+                            'status': "success",
+                            'method': "add",
+                            'en_type': "Sketch",
+                            'sketchId':long(jsonData['sketchId']),
+                            'uniqueId':jsonData['uniqueId'],
+                            'data': jsonData}
+                else:
+                  result = {'id': entity.key().id(),
+                            'status': "success",
+                            'method': "add",
+                            'en_type': "Sketch",
+                            'data': jsonData} #this would also check if the json submitted was valid
             
             else:
               #Rollback
@@ -271,13 +280,20 @@ class Sketch(db.Model):
             result = {'status': "error",
                       'message': "Save unsuccessful. Please try again."}
         else:
-          result = {'id': entity.key().id(), 
-                    'status': "success",
-                    'method': "add",
-                    'en_type': "Sketch",
-                    'data': jsonData} #this would also check if the json submitted was valid
-      
-      #If sketch was NOT created from latest version
+           if 'uniqueId' in jsonData:
+                  result = {'id': entity.key().id(),
+                            'status': "success",
+                            'method': "add",
+                            'en_type': "Sketch",
+                            'sketchId':long(jsonData['sketchId']),
+                            'uniqueId':jsonData['uniqueId'],
+                            'data': jsonData}
+           else:
+                  result = {'id': entity.key().id(),
+                            'status': "success",
+                            'method': "add",
+                            'en_type': "Sketch",
+                            'data': jsonData}      #If sketch was NOT created from latest version
       else:
         result = {'status': "errorDiscrepancy",
                   'message': "This sketch was recently updated to Version " + str(versionCount) + " at " +  thelatestobject_created.strftime("%Y-%m-%d %H:%M") + ". You are trying to save from an older version.",
