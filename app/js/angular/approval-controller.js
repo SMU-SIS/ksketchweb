@@ -19,7 +19,7 @@ function ApprovalController($scope,$resource,sharedProperties,sharedFunctions){
                 "u_login": false, "u_email": "", "g_hash": "", "u_created": "", 
                 "u_lastlogin": "", "u_logincount": "", "u_version": 1.0, 
                 "u_isadmin": false, "u_isactive": false, "is_approved": false,
-                "birth_month": "", "birth_year": "", "parent_email": "",
+                "birth_month": "", "birth_year": "", "parent_email": "not required",
                 "contact_studies": true, "contact_updates": true
                 };
 
@@ -28,7 +28,7 @@ function ApprovalController($scope,$resource,sharedProperties,sharedFunctions){
                         "u_login": false, "u_email": "", "g_hash": "", "u_created": "", 
                         "u_lastlogin": "", "u_logincount": "", "u_version": 1.0, 
                         "u_isadmin": false, "u_isactive": false, "is_approved": false,
-                        "birth_month": "", "birth_year": "", "parent_email": "",
+                        "birth_month": "", "birth_year": "", "parent_email": "not required",
                         "contact_studies": true, "contact_updates": true
                         };
 
@@ -229,7 +229,7 @@ function ApprovalController($scope,$resource,sharedProperties,sharedFunctions){
           { window.location.replace("register.html");}
       }
     }
-
+    console.log($scope.User.parent_email);
     if($scope.test == "-" && $scope.User.parent_email != "not required") 
     { window.location.replace('index.html');}
   }
