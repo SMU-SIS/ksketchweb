@@ -192,7 +192,7 @@ class ActionHandler(webapp2.RequestHandler):
         user = self.auth.store.get_user_by_auth_token(long(userid),token)
 
         if user and user[0] and self.request.method=="GET":
-          result = Sketch.get_latest_by_criteria(jsonData)
+          result = Sketch.get_latest_by_criteria(data)
         else:
             result = {'status':'session_expired',
               'message':'Please login again',
