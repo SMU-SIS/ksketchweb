@@ -144,7 +144,7 @@ class Sketch(db.Model):
       check_new_sketch=False
       ModelCount.increment_counter('Sketch_count')
       #For new sketches/sketches saved as new sketches
-      if jsonData['sketchId'] == "" or jsonData['sketchId'] == -1:
+      if jsonData['sketchId'] == "" or jsonData['sketchId'] == -1 or jsonData['sketchId'] == None:
         #Assigns new SketchId
         handmade_key = db.Key.from_path('Sketch', 1)
         #Get new ID from DB
