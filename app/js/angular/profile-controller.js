@@ -579,7 +579,6 @@ function ProfileController($scope,$resource,sharedProperties, sharedFunctions){
 
                         $scope.DeleteResource.get(function(response) {
                             var result = response;
-                            console.log(result);
                             if(result.status == "success") {
                                 $scope.trashitems.entities.push($scope.items.entities[index]);
                                 $scope.items.entities.splice(index, 1);
@@ -604,7 +603,6 @@ function ProfileController($scope,$resource,sharedProperties, sharedFunctions){
 
                         $scope.DeleteResource.get(function(response) {
                             var result = response;
-                            console.log(result);
                             if(result.status == "success") {
                                 $scope.trashitems.entities.splice(index, 1);
                             } else {
@@ -625,10 +623,10 @@ function ProfileController($scope,$resource,sharedProperties, sharedFunctions){
 
                     $scope.DeleteResource.get(function(response) {
                         var result = response;
-                        console.log(result);
                         if(result.status == "success") {
                             $scope.items.entities.push($scope.trashitems.entities[index]);
                             $scope.trashitems.entities.splice(index, 1);
+                            $scope.reorderSketches();
                         } else {
                             bootbox.alert(result.message);
                         }
