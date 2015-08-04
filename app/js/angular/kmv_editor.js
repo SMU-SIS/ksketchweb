@@ -51,9 +51,8 @@ function KMVEditor($scope, $resource, sharedProperties, sharedFunctions) {
 
     //Date (Time Zone) Format
     $scope.tzformat = function (utc_date) {
-
-        var d = moment(utc_date, "DD MMM YYYY HH:mm:ss");
-        return d.format("dddd, Do MMM YYYY, hh:mm:ss");
+    var localTime  = moment.utc(utc_date+" UTC").toDate();
+    return moment(localTime).format("dddd, Do MMM YYYY, hh:mm:ss a");
     };
 
     $scope.search = "";
