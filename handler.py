@@ -29,6 +29,7 @@ import webapp2
 from google.appengine.api import memcache
 from google.appengine.ext import db, webapp,deferred
 from google.appengine.ext.webapp.util import run_wsgi_app
+from appengine_config import _ConfigDefaults
 
 import json
 
@@ -107,11 +108,12 @@ class ActionHandler(webapp2.RequestHandler):
     def delete_sketch_mobile(self):
         sketchid = self.request.get("sketchid")
         userid = self.request.get("userid")
-        token = self.request.get("token")
-        user = self.auth.store.get_user_by_auth_token(long(userid),token)
-        userid = 0
-        if user and user[0]:
-          userid = user[0]['user_id']
+        if _ConfigDefaults.ksketch_LIST_DELETE_REQUIRE_AUTH:
+            token = self.request.get("token")
+            user = self.auth.store.get_user_by_auth_token(long(userid),token)
+            userid = 0
+            if user and user[0]:
+              userid = user[0]['user_id']
         result = Sketch.delete_mobile(sketchid, userid=userid)
         return self.respond(result)
 
@@ -187,16 +189,19 @@ class ActionHandler(webapp2.RequestHandler):
         result = {'status':'error',
               'message':'There was an error getting the list.',
               'submessage':'Please try again later.'}
-        userid = jsonData['userid']
-        token = jsonData['token']
-        user = self.auth.store.get_user_by_auth_token(long(userid),token)
+        if _ConfigDefaults.ksketch_LIST_DELETE_REQUIRE_AUTH:
+            userid = jsonData['userid']
+            token = jsonData['token']
+            user = self.auth.store.get_user_by_auth_token(long(userid),token)
 
-        if user and user[0] and self.request.method=="GET":
-          result = Sketch.get_latest_by_criteria(data)
+            if user and user[0] and self.request.method=="GET":
+              result = Sketch.get_latest_by_criteria(data)
+            else:
+                result = {'status':'session_expired',
+                  'message':'Please login again',
+                  'submessage':'Please try again later.'}
         else:
-            result = {'status':'session_expired',
-              'message':'Please login again',
-              'submessage':'Please try again later.'}
+            result = Sketch.get_latest_by_criteria(data)
         return self.respond(result)
 
     #Handler for listing Sketches by Group          
