@@ -426,7 +426,7 @@ http://mozilla.org/MPL/2.0/.
                     <a href="profile.html?id={{item.data.owner_id}}" ui-if="item.data.owner_id != 0">{{item.data.owner}}</a>
                     <span ui-if="item.data.owner_id == 0">{{item.data.owner}}</span>
                     <br>
-                    <span style="font-weight:bold">Created On:</span> {{item.created}}
+                    <span style="font-weight:bold">Created On:</span> {{tzformat(item.created)}}
                     <br>
                     <div ui-if="item.data.owner_id != 0">
                       <hr/>
