@@ -122,31 +122,34 @@ function SketchController($scope,$resource,sharedProperties,sharedFunctions){
 	$scope.item.data = {"sketchId":"", "version":"", "originalSketch":-1,"originalVersion":-1, "owner":"", "owner_id":"", "fileName":"", "fileData":"", "changeDescription":"", "appver":"", "p_view": true, "p_edit": true, "p_comment": true, "group_permissions": []};    
   
 	$scope.saveAs = function() { //Saving new sketch/saving new sketch as existing sketch
-	   	
-		$scope.fileData = $scope.fileData.replace(/(\r\n|\n|\r)/gm," ");
-		
-		$scope.item.data.sketchId = "";			
-		
-		$scope.item.data.originalSketch = $scope.sketchId;
-		$scope.item.data.originalVersion = $scope.version;
-		
-		$scope.item.data.owner = $scope.User.u_name;
-    $scope.item.data.owner_id = $scope.User.id;
-		$scope.item.data.fileName = $scope.tempFileName;
-		$scope.item.data.fileData = $scope.fileData;
-		$scope.item.data.thumbnailData = $scope.thumbnailData;
-		$scope.item.data.changeDescription = $scope.changeDescription;
-    $scope.item.data.appver = $scope.User.u_version;
-    
-    $scope.item.data.p_view = $scope.permissions.p_view;
-    $scope.item.data.p_edit = $scope.permissions.p_edit;
-    $scope.item.data.p_comment = $scope.permissions.p_comment;
-    $scope.item.data.group_permissions = $scope.permissions.group_permissions;
-		
-	  $scope.setMeta($scope.item.data.sketchId, $scope.item.data.version, $scope.item.data.owner, $scope.item.data.owner_id, $scope.item.data.fileName);
-		$scope.changeDescription = "" //Clears placeholder before next load.
-		
-		$scope.add_sketch();
+	   	if($scope.fileName == $scope.tempFileName) {
+          $scope.save();
+        } else {
+          $scope.fileData = $scope.fileData.replace(/(\r\n|\n|\r)/gm, " ");
+
+          $scope.item.data.sketchId = "";
+
+          $scope.item.data.originalSketch = $scope.sketchId;
+          $scope.item.data.originalVersion = $scope.version;
+
+          $scope.item.data.owner = $scope.User.u_name;
+          $scope.item.data.owner_id = $scope.User.id;
+          $scope.item.data.fileName = $scope.tempFileName;
+          $scope.item.data.fileData = $scope.fileData;
+          $scope.item.data.thumbnailData = $scope.thumbnailData;
+          $scope.item.data.changeDescription = $scope.changeDescription;
+          $scope.item.data.appver = $scope.User.u_version;
+
+          $scope.item.data.p_view = $scope.permissions.p_view;
+          $scope.item.data.p_edit = $scope.permissions.p_edit;
+          $scope.item.data.p_comment = $scope.permissions.p_comment;
+          $scope.item.data.group_permissions = $scope.permissions.group_permissions;
+
+          $scope.setMeta($scope.item.data.sketchId, $scope.item.data.version, $scope.item.data.owner, $scope.item.data.owner_id, $scope.item.data.fileName);
+          $scope.changeDescription = "" //Clears placeholder before next load.
+
+          $scope.add_sketch();
+        }
 	}
 	
 	$scope.save = function() { //Save new version of existing file
