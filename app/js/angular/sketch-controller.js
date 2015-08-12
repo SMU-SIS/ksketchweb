@@ -34,7 +34,7 @@ function SketchController($scope,$resource,sharedProperties,sharedFunctions){
 
   $scope.overwrite = false;
 
-  $scope.editor_location = "swf/v2/KSketch2_Web.swf";
+  $scope.editor_location = "swf/v3/KSKWeb.swf";
   $scope.get_editor = function() {
     return $scope.editor_location;
   }
