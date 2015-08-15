@@ -56,3 +56,9 @@ indexes:
   - name: owner
   - name: modified
     direction: desc
+- kind: Trash
+  properties:
+  - name: isLatest
+  - name: owner
+  - name: created
+    direction: desc
