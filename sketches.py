@@ -245,7 +245,7 @@ class Sketch(db.Model):
             
             group_count = 0
             #try:
-            if jsonData['group_permissions']:
+            if "group_permissions" in jsonData and jsonData['group_permissions']:
               group_permissions = jsonData['group_permissions']
               group_count = Sketch_Groups.add(long(jsonData['sketchId']),
                                               group_permissions)
