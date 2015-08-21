@@ -74,7 +74,7 @@ class Sketch(db.Model):
       versionCount_decrement = versionCount - 1
       change = jsonData['changeDescription']
       change = change[:255]
-
+      Sketch.update_latest_flag(jsonData['sketchId'])
       entity = Sketch(sketchId=long(jsonData['sketchId']),
                     version=long(jsonData['version']),
                     changeDescription=change,

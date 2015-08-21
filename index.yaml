@@ -62,3 +62,13 @@ indexes:
   - name: owner
   - name: created
     direction: desc
+- kind: Trash
+  properties:
+  - name: isLatest
+  - name: owner
+  - name: lowerFileName
+- kind: Trash
+  properties:
+  - name: isLatest
+  - name: owner
+  - name: modified
