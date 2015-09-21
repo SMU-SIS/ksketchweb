@@ -18,6 +18,13 @@ http://mozilla.org/MPL/2.0/.
     <!-- Google Analytics Code -->
     
     <script>
+        function detectIE() {
+            var ua = navigator.userAgent;
+            if((ua.indexOf("Edge") > 0) || (navigator.appName == 'Microsoft Internet Explorer') || ((navigator.appName=='Netscape') && (ua.indexOf("Trident/7.0") > 0)))
+            {
+              alert("The browser we detect is unsupported!\nPlease use web browsers like Safari (Apple), Chrome or Mozilla Firefox to access the K-Sketch website.");
+            }
+           }
       (function(i,s,o,g,r,a,m){i['GoogleAnalyticsObject']=r;i[r]=i[r]||function(){
       (i[r].q=i[r].q||[]).push(arguments)},i[r].l=1*new Date();a=s.createElement(o),
       m=s.getElementsByTagName(o)[0];a.async=1;a.src=g;m.parentNode.insertBefore(a,m)
@@ -60,7 +67,7 @@ http://mozilla.org/MPL/2.0/.
   </head>
   
   <!-- body id="ksketchapp" ng-controller="LoginController" scrolling="no" -->
-  <body ng-controller="IndexController" id="ksketchapp"  scrolling="no">
+  <body ng-controller="IndexController" id="ksketchapp"  scrolling="no" onload="detectIE()">
     <!-- Loading -->      
     <div id="LoadingDiv" ui-if="waiting!='Ready'"></div>
     <div class="modal" id="Loading" ui-if="waiting=='Loading'">
