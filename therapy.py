@@ -45,8 +45,8 @@ class Therapy(db.Model):
                     version = 0
                 #Check if the therapy data is new data
                 isNew = True
-                data = Therapy.get_therapydata(sketchId)
-                if data != "":
+                object = Therapy.get_therapydata(sketchId)
+                if object['data'] != "":
                     isNew = False
 
                 if isNew:
@@ -66,7 +66,7 @@ class Therapy(db.Model):
                         'message': "Please provide sketch ID."}
         except:
             result = {'status': "error",
-                   'message': "Save Therapy data unsuccessful. Please try again."}
+                   'message': "Save of Therapy data is unsuccessful. Please try again."}
 
         return result
 
@@ -77,13 +77,19 @@ class Therapy(db.Model):
             'sketchId': "",
             'version':""
         }
-        objects = Therapy.all().order('sketchId').fetch(limit=None)
-        for object in objects:
-            data = {
-                'sketchId': object.sketchId,
-                'version': object.version
-            }
-            entities.append(data)
+        try:
+            objects = Therapy.all().order('sketchId').fetch(limit=None)
+            if objects:
+                for object in objects:
+                    data = {
+                        'sketchId': object.sketchId,
+                        'version': object.version
+                    }
+                    entities.append(data)
+        except:
+            result = {'status': "error",
+                      'message': "Therapy data is not available"
+                      }
         return entities
 
     @staticmethod
@@ -98,10 +104,14 @@ class Therapy(db.Model):
                 'sketchId': object.sketchId,
                 'version': object.version
             }
+            result = {'status': "success",
+                      'message': "Found therapy data",
+                      'data': data}
         else:
             result = {'status': "error",
-                    'message': "Sketch ID is not found."}
-        return data
+                      'message': "Sketch ID is not found.",
+                      'data': ""}
+        return result
 
     @staticmethod
     def update_version(sketchId,version):
