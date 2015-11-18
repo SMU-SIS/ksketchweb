@@ -1,0 +1,84 @@
+<!DOCTYPE html>
+<!--
+Copyright 2015 Singapore Management University
+
+This Source Code Form is subject to the terms of the
+Mozilla Public License, v. 2.0. If a copy of the MPL was
+not distributed with this file, You can obtain one at
+http://mozilla.org/MPL/2.0/.
+-->
+<html ng-app="myApp" lang="en">
+  <head>
+    <meta charset="utf-8">
+    <title>K-Sketch: The Kinetic Sketch Pad!</title>
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta name="description" content="">
+    <meta name="author" content="">
+    
+    <!-- Le styles -->
+    <script>
+      (function(i,s,o,g,r,a,m){i['GoogleAnalyticsObject']=r;i[r]=i[r]||function(){
+      (i[r].q=i[r].q||[]).push(arguments)},i[r].l=1*new Date();a=s.createElement(o),
+      m=s.getElementsByTagName(o)[0];a.async=1;a.src=g;m.parentNode.insertBefore(a,m)
+      })(window,document,'script','//www.google-analytics.com/analytics.js','ga');
+
+      ga('create', 'UA-47832938-1', 'ksketchweb.appspot.com');
+      ga('send', 'pageview');
+    </script>
+    
+    <link href="css/bootstrap.css" rel="stylesheet">
+    <link href="css/bootstrap-responsive.css" rel="stylesheet">
+    
+    <!-- Additional styles for individual components -->
+    <link href="css/additional.css" rel="stylesheet">
+    
+    <!-- HTML5 shim, for IE6-8 support of HTML5 elements -->
+    <!--[if lt IE 9]>
+<script src="http://html5shim.googlecode.com/svn/trunk/html5.js"></script>
+<![endif]-->
+
+  </head>
+  <body id="ksketchapp" ng-controller="LoginController" scrolling="no">
+  <!--body scrolling="no"-->
+	
+	<!-- Top Bar -->
+	<div class="navbar navbar-inverse navbar-fixed-top">
+	  <div class="navbar-inner">
+	    <div align="center">
+	      <a class="mobile-brand" id="logo" href=" index.html"><h1>K-Sketch<br/>Mobile</h1></a>
+	    </div>
+	  </div>
+	</div>
+	
+	<div class="mobile-space"></div>	
+    <div class="mobile-space"></div>
+	<!-- Main Body -->
+    <div align="center">
+    	
+     	<!-- Navigation Sidebar (Access separate panes). -->
+       	<ul class="nav nav-list">
+       		<div class="mobile-space"></div>
+        	<li id="sc"><a href="/user/login"><h2>SIGN IN</h2></a></li>
+        	<div class="mobile-space"></div>
+        	<li id="sc"><a href="skip.html"><h2>CANCEL</h2></a></li>
+       	</ul>
+    </div>
+    <div class="mobile-space"></div>
+    <div class="mobile-space"></div>
+    <div class="footer-table" ng-model="year">
+      <img src="img/footer_logo_small.png"/><br/>
+            Copyright &copy; {{year}} Singapore Management University.<br/> Developed with support from SMU, U.C. Berkeley, UW, and under grants from the NSF and the Singapore-MIT Gambit Game Lab.
+            <br/>
+    </div>
+
+    <!-- Placed at the end of the document so the pages load faster -->
+    <script src="js/jquery/jquery.js"></script>
+    <script src="lib/angular/angular.min.js"></script>
+    <script src="js/moment/moment.min.js"></script>
+    <script src="lib/angular/angular-ui.min.js"></script>
+    <script src="lib/angular/angular-resource.min.js"></script>
+    <script src="js/angular/login-controller.js"></script>
+    <script src="js/app.js"></script>
+
+  </body>
+</html>
