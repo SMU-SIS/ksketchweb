@@ -1,3 +1,4 @@
+# coding=utf-8
 '''
 Copyright 2015 Singapore Management University
 
@@ -6,7 +7,6 @@ Mozilla Public License, v. 2.0. If a copy of the MPL was
 not distributed with this file, You can obtain one at
 http://mozilla.org/MPL/2.0/.
 '''
-# -*- coding: utf-8 -*-
 """Beautiful Soup bonus library: Unicode, Dammit
 
 This library converts a bytestream to Unicode through any means

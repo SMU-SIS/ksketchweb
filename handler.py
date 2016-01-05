@@ -1,3 +1,4 @@
+# coding=utf-8
 '''
 Copyright 2015 Singapore Management University
 
@@ -518,12 +519,12 @@ class ActionHandler(webapp2.RequestHandler):
         return self.respond(result)
 
     #Handler for adding therapy data
-    def add_therapydata(self): #/add/therapydata
-        result = Therapy.add(self.request.get('sketchid'), self.request.get('version'))
+    def add_therapydata(self): #/add/therapydata/<sketchid>/<version>/<recall>/<trace>/<track>/<recall>
+        result = Therapy.add(self.request.get('sketchid'), self.request.get('version'), self.request.get('recall'), self.request.get('trace'), self.request.get('track'), self.request.get('recreate'))
         return self.respond(result)
 
     #Handler for retrieving therapy data by sketchId
-    def get_therapydata(self): #/get/therapydata
+    def get_therapydata(self): #/get/therapydata/<sketchid>
         result = Therapy.get_therapydata(self.request.get('sketchid'))
         return self.respond(result)
 
