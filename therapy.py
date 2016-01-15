@@ -25,53 +25,51 @@ from google.appengine.ext import db
 
 #Handles Therapy data: adding and getting of therapy data
 class Therapy(db.Model):
-    sketchId = db.IntegerProperty(required=True) #Sketch ID of Sketch.
-    version = db.IntegerProperty(required=True) #Version of Sketch.
-    resultRecall = db.StringProperty(default="")
-    resultTrace = db.StringProperty(default="")
-    resultTrack = db.StringProperty(default="")
-    resultRecreate = db.StringProperty(default="")
-    created = db.DateTimeProperty(auto_now_add=True)
-    modified = db.DateTimeProperty(auto_now=True)
-
-    def to_dict(self):
-       d = dict([(p, unicode(getattr(self, p))) for p in self.properties()])
-       d["id"] = self.key().id()
-       return d
+    userName = db.StringProperty(default="") #Name of user
+    templateName = db.StringProperty(default="") #Name of Therapy template
+    resultDate = db.StringProperty(default="") #Date of therapy data is generated
+    resultRecall = db.StringProperty(default="") #<template object id>:<trials>:<time given>:<time taken>:<stars>:<retry>
+    resultTrace = db.StringProperty(default="") #<template object id>:<trials>:<time given>:<time taken>:<stars>:<retry>
+    resultTrack = db.StringProperty(default="") #<template object id>:<trials>:<time given>:<time taken>:<stars>:<retry>
+    resultRecreate = db.StringProperty(default="") #<template object id>:<trials>:<time given>:<time taken>:<stars>:<retry>
+    created = db.DateTimeProperty(auto_now_add=True) #Date of Therapy data is saved into the datastore
+    modified = db.DateTimeProperty(auto_now=True) #Date of Therapy data is updated in the datastore
+    version = db.IntegerProperty() #Version of Sketch.
 
     #Creates a new therapy data entity
     @staticmethod
-    def add(sketchId, version, result_Recall, result_Trace, result_Track, result_Recreate):
+    def add(userName, templateName, resultDate, resultRecall, resultTrace, resultTrack, resultRecreate):
         result = {}
         try:
-            if sketchId != "":
-                if version == '':
-                    version = 0
+            if userName != "":
                 #Check if the therapy data is new data
                 isNew = True
-                object = Therapy.get_therapydata(sketchId)
+                object = Therapy.get_therapydata(userName, templateName, resultDate)
                 if object['data'] != "":
                     isNew = False
 
                 if isNew:
                     version = 0
-                    entity = Therapy(sketchId=long(sketchId),
+                    entity = Therapy(
                                     version=long(version),
-                                    resultRecall=result_Recall,
-                                    resultTrace=result_Trace,
-                                    resultTrack=result_Track,
-                                    resultRecreate=result_Recreate)
+                                    userName=userName,
+                                    templateName=templateName,
+                                    resultDate=resultDate,
+                                    resultRecall=resultRecall,
+                                    resultTrace=resultTrace,
+                                    resultTrack=resultTrack,
+                                    resultRecreate=resultRecreate)
                     entity.put()
                     result={'status': "add successful",
-                        'message': "Added new therapy data into Datastore: sketch ID: " + str(sketchId) + ", version: " + str(version)}
+                        'message': "Added new therapy data into Datastore: user name: " + userName + ", template name: " + templateName + ", result date: " + resultDate}
                 else:
-                    Therapy.update_version(sketchId,version,result_Recall,result_Trace,result_Track,result_Recreate)
+                    Therapy.update(userName, templateName, resultDate, resultRecall, resultTrace, resultTrack, resultRecreate)
                     result={'status': "update successful",
-                        'message': "Updated therapy data for sketch ID: " + str(sketchId) + " to version: " + str(version)}
+                        'message': "Updated therapy data for user name: " + userName + ", template name: " + templateName + ", result date: " + resultDate}
 
             else:
               result = {'status': "error",
-                        'message': "Please provide sketch ID."}
+                        'message': "Please provide user name."}
         except:
             result = {'status': "error",
                    'message': "Save of Therapy data is unsuccessful. Please try again."}
@@ -82,21 +80,25 @@ class Therapy(db.Model):
     def get_entities(self):
         entities = []
         data = {
-            'sketchId': "",
             'version':"",
+            'userName' : "",
+            'templateName' : "",
+            'resultDate' : "",
             'resultRecall': "",
             'resultTrace': "",
             'resultTrack': "",
             'resultRecreate': ""
         }
         try:
-            objects = Therapy.all().order('sketchId').fetch(limit=None)
+            objects = Therapy.all().order('userName').fetch(limit=None)
             if objects:
                 for object in objects:
 
                     data = {
-                        'sketchId': object.sketchId,
                         'version': object.version,
+                        'userName' : object.userName,
+                        'templateName' : object.templateName,
+                        'resultDate' : object.resultDate,
                         'resultRecall': Therapy.getData(object.resultRecall),
                         'resultTrace': Therapy.getData(object.resultTrace),
                         'resultTrack': Therapy.getData(object.resultTrack),
@@ -110,15 +112,18 @@ class Therapy(db.Model):
         return entities
 
     @staticmethod
-    def get_therapydata(sketchId):
+    def get_therapydata(userName, templateName, resultDate):
         utc = UTC()
         data = ""
         query = Therapy.all()
-        query.filter('sketchId =',long(sketchId)).fetch(limit=None)
+        # query.filter('sketchId =',long(sketchId)).fetch(limit=None)
+        query.filter('userName =',userName).filter('templateName = ',templateName).filter('resultDate',resultDate).fetch(limit=None)
         object = query.get()
         if object:
             data = {
-                'sketchId': object.sketchId,
+                'userName' : object.userName,
+                'templateName' : object.templateName,
+                'resultDate' : object.resultDate,
                 'version': object.version,
                 'resultRecall': Therapy.getData(object.resultRecall),
                 'resultTrace': Therapy.getData(object.resultTrace),
@@ -130,38 +135,67 @@ class Therapy(db.Model):
                       'data': data}
         else:
             result = {'status': "error",
-                      'message': "Sketch ID is not found.",
+                      'message': "Data is not found.",
                       'data': ""}
         return result
 
     @staticmethod
     def getData(content):
+        datalist = []
         data = {
-            'time':"",
-            'accuracy':"",
-            'quadrant':"",
+            'objectTemplateId':"",
             'trials':"",
-            'stars':""
+            'timeGiven':"",
+            'timeTaken':"",
+            'stars':"",
+            'retry':""
+        }
+        if content!= '':
+            if(content.find("|") > 0):
+                array = content.split('|')
+                for i in range(len(array)):
+                    if(array[i] != ''):
+                        data = Therapy.getDataItem(array[i])
+                        datalist.append(data)
+            else:
+                data = Therapy.getDataItem(content)
+                datalist.append(data)
+        return datalist
+
+    @staticmethod
+    def getDataItem(content):
+        data = {
+            'objectTemplateId':"",
+            'trials':"",
+            'timeGiven':"",
+            'timeTaken':"",
+            'stars':"",
+            'retry':""
         }
         if content!= '':
             array = content.split(':')
-            data = {'time':array[0],
-                'accuracy':array[1],
-                'quadrant':array[2],
-                'trials':array[3],
-                'stars':array[4]
+            data = {
+                'objectTemplateId':array[0],
+                'trials':array[1],
+                'timeGiven':array[2],
+                'timeTaken':array[3],
+                'stars':array[4],
+                'retry':array[5]
             }
         return data
 
     @staticmethod
-    def update_version(sketchId,version,result_Recall,result_Trace,result_Track,result_Recreate):
+    def update(userName, templateName, resultDate, resultRecall, resultTrace, resultTrack, resultRecreate):
         query = Therapy.all()
-        query.filter('sketchId =',long(sketchId)).fetch(limit=None)
+        query.filter('userName =',userName).filter('templateName = ',templateName).filter('resultDate',resultDate).fetch(limit=None)
         object = query.get()
         if object:
-            object.version = long(version)
-            object.resultRecall = result_Recall
-            object.resultTrace = result_Trace
-            object.resultTrack = result_Track
-            object.resultRecreate = result_Recreate
-            db.put(object)
+            if object.resultRecall == resultRecall and object.resultTrace == resultTrace and object.resultTrack == resultTrack and object.resultRecreate == resultRecreate:
+                return
+            else:
+                object.version = object.version + 1
+                object.resultRecall = resultRecall
+                object.resultTrace = resultTrace
+                object.resultTrack = resultTrack
+                object.resultRecreate = resultRecreate
+                db.put(object)

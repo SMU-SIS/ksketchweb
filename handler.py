@@ -519,13 +519,13 @@ class ActionHandler(webapp2.RequestHandler):
         return self.respond(result)
 
     #Handler for adding therapy data
-    def add_therapydata(self): #/add/therapydata/<sketchid>/<version>/<recall>/<trace>/<track>/<recall>
-        result = Therapy.add(self.request.get('sketchid'), self.request.get('version'), self.request.get('recall'), self.request.get('trace'), self.request.get('track'), self.request.get('recreate'))
+    def add_therapydata(self): #/add/therapydata/<username>/<templatename>/<resultdate>/<resultRecall>/<resultTrace>/<resultTrack>/<resultRecreate>
+        result = Therapy.add(self.request.get('userName'), self.request.get('templateName'), self.request.get('resultDate'), self.request.get('resultRecall'), self.request.get('resultTrace'), self.request.get('resultTrack'), self.request.get('resultRecreate'))
         return self.respond(result)
 
-    #Handler for retrieving therapy data by sketchId
-    def get_therapydata(self): #/get/therapydata/<sketchid>
-        result = Therapy.get_therapydata(self.request.get('sketchid'))
+    #Handler for retrieving therapy data by user name, template name and result date
+    def get_therapydata(self): #/get/therapydata/<username>/<templatename>/<resultdate>
+        result = Therapy.get_therapydata(self.request.get('userName'), self.request.get('templateName'), self.request.get('resultDate'))
         return self.respond(result)
 
     #Handler for retrieving all therapy data
