@@ -20,7 +20,6 @@ Note to self: json.loads = json string to objects. json.dumps is object to json 
 """
 Attributes and functions for Therapydata entity
 """
-from rpx import UTC
 from google.appengine.ext import db
 
 #Handles Therapy data: adding and getting of therapy data
@@ -194,8 +193,21 @@ class Therapy(db.Model):
                 return
             else:
                 object.version = object.version + 1
-                object.resultRecall = resultRecall
-                object.resultTrace = resultTrace
-                object.resultTrack = resultTrack
-                object.resultRecreate = resultRecreate
-                db.put(object)
+                Therapy.add_version(object.version, userName, templateName, resultDate, resultRecall, resultTrace, resultTrack, resultRecreate)
+
+    @staticmethod
+    def add_version(version, userName, templateName, resultDate, resultRecall, resultTrace, resultTrack, resultRecreate):
+        try:
+            entity = Therapy(
+                    version=long(version),
+                    userName=userName,
+                    templateName=templateName,
+                    resultDate=resultDate,
+                    resultRecall=resultRecall,
+                    resultTrace=resultTrace,
+                    resultTrack=resultTrack,
+                    resultRecreate=resultRecreate)
+            entity.put()
+        except:
+            result = {'status': "error",
+                   'message': "Save of Therapy data is unsuccessful. Please try again."}

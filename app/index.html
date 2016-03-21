@@ -16,7 +16,7 @@ http://mozilla.org/MPL/2.0/.
     <meta name="author" content="">
     
     <!-- Google Analytics Code -->
-    
+    <script src="js/config.js"></script>
     <script>
         function detectIE() {
             var ua = navigator.userAgent;
@@ -30,7 +30,7 @@ http://mozilla.org/MPL/2.0/.
       m=s.getElementsByTagName(o)[0];a.async=1;a.src=g;m.parentNode.insertBefore(a,m)
       })(window,document,'script','//www.google-analytics.com/analytics.js','ga');
 
-      ga('create', 'UA-47832938-1', 'ksketchweb.appspot.com');
+      ga('create', config.trackingID, config.trackerName);
       ga('send', 'pageview');
     </script>
     
