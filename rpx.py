@@ -768,7 +768,7 @@ K-Sketch would like to request permission for your child, "+ result['u_name'] + 
       \n\
 Please click the following link to activate your child's account: " +_ConfigDefaults.ksketch_HOSTNAME + url_approve + "\n\
       \n\
-Please click the following link to cancel participation: " + _ConfigDefaults.ksketch_HOSTNAME + url_disapprove + "\n\
+Please click the following link to cancel participation: " + "http://"+_ConfigDefaults.ksketch_HOSTNAME + url_disapprove + "\n\
 \n\
 \n\
 K-Sketch Team"

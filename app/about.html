@@ -16,14 +16,14 @@ http://mozilla.org/MPL/2.0/.
     <meta name="author" content="">
     
     <!-- Google Analytics Code -->
-    
+    <script src="js/app.js"></script>
     <script>
       (function(i,s,o,g,r,a,m){i['GoogleAnalyticsObject']=r;i[r]=i[r]||function(){
       (i[r].q=i[r].q||[]).push(arguments)},i[r].l=1*new Date();a=s.createElement(o),
       m=s.getElementsByTagName(o)[0];a.async=1;a.src=g;m.parentNode.insertBefore(a,m)
       })(window,document,'script','//www.google-analytics.com/analytics.js','ga');
 
-      ga('create', 'UA-47832938-1', 'ksketchweb.appspot.com');
+      ga('create', config.trackingID, config.trackerName);
       ga('send', 'pageview');
     </script>
     
@@ -230,14 +230,7 @@ http://mozilla.org/MPL/2.0/.
               var x=xmlDoc.getElementsByTagName("List");
               var person=x[0].getElementsByTagName("Person");
               for (i=0;i<person.length;i++)
-              { 
-                var evenColumn=false;
-                if(i%2==0)
-                {
-                  evenColumn=true;
-                }
-
-                var person_image=person[i].getElementsByTagName("Image")[0].childNodes[0].nodeValue;
+              {
                 var person_link=person[i].getElementsByTagName("Link")[0].childNodes[0].nodeValue;
                 var person_name=person[i].getElementsByTagName("Name")[0].childNodes[0].nodeValue;
                 var person_designation=person[i].getElementsByTagName("Designation")[0].childNodes[0].nodeValue;
@@ -248,35 +241,17 @@ http://mozilla.org/MPL/2.0/.
                 {
                   person_link = "#";
                 }
-                
-                if(evenColumn)
-                {
-                  document.write("<tr>");
-                  document.write("<td>");
-                    document.write("<table width='100%'><tr><td align='center' width='20%'>");
-                      document.write("<a href='" + person_link + "'><img src='" + person_image + "'/></a>");
-                      document.write("</td><td width='5%'></td><td>");
-                      document.write("<h4>" + person_name + "</h4>" + person_designation + "<br/>" + person_department + "<br/>" + person_affiliation );
-                    document.write("</td></tr></table>");
-                  document.write("</td>");
-                }
-                
-                if(!evenColumn)
-                {
-                  document.write("<td>");
-                    document.write("<table width='100%'><tr><td align='center' width='20%'>");
-                      document.write("<a href='" + person_link + "'><img src='" + person_image + "'/></a>");
-                      document.write("</td><td width='5%'></td><td>");
-                      document.write("<h4>" + person_name + "</h4>" + person_designation + "<br/>" + person_department + "<br/>" + person_affiliation );
-                    document.write("</td></tr></table>");
-                  document.write("</td>");
 
-                  document.write("</tr>");
-
-                  document.write("<tr><td colspan='2' height='30px'></td></tr>");
-                }
+                document.write("<tr>");
+                document.write("<td>");
+                document.write("<table width='100%'><tr><td width='20%'>");
+                document.write("<h4>" + "<a href='" + person_link + "'>" + person_name + "</a></h4>" + person_designation + "<br/>" + person_department + "<br/>" + person_affiliation );
+                document.write("</td></tr></table>");
+                document.write("</td>");
+                document.write("</tr>");
+                document.write("</table><br/>");
               }
-              document.write("</table><br/>");
+
             </script>
             <br/>
             <h2>Past Contributors</h2>

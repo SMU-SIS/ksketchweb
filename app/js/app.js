@@ -1,4 +1,8 @@
 'use strict';
+var config = {
+    "trackingID":"*** Enter your GAE tracking ID ***",
+    "trackerName":"*** Enter your GAE host name ***"
+}
 
   var myApp = angular.module('myApp', ['ui.directives', 'ngResource']);
   myApp.service('sharedProperties', function() {

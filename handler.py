@@ -1,3 +1,4 @@
+# coding=utf-8
 '''
 Copyright 2015 Singapore Management University
 
@@ -517,6 +518,21 @@ class ActionHandler(webapp2.RequestHandler):
         result = Sketch.get_xml_by_versioning_mobile(sketchId, version, "View", userid=userid)
         return self.respond(result)
 
+    #Handler for adding therapy data
+    def add_therapydata(self): #/add/therapydata/<username>/<templatename>/<resultdate>/<resultRecall>/<resultTrace>/<resultTrack>/<resultRecreate>
+        result = Therapy.add(self.request.get('userName'), self.request.get('templateName'), self.request.get('resultDate'), self.request.get('resultRecall'), self.request.get('resultTrace'), self.request.get('resultTrack'), self.request.get('resultRecreate'))
+        return self.respond(result)
+
+    #Handler for retrieving therapy data by user name, template name and result date
+    def get_therapydata(self): #/get/therapydata/<username>/<templatename>/<resultdate>
+        result = Therapy.get_therapydata(self.request.get('userName'), self.request.get('templateName'), self.request.get('resultDate'))
+        return self.respond(result)
+
+    #Handler for retrieving all therapy data
+    def get_therapydata_all(self): #/get/therapydata
+        result = Therapy.get_entities(self)
+        return self.respond(result)
+
 #Configuration and URI mapping
 webapp2_config = {}
 webapp2_config['webapp2_extras.sessions'] = {
@@ -570,7 +586,10 @@ application = webapp2.WSGIApplication([
     webapp2.Route('/get/svg/view/<sketchId>/<version>/<userid>', handler=ActionHandler, handler_method='send_svg'),
     webapp2.Route('/get/svg/script/<sketchId>/<version>/<userid>', handler=ActionHandler, handler_method='send_script'),
     webapp2.Route('/get/sketch/view_xml/<sketchId>/<version>/<userid>', handler=ActionHandler, handler_method='view_sketch_xml'),
-    webapp2.Route('/get/trash/user',handler=ActionHandler, handler_method='view_trash_sketches')], # Get Sketch (View)],
+    webapp2.Route('/get/trash/user',handler=ActionHandler, handler_method='view_trash_sketches'), # Get Sketch (View)],
+    webapp2.Route('/add/therapydata',handler=ActionHandler,handler_method='add_therapydata'), # Add therapy data
+    webapp2.Route('/get/therapydata',handler=ActionHandler,handler_method='get_therapydata'), # Get therapy data by sketchId
+    webapp2.Route('/get/therapydataall',handler=ActionHandler,handler_method='get_therapydata_all')], # Get all therapy data
     config=webapp2_config,
     debug=True)
     
@@ -586,3 +605,4 @@ from notifications import Notification
 from ksketchsvg import ksketchsvg
 from svgcache import SVGCache
 from trash import Trash
+from therapy import Therapy

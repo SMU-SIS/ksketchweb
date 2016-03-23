@@ -337,21 +337,18 @@ class Sketch(db.Model):
     remaining = len(in_clause)
     #The IN filter can have maximum of 30 entries
     MAX_COUNT_IN_CLAUSE = 30
-    if remaining > MAX_COUNT_IN_CLAUSE:
-        objects = Sketch.all().filter('sketchId IN', in_clause[:30]).order('-modified').fetch(limit=None)
-        remaining -= MAX_COUNT_IN_CLAUSE
-        count += MAX_COUNT_IN_CLAUSE
-        while remaining > 0:
-            if remaining < MAX_COUNT_IN_CLAUSE:
-                objects = objects+Sketch.all().filter('sketchId IN', in_clause[count:count+remaining]).order('-modified').fetch(limit=None)
-                remaining = 0
-                count += remaining
-            else:
-                objects = objects+Sketch.all().filter('sketchId IN', in_clause[count:count+remaining]).order('-modified').fetch(limit=None)
-                remaining -= MAX_COUNT_IN_CLAUSE
-                count += remaining
-    else:
-        objects = Sketch.all().filter('sketchId IN', in_clause).order('-modified').fetch(limit=None)
+
+    while remaining > 0:
+        if remaining < MAX_COUNT_IN_CLAUSE:
+            objects = objects+Sketch.all().filter('sketchId IN', in_clause[count:count+remaining]).order('-modified').fetch(limit=None)
+            remaining = 0
+            count += remaining
+        else:
+            next = count + MAX_COUNT_IN_CLAUSE
+            objects = objects+Sketch.all().filter('sketchId IN', in_clause[count:next]).order('-modified').fetch(limit=None)
+            remaining -= MAX_COUNT_IN_CLAUSE
+            count += MAX_COUNT_IN_CLAUSE
+
     entities = []
     count = 0
     next_offset = 0
@@ -896,14 +893,10 @@ class Sketch(db.Model):
   #Gets the names of Sketches that match the given criteria
   @staticmethod
   def get_matching_names(criteria=""):
-    theQuery = Sketch.all()
+    theQuery = Sketch.all().filter("isLatest" , True)
     objects = theQuery.run()
-    entities = []
-    if criteria != "":
-      for object in objects:
-        if criteria.lower() in object.fileName.lower():
-          entities.append(object.sketchId)
-          
+    criteria_lowercase = criteria.lower()
+    entities = [x.sketchId for x in objects if criteria_lowercase in x.lowerFileName]
     return entities
   
   #Counts the number of Sketch entities that a particular User may #View/Edit/Comment

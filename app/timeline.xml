@@ -281,7 +281,18 @@ http://mozilla.org/MPL/2.0/.
 		  <Month>Aug</Month>
 		  <Day>0</Day>
 		  <Description>
-		    Ram Vibhakar Suthagar joins the project as a Research Engineer and upgrades the K-Sketch 2 web site. He is supported by a grant from the SMU SIS Research Centre.
+		  	Ram Vibhakar Suthagar joins the project for one year as a Research Engineer and upgrades the K-Sketch 2 web site. He is supported by a grant from the SMU SIS Research Centre
+		  </Description>
+		</Event>
+	</YearEntry>
+
+	<YearEntry>
+		<Year>2015</Year>
+		<Event>
+		  <Month>Sep</Month>
+		  <Day>0</Day>
+		  <Description>
+		  	Nguyen Thi Ngoc joins the project for one year as a Research Associate. She works with Camellia Zakaria to build a new child-friendly version of K-Sketch for muscle rehabilitation exercises. Ngoc is also supported by a grant from the SMU SIS Research Centre.
 		  </Description>
 		</Event>
 	</YearEntry>
