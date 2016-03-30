@@ -5,7 +5,7 @@ api_version: 1
 threadsafe: false
 
 includes:
-- config.yaml
+- main.yaml
 
 libraries:
 - name: webapp2
