@@ -14,7 +14,14 @@ http://mozilla.org/MPL/2.0/.
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <meta name="description" content="">
     <meta name="author" content="">
-    
+    <meta property="og:site_name" content="K-Sketch"/>
+    <meta property="og:title" content="K-Sketch: The Kinetic Sketch Pad!"/>
+    <meta property="og:type" content="website" />
+    <meta property="og:description" content="Click here to view animation" />
+    <meta property="og:image" content="your image url"/>
+    <meta property="og:image:width" content="200" />
+    <meta property="og:image:height" content="200" />
+
     <!-- Google Analytics Code -->
     <script src="lib/angular/angular.min.js"></script>
     <script src="js/app.js"></script>
@@ -358,14 +365,14 @@ http://mozilla.org/MPL/2.0/.
                           <param name="allowFullScreen" value="true" />
                           <!--<![endif]-->
                           <!--[if gte IE 6]>-->
-                          <p> 
-                            Either scripts and active content are not permitted to run or Adobe Flash Player version
-                            10.2.0 or greater is not installed.
-                          </p>
+                          <!--<p> -->
+                            <!--Either scripts and active content are not permitted to run or Adobe Flash Player version-->
+                            <!--10.2.0 or greater is not installed.-->
+                          <!--</p>-->
                           <!--<![endif]-->
-                          <a href="http://www.adobe.com/go/getflashplayer">
-                            <img src="http://www.adobe.com/images/shared/download_buttons/get_flash_player.gif" alt="Get Adobe Flash Player" />
-                          </a>
+                          <!--<a href="http://www.adobe.com/go/getflashplayer">-->
+                            <!--<img src="http://www.adobe.com/images/shared/download_buttons/get_flash_player.gif" alt="Get Adobe Flash Player" />-->
+                          <!--</a>-->
                           <!--[if !IE]>-->
                         </object>
                         <!--<![endif]-->
@@ -473,6 +480,10 @@ http://mozilla.org/MPL/2.0/.
                       You have to <a href="/user/login">log in</a> to like/unlike this sketch.
                     </div>
                     <hr/>
+                    <div>
+                      <div ui-if="item.data.p_public.p_view == 1"><b>Public</b>: Anyone can view this sketch after you share it.</div>
+                      <div ui-if="item.data.p_public.p_view == 0"><b>Private</b>: Only authorized users can view this sketch after you share it.</div>
+                    </div>
                     <span class='st_facebook_hcount' displayText='Facebook'></span>
                     <span class='st_fblike_hcount' displayText='Facebook Like'></span>
                   </div>
