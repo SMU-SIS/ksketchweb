@@ -1,7 +1,9 @@
 'use strict';
 var config = {
     "trackingID":"*** Enter your GAE tracking ID ***",
-    "trackerName":"*** Enter your GAE host name ***"
+    "trackerName":"*** Enter your GAE host name ***",
+    "iTunesStore":"*** Enter your iTunes Store url ***",
+    "googleStore":"*** Enter your Google Store url ***"
 }
 
   var myApp = angular.module('myApp', ['ui.directives', 'ngResource']);
