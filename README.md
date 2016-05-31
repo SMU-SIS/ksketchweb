@@ -1,6 +1,1 @@
-kinnovators
-===========
-
-Kinnovators FYP Project
-
-All code can be found on the gh-pages branch. 
+For more information See the [K-Sketch Developer](https://sites.google.com/site/ksketchdev/) site. 
