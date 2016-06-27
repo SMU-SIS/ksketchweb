@@ -289,10 +289,10 @@ http://mozilla.org/MPL/2.0/.
                   <li>
                     <a title="View personal profile" href="#Profile" data-toggle="tab">Profile</a>
                   </li>
-                  <li>
+                  <li ui-if="belong">
                     <a title="View group memberships" href="#Groups" data-toggle="tab">Groups</a>
                   </li>
-                    <li>
+                    <li ui-if="belong">
                     <a title="View Trash" href="#Trash" data-toggle="tab">Trash</a>
                   </li>
                 </ul>
@@ -380,7 +380,7 @@ http://mozilla.org/MPL/2.0/.
                       </div>
                       <ul class="unstyled" ui-if="!!items.entities.length"  ng-cloak>
                         <li ng-repeat="files in items.entities">
-                          <div class="well well-small">
+                          <div class="well well-small" ui-if="files.data.p_view == 1">
                             <div class="row-fluid">
                               <div class="span2">
                                 <a onClick ="view_sketch({{files.data.sketchId}})" title="View this sketch">
@@ -499,8 +499,8 @@ http://mozilla.org/MPL/2.0/.
                               <tr>
                                 <td>
                                   <span style="font-weight:bold">Display Name:</span> {{profile_user.u_name}}<br>
-                                  <span style="font-weight:bold">Contact for Updates:</span> {{profile_user.contact_updates}}<br>
-                                  <span style="font-weight:bold">Contact for Studies:</span> {{profile_user.contact_studies}}<br>
+                                  <span ui-if="belong"><span style="font-weight:bold">Contact for Updates:</span> {{profile_user.contact_updates}}</span><br>
+                                  <span ui-if="belong"><span style="font-weight:bold">Contact for Studies:</span> {{profile_user.contact_studies}}</span><br>
                                 </td>
                                 <td width="20%"></td>
                                 <td width="50%">
@@ -511,19 +511,20 @@ http://mozilla.org/MPL/2.0/.
                           </div>
                           </div>
                           <hr ui-if="belong">
-                          <span ui-if="belong" style="font-weight:bold">Birth Date:</span> {{profile_user.birth_month}} / {{profile_user.birth_year}}<br>
-                          <span ui-if="belong" style="font-weight:bold">E-mail:</span> {{profile_user.u_email}}<br>
-                          <span ui-if="belong" style="font-weight:bold">Date Created:</span> {{profile_user.u_created}}<br>
-                          <span ui-if="belong" style="font-weight:bold">Last Login:</span> {{profile_user.u_lastlogin}}<br>
-                          <span ui-if="belong" style="font-weight:bold">No. of Logins:</span> {{profile_user.u_logincount}}<br>
-                          <span ui-if="belong && profile_user.u_changed > 0" style="font-weight:bold">No. of Profile Changes:</span> {{profile_user.u_changed}}<br>
+                          	<span ui-if="belong"><b>Birth Date: </b>{{profile_user.birth_month}} / {{profile_user.birth_year}}</span><br>
+                            <span ui-if="belong"><b>E-mail: </b>{{profile_user.u_email}}</span><br>
+                            <span ui-if="belong"><b>Date Created: </b>{{profile_user.u_created}}</span><br>
+                            <span ui-if="belong"><b>Last Login: </b>{{profile_user.u_lastlogin}}</span><br>
+                            <span ui-if="belong"><b>No. of Logins: </b>{{profile_user.u_logincount}}</span><br>
+                            <span ui-if="belong && profile_user.u_changed > 0" style="font-weight:bold"><b>No. of Profile Changes: </b>{{profile_user.u_changed}}</span><br>
+
                           <hr>
-                          <span style="font-weight:bold">Account Type:</span> 
+                          <span ui-if="belong"><span style="font-weight:bold">Account Type:</span>
                           <span class="label label-important" ui-if="!!profile_user.u_isadmin" ng-cloak>
                             Administrator
                           </span>
                           <!-- <span ui-if="!!profile_user.u_isadmin && belong"> (<a title="Go to administrator console" href="console.html">Go to Console</a>)</span> -->
-                          <span class="label label-success" ui-if="!profile_user.u_isadmin" ng-cloak>Ordinary User</span>
+                          <span class="label label-success" ui-if="!profile_user.u_isadmin" ng-cloak>Ordinary User</span></span>
                         </div>
                       </div>
                       
@@ -565,7 +566,7 @@ http://mozilla.org/MPL/2.0/.
                   </div>
                   
                   <!-- Groups Pane -->
-                  <div class="tab-pane" id="Groups">
+                  <div class="tab-pane" ui-if="belong" id="Groups">
                     <div class="row-fluid">
                       <div class="span10">
                         <h2 ui-if="belong">My Groups</h2>
@@ -615,7 +616,7 @@ http://mozilla.org/MPL/2.0/.
                     </div>                  
                   </div>
                     <!-- Trash pane -->
-                    <div class="tab-pane" id="Trash">
+                    <div class="tab-pane" ui-if="belong" id="Trash">
                     <div class="row-fluid">
                       <div class="row-fluid">
                                 <div class="span6">
