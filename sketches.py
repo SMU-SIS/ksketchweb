@@ -434,9 +434,20 @@ class Sketch(db.Model):
 
     entities = []
     next_offset = offset + limit
-    
+
     for object in objects:
+      #Check Permissions
+      permissions = Permissions.user_access_control(object.sketchId,userid)
       user_name = User.get_name(object.owner)
+      p_view = 0
+      p_edit = False
+      p_comment = False
+
+      if bool(permissions['p_view']):
+        p_view = 1
+        p_edit = True
+        p_comment = True
+
       data = {'sketchId': object.sketchId,
             'version': object.version,
             'changeDescription': object.changeDescription,
@@ -448,9 +459,9 @@ class Sketch(db.Model):
             'originalVersion': object.original_version,
             'originalName': Sketch.get_sketch_name(object.original_sketch,object.original_version),
             'appver': object.appver,
-            'p_view': 1,
-            'p_edit': True,
-            'p_comment': True,
+            'p_view': p_view,
+            'p_edit': p_edit,
+            'p_comment': p_comment,
             'like': Like.get_entities_by_id(object.sketchId, 0)['count'],
             'comment': Comment.get_entities_by_id(object.sketchId)['count']}
 
