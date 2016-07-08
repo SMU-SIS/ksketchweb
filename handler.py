@@ -529,7 +529,7 @@ class ActionHandler(webapp2.RequestHandler):
         return self.respond(result)
 
     #Handler for retrieving all therapy data
-    def get_therapydata_all(self): #/get/therapydata
+    def get_therapydata_all(self): #/get/therapydataall
         result = Therapy.get_entities(self)
         return self.respond(result)
 
@@ -588,7 +588,7 @@ application = webapp2.WSGIApplication([
     webapp2.Route('/get/sketch/view_xml/<sketchId>/<version>/<userid>', handler=ActionHandler, handler_method='view_sketch_xml'),
     webapp2.Route('/get/trash/user',handler=ActionHandler, handler_method='view_trash_sketches'), # Get Sketch (View)],
     webapp2.Route('/add/therapydata',handler=ActionHandler,handler_method='add_therapydata'), # Add therapy data
-    webapp2.Route('/get/therapydata',handler=ActionHandler,handler_method='get_therapydata'), # Get therapy data by sketchId
+    webapp2.Route('/get/therapydata',handler=ActionHandler,handler_method='get_therapydata'), # Get therapy data by by user name, template name and result date
     webapp2.Route('/get/therapydataall',handler=ActionHandler,handler_method='get_therapydata_all')], # Get all therapy data
     config=webapp2_config,
     debug=True)

@@ -6,8 +6,6 @@ Mozilla Public License, v. 2.0. If a copy of the MPL was
 not distributed with this file, You can obtain one at
 http://mozilla.org/MPL/2.0/.
 '''
-import logging
-from counters import ModelCount
 
 """Therapy Data Module
 
@@ -21,6 +19,7 @@ Note to self: json.loads = json string to objects. json.dumps is object to json 
 Attributes and functions for Therapydata entity
 """
 from google.appengine.ext import db
+from crypto import Crypto
 
 #Handles Therapy data: adding and getting of therapy data
 class Therapy(db.Model):
@@ -51,7 +50,7 @@ class Therapy(db.Model):
                     version = 0
                     entity = Therapy(
                                     version=long(version),
-                                    userName=userName,
+                                    userName=Crypto.encrypt(userName),
                                     templateName=templateName,
                                     resultDate=resultDate,
                                     resultRecall=resultRecall,
@@ -95,7 +94,7 @@ class Therapy(db.Model):
 
                     data = {
                         'version': object.version,
-                        'userName' : object.userName,
+                        'userName' : Crypto.decrypt(object.userName),
                         'templateName' : object.templateName,
                         'resultDate' : object.resultDate,
                         'resultRecall': Therapy.getData(object.resultRecall),
@@ -112,15 +111,14 @@ class Therapy(db.Model):
 
     @staticmethod
     def get_therapydata(userName, templateName, resultDate):
-        utc = UTC()
         data = ""
         query = Therapy.all()
-        # query.filter('sketchId =',long(sketchId)).fetch(limit=None)
-        query.filter('userName =',userName).filter('templateName = ',templateName).filter('resultDate',resultDate).fetch(limit=None)
+        cipher_text = Crypto.encrypt(userName)
+        query.filter('userName =',cipher_text).filter('templateName = ',templateName).filter('resultDate',resultDate).fetch(limit=None)
         object = query.get()
         if object:
             data = {
-                'userName' : object.userName,
+                'userName' : Crypto.decrypt(object.userName),
                 'templateName' : object.templateName,
                 'resultDate' : object.resultDate,
                 'version': object.version,
@@ -186,7 +184,7 @@ class Therapy(db.Model):
     @staticmethod
     def update(userName, templateName, resultDate, resultRecall, resultTrace, resultTrack, resultRecreate):
         query = Therapy.all()
-        query.filter('userName =',userName).filter('templateName = ',templateName).filter('resultDate',resultDate).fetch(limit=None)
+        query.filter('userName =',Crypto.encrypt(userName)).filter('templateName = ',templateName).filter('resultDate',resultDate).fetch(limit=None)
         object = query.get()
         if object:
             if object.resultRecall == resultRecall and object.resultTrace == resultTrace and object.resultTrack == resultTrack and object.resultRecreate == resultRecreate:
@@ -200,7 +198,7 @@ class Therapy(db.Model):
         try:
             entity = Therapy(
                     version=long(version),
-                    userName=userName,
+                    userName=Crypto.encrypt(userName),
                     templateName=templateName,
                     resultDate=resultDate,
                     resultRecall=resultRecall,

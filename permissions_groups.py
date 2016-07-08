@@ -504,8 +504,9 @@ class UserGroupMgmt(db.Model):
     for object in objects:
       test = ""
       include = True
+      decoded_display_name = Crypto.decrypt(object.display_name)
       if criteria != "":      
-        if criteria.lower() in object.display_name.lower():
+        if criteria.lower() in decoded_display_name.lower():
           include = True
         else:
           include = False
@@ -517,8 +518,8 @@ class UserGroupMgmt(db.Model):
             
       if include:
         data = {'id': object.key().id(),
-                'u_name': object.display_name,
-                'u_realname': object.real_name}
+                'u_name': decoded_display_name,
+                'u_realname': Crypto.decrypt(object.real_name)}
         entities.append(data)
     return entities
     
@@ -655,3 +656,4 @@ class UserGroupMgmt(db.Model):
 from rpx import User, UTC
 from sketches import Sketch
 from notifications import Notification
+from crypto import Crypto
