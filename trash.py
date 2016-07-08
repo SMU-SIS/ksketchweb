@@ -133,7 +133,7 @@ class Trash(db.Model):
 
         entities = []
         for object in objects:
-          user_name = User.get_name(object.owner)
+          user_name = User.get_name(Crypto.decrypt(object.owner))
           data = {'sketchId': object.sketchId,
                 'version': object.version,
                 'changeDescription': object.changeDescription,
@@ -177,3 +177,4 @@ class Trash(db.Model):
 from rpx import UTC, User
 from sketches import VersionCount, Sketch
 from comments_likes import Comment, Like
+from crypto import Crypto

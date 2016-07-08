@@ -508,7 +508,7 @@ class Sketch(db.Model):
 
         if bool(permissions['p_view']) and latest_check:
           test = "works too!"
-          user_name = User.get_name(object.owner)
+          user_name = User.get_name(Crypto.decrypt(object.owner))
           data = {'sketchId': object.sketchId,
                 'version': object.version,
                 'changeDescription': object.changeDescription,
@@ -590,13 +590,13 @@ class Sketch(db.Model):
           
         if bool(permissions['p_view']) and latest_check:
           test = "works too!"
-          user_name = User.get_name(object.owner)
+          user_name = User.get_name(Crypto.decrypt(object.owner))
           data = {'sketchId': object.sketchId,
                 'version': object.version,
                 'changeDescription': object.changeDescription,
                 'fileName': object.fileName,
                 'thumbnailData': object.thumbnailData,
-                'owner': user_name,
+                'owner': Crypto.decrypt(user_name),
                 'owner_id': object.owner,
                 'originalSketch': object.original_sketch,
                 'originalVersion': object.original_version,
@@ -1546,3 +1546,4 @@ from comments_likes import Comment, Like
 from permissions_groups import Permissions, Sketch_Groups
 from notifications import Notification    
 from trash import Trash
+from crypto import Crypto

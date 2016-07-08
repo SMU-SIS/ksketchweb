@@ -23,5 +23,6 @@ class _ConfigDefaults(object):
   ksketch_SENDGRID_username = ''            # Enter your sendgrid.com username here
   ksketch_SENDGRID_password = ''            # Enter your sendgrid.com password here
   ksketch_EMAIL = 'user@yourdomain.com'     # Enter your email id here
-  ksketch_HOSTNAME = 'localhost:8080'       # Enter your hostname here  ksketch_HOSTNAME = 'localhost:8080'       # Enter your hostname here  ksketch_SENDGRID_username = 'ksketch'
+  ksketch_HOSTNAME = 'localhost:8080'       # Enter your hostname here
   ksketch_LIST_DELETE_REQUIRE_AUTH = True
+  ksketch_CRYPTO_KEY = ''                   # Enter your crypto key here

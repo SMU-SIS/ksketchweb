@@ -80,6 +80,7 @@ class User(db.Model):
   parent_email       = db.StringProperty()  #email add of User's parent
   contact_studies    = db.BooleanProperty() #User option for participation in studies
   contact_updates    = db.BooleanProperty() #User option for participation in updates
+  encrypted          = db.BooleanProperty(default=True) #Encryption status
 
   def to_dict(self):
        d = dict([(p, unicode(getattr(self, p))) for p in self.properties()])
@@ -122,12 +123,14 @@ class User(db.Model):
       if (not user.real_name):
         user.real_name = user.display_name #default to display name
         user.put()
+      if (user.parent_email != 'not required') == True:
+        user.parent_email = Crypto.decrypt(user.parent_email)
       result = {'status':'success',
                 'id': userid,
                 'u_login': bool(True),
-                'u_name': user.display_name,
-                'u_realname': user.real_name,
-                'u_email': user.email,
+                'u_name': Crypto.decrypt(user.display_name),
+                'u_realname': Crypto.decrypt(user.real_name),
+                'u_email': Crypto.decrypt(user.email),
                 'g_hash': g_hash,
                 'u_created': user.created.replace(tzinfo=utc).strftime("%d %b %Y %H:%M:%S"),
                 'u_lastlogin': "",
@@ -159,7 +162,7 @@ class User(db.Model):
         entity = User.get_by_id(int(model_id))
         
         if entity:
-          return entity.display_name
+          return Crypto.decrypt(entity.display_name)
         else:
           return "N/A"
       except ValueError:
@@ -201,12 +204,14 @@ class User(db.Model):
       if (not user.real_name):
         user.real_name = user.display_name #default to display name
         user.put()
+      if (user.parent_email != 'not required') == True:
+        user.parent_email = Crypto.decrypt(user.parent_email)
       result = {'status':'success',
                 'id': id,
                 'u_login': bool(True),
-                'u_name': user.display_name,
-                'u_realname': user.real_name,
-                'u_email': user.email,
+                'u_name': Crypto.decrypt(user.display_name),
+                'u_realname': Crypto.decrypt(user.real_name),
+                'u_email': Crypto.decrypt(user.email),
                 'g_hash': g_hash,
                 'u_created': user.created.replace(tzinfo=utc).strftime("%d %b %Y %H:%M:%S"),
                 'u_lastlogin': "",
@@ -253,7 +258,7 @@ class User(db.Model):
         entities.append(0)
       for object in objects:
         include = True
-        if criteria.lower() in object.display_name.lower():
+        if criteria.lower() in Crypto.decrypt(object.display_name).lower():
           include = True
         else:
           include = False
@@ -276,29 +281,28 @@ class User(db.Model):
         entities.append(0)
       for object in objects:
         include = True
-        if criteria.lower() in object.display_name.lower():
+        if criteria.lower() in Crypto.decrypt(object.display_name).lower():
           include = True
         else:
           include = False
-        
+
         if include:
           data = {'id': object.key().id(),
-                  'u_name': object.display_name,
-                  'u_realname': object.real_name}
+                  'u_name': Crypto.decrypt(object.display_name),
+                  'u_realname': Crypto.decrypt(object.real_name)}
           entities.append(data)
     else:
       for object in objects:
-      
         data = {'id': object.key().id(),
-                'u_name': object.display_name,
-                'u_realname': object.real_name}
+                'u_name': Crypto.decrypt(object.display_name),
+                'u_realname': Crypto.decrypt(object.real_name)}
         entities.append(data)  
             
     return entities
     
-    #Gets Users by criteria
-    @staticmethod
-    def get_entities(criteria=""):
+  #Gets Users by criteria
+  @staticmethod
+  def get_entities(criteria=""):
       utc=UTC()
       
       theQuery = User.all()
@@ -308,21 +312,24 @@ class User(db.Model):
       
       for object in objects:
         include = True
+        decoded_display_name = Crypto.decrypt(object.display_name);
         if criteria != "":
-          if criteria.lower() in object.display_name.lower():
+          if criteria.lower() in decoded_display_name.lower():
             include = True
             
         if include:
           email_hasher = hashlib.md5()
-          email_hasher.update(user.email.lower())
+          email_hasher.update(object.email.lower())
           g_hash = email_hasher.hexdigest()
           if (not object.real_name):
-            object.real_name = object.display_name #default to display name
+            object.real_name = decoded_display_name #default to display name
             object.put()
+          if (object.parent_email != 'not required') == True:
+            object.parent_email = Crypto.decrypt(object.parent_email)
           data = {'id': object.key().id(),
-                  'u_name': object.display_name,
-                  'u_realname': object.real_name,
-                  'u_email': object.email,
+                  'u_name': decoded_display_name,
+                  'u_realname': Crypto.decrypt(object.real_name),
+                  'u_email': Crypto.decrypt(object.email),
                   'g_hash': g_hash,
                   'u_created': object.created.replace(tzinfo=utc).strftime("%d %b %Y %H:%M:%S"),
                   'u_lastlogin': "",
@@ -373,16 +380,22 @@ class User(db.Model):
     elif User.check_if_admin(userid):
       edit_check = True
       
-    if edit_check:    
+    if edit_check:
       entity = User.get_by_id(long(model_id))
       if entity:
         try:
-          entity.display_name = jsonData['u_displayname']
+          if (Crypto.decrypt(entity.display_name) != (jsonData['u_displayname'])) == False:
+              entity.display_name = Crypto.encrypt(jsonData['u_displayname'])
+          else:
+            entity.display_name = jsonData['u_displayname']
         except (KeyError, ValueError):
           entity.display_name = entity.display_name
           
         try:
-          entity.real_name = jsonData['u_realname']
+          if (Crypto.decrypt(entity.real_name) != (jsonData['u_realname'])) == False:
+              entity.real_name = Crypto.encrypt(jsonData['u_realname'])
+          else:
+            entity.real_name = jsonData['u_realname']
         except (KeyError, ValueError):
           entity.real_name = entity.real_name
           
@@ -402,7 +415,10 @@ class User(db.Model):
           entity.birth_year = entity.birth_year
 
         try:
-          entity.parent_email = jsonData['parent_email']
+          if jsonData['parent_email'] == 'not required':
+            entity.parent_email = jsonData['parent_email']
+          else:
+            entity.parent_email = Crypto.encrypt(jsonData['parent_email'])
         except (KeyError, ValueError):
           entity.parent_email = entity.parent_email
 
@@ -766,7 +782,7 @@ class GetUser(webapp2.RequestHandler):
       \n\
 K-Sketch would like to request permission for your child, "+ result['u_name'] + ", to participate in using our system. \n\
       \n\
-Please click the following link to activate your child's account: " +_ConfigDefaults.ksketch_HOSTNAME + url_approve + "\n\
+Please click the following link to activate your child's account: " + "http://" +_ConfigDefaults.ksketch_HOSTNAME + url_approve + "\n\
       \n\
 Please click the following link to cancel participation: " + "http://"+_ConfigDefaults.ksketch_HOSTNAME + url_disapprove + "\n\
 \n\
@@ -812,7 +828,7 @@ K-Sketch Team"
       \n\
 Thank you for allowing your child, "+ result['u_name'] + ", to participate in using K-Sketch. \n\
       \n\
-To view your child's sketches, click on: "+ _ConfigDefaults.ksketch_HOSTNAME + url_monitor + "\n\
+To view your child's sketches, click on: " + "http://" + _ConfigDefaults.ksketch_HOSTNAME + url_monitor + "\n\
       \n\
 Please bookmark this link to easily access your child's profile in the future.\n\
 \n\
@@ -880,11 +896,11 @@ class OAuthTokenHandler(BaseHandler):
         if user_info:
           # extract some useful fields
           oid = user_info['id']
-          email = user_info['email']
+          email = Crypto.encrypt(user_info['email'])
           try:
-              display_name = user_info['name']
+              display_name = Crypto.encrypt(user_info['name'])
           except KeyError:
-              display_name = email.partition('@')[0]
+              display_name = Crypto.encrypt(email.partition('@')[0])
 
             # check if there is a user present with that auth_id
           exist = True
@@ -960,3 +976,4 @@ application = webapp2.WSGIApplication([
 #Imports placed below to avoid circular imports
 from counters import AppUserCount
 from sketches import Sketch
+from crypto import Crypto

@@ -10,3 +10,5 @@ includes:
 libraries:
 - name: webapp2
   version: "2.5.1"
+- name: pycrypto
+  version: "2.6"
