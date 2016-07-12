@@ -133,7 +133,7 @@ class Trash(db.Model):
 
         entities = []
         for object in objects:
-          user_name = User.get_name(Crypto.decrypt(object.owner))
+          user_name = User.get_name(object.owner)
           data = {'sketchId': object.sketchId,
                 'version': object.version,
                 'changeDescription': object.changeDescription,

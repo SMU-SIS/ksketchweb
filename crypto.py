@@ -43,7 +43,7 @@ class Crypto:
         PADDING = '{'
         try:
             if(cipherText != ""):
-                if " " in cipherText == True:
+                if " " in cipherText:
                     cipherText = cipherText.replace(" ", "+")
                 decodeAES = lambda c, e: c.decrypt(base64.b64decode(e)).rstrip(PADDING)
                 plainText = decodeAES(AES.new(_ConfigDefaults.ksketch_CRYPTO_KEY), cipherText)
